@@ -4,4 +4,4 @@ cd /home/makowlg/Documents/Immune-CCI/src
 #conda init
 conda activate mkpy
 
-python immune_questions1.py
+python a_immune.py
