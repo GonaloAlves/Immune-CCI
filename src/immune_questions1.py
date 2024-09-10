@@ -1,11 +1,10 @@
 import scanpy as sc
 
-
 import os
 import shutil
 
 adata = sc.read_h5ad("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked.h5ad") # enter h5ad file name 
-
+print(adata)
 
 ### Visualize clusters ###
 
@@ -16,7 +15,7 @@ different_reso = []
 for reso in adata.obs.columns: 
     if reso.startswith('leiden_'):
         different_reso.append(reso)
-
+print(different_reso)
 print(len(different_reso))
 
 
