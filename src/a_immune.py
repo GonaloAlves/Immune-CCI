@@ -70,10 +70,22 @@ for cluster, df in cluster_dfs.items():
 
         pos_lfc = one_sorted_df.head(num_nega_lfc)
 
-        top_genes_positive1 = top_genes['logfoldchange'] > 0
-        top_genes_positive2 = top_genes[top_genes_positive1]
+        mask1 = top_genes['logfoldchange'] > 0
+        top_genes_positive = top_genes[mask1]
 
-        combined_top_genes = pd.concat([top_genes_positive2,pos_lfc])
+        replacements = []
+        for gene, values in one_sorted_df.iterrows():
+            if gene not in top_genes_positive.index:
+                replacements.append(values)
+            else:
+                continue
+
+            if len(replacements) == num_nega_lfc:
+                break  # Stop once we have enough replacement genes
+
+        replacements_df = pd.DataFrame(replacements)
+
+        combined_top_genes = pd.concat([top_genes_positive,replacements_df])
 
         
         top_genes_cluster[cluster] = combined_top_genes
@@ -166,5 +178,5 @@ for cluster, df in top_genes_cluster.items():
 # dotplot2.savefig(output_path2, bbox_inches="tight")
 # plt.close()  # Close the current figure to avoid overlap
 
-PendingDeprecationWarning
+
 print("hello world")
