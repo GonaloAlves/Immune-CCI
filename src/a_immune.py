@@ -52,8 +52,7 @@ for i in range(len(gene_names.columns)): #for loop to take the nr of columns
 #     print(f"\n{cluster}:")
 #     print(df.head())
 
-
-#Filter, sort, and select top 5 genes per cluster
+# Filter, sort, and select top 5 genes per cluster
 top_genes_cluster = {}
 
 for cluster, df in cluster_dfs.items():
@@ -61,9 +60,8 @@ for cluster, df in cluster_dfs.items():
     filtered_df = df[mask]
     #filtered_df = df.mask(df['pvals_adj'] >= 0.05) # padj < 0.05
     #sorted_df = filtered_df.sort_values(by='logfoldchange', ascending=False) # orders by fold change
-
     top_genes = filtered_df.head(5)
-
+    
     if (top_genes['logfoldchange'] < 0).any(): # top 5 genes
 
         num_nega_lfc = (top_genes['logfoldchange'] < 0).sum()
@@ -74,11 +72,9 @@ for cluster, df in cluster_dfs.items():
         top_genes_positive = top_genes[mask1]
 
         replacements = []
-        for gene, values in one_sorted_df.iterrows():
+        for gene, values in df.iterrows():
             if gene not in top_genes_positive.index:
                 replacements.append(values)
-            else:
-                continue
 
             if len(replacements) == num_nega_lfc:
                 break  # Stop once we have enough replacement genes
@@ -89,7 +85,12 @@ for cluster, df in cluster_dfs.items():
 
         
         top_genes_cluster[cluster] = combined_top_genes
-        
+
+    elif top_genes.empty: 
+        top_genes_new = df.head(5)
+
+        top_genes_cluster[cluster] = top_genes_new
+
     else:
         top_genes_cluster[cluster] = top_genes # Assigns the DataFrame (top_genes) to the key cluster in the dictionary top_genes_per_cluster.
 
