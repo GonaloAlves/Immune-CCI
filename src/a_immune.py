@@ -97,39 +97,39 @@ for cluster, df in cluster_dfs.items():
 #ordenar primeiro por logfoldchange por ordem decrescente, ver e dps quando for retirar os pvalue mais elevados ver quandos genes sobram que tenham um
 #logfoldchange inferior a 0, dependendo o numero vamos buscar os top n de genes com o logfoldchange superior da lista inicial de genes ordenados
 
-# print 
-for cluster, df in top_genes_cluster.items():
-    print(f"\nTop genes in {cluster}:")
-    print(df)
-
-
-# # append the genes to a full list in cluster order, every 5 genes is a cluster
-# top_genes = []
-
+# # print 
 # for cluster, df in top_genes_cluster.items():
-#     for gene in df.index:
-#         top_genes.append(gene)
+#     print(f"\nTop genes in {cluster}:")
+#     print(df)
+
+
+# Create a dictionary to hold top gene names for each cluster
+top_genes_names = {}
+
+# Iterate over the top genes per cluster
+for cluster, df in top_genes_cluster.items():
+    # Collect the top 5 gene names for this cluster
+    top_genes_names[cluster] = df.index.tolist()
 
 
 # print("\nTop genes per cluster:")
-# print(top_genes)
+# print(top_genes_names)
 
 
+## Visualize the DotPlots of the DGE's ###
 
-# ### Visualize the DotPlots of the DGE's ###
+# New directory 
+dotplots = "dotplots"
 
-# # New directory 
-# dotplots = "dotplots"
+# Delete the existing dir if exists
+if os.path.exists(dotplots):
+    shutil.rmtree(dotplots)
 
-# # Delete the existing dir if exists
-# if os.path.exists(dotplots):
-#     shutil.rmtree(dotplots)
+os.makedirs(dotplots)
 
-# os.makedirs(dotplots)
-
-## Creates the dir
-#if not os.path.exists(dotplots):
-#   os.makedirs(dotplots)
+# Creates the dir
+if not os.path.exists(dotplots):
+  os.makedirs(dotplots)
 
 
 # # DotPlot 1 representing the ranked genes by deafault method
@@ -150,23 +150,27 @@ for cluster, df in top_genes_cluster.items():
 #     return_fig=True
 # )
 
+# d1 = {'a': 1, 'b': 2, 'c': 3}
+# print(d1)
+# d1 = {f'{k}*': v for k, v in d1.items()}
+# print(d1)
 
-# # DotPlot 2 representing the ranked genes by top 5 filter
-# dotplot2 = sc.pl.rank_genes_groups_dotplot(
-#     adata,
-#     var_names=top_genes,
-#     groupby='leiden_fusion',
-#     key = 'rank_genes_groups_leiden_fusion',
-#     cmap='bwr',
-#     vmin=-4,
-#     vmax=4,
-#     values_to_plot='logfoldchanges',
-#     #min_logfoldchange=1,
-#     colorbar_title='log fold change',
-#     use_raw=False,
-#     dendrogram=False,
-#     return_fig=True
-# )
+# DotPlot 2 representing the ranked genes by top 5 filter
+dotplot1 = sc.pl.rank_genes_groups_dotplot(
+    adata,
+    var_names=top_genes_names,
+    groupby='leiden_fusion',
+    key = 'rank_genes_groups_leiden_fusion',
+    cmap='bwr',
+    vmin=-4,
+    vmax=4,
+    values_to_plot='logfoldchanges',
+    #min_logfoldchange=1,
+    colorbar_title='log fold change',
+    use_raw=False,
+    dendrogram=False,
+    return_fig=True
+)
 
 
 # output_path1 = os.path.join(dotplots, "dotplot_1.png")
@@ -175,9 +179,9 @@ for cluster, df in top_genes_cluster.items():
 
 
 
-# output_path2 = os.path.join(dotplots, "dotplot_2.png")
-# dotplot2.savefig(output_path2, bbox_inches="tight")
-# plt.close()  # Close the current figure to avoid overlap
+output_path1 = os.path.join(dotplots, "dotplot_1.png")
+dotplot1.savefig(output_path1, bbox_inches="tight")
+plt.close()  # Close the current figure to avoid overlap
 
 
 print("hello world")
