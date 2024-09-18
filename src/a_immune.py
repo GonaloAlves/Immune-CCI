@@ -45,7 +45,7 @@ for i in range(len(gene_names.columns)): #for loop to take the nr of columns
     # cluster_df.index.name = 'gene'
 
     cluster_names = gene_names.columns[i]
-    cluster_dfs[f'Cluster:{cluster_names}'] = one_sorted_df    # append it to the dictionary
+    cluster_dfs[cluster_names] = one_sorted_df    # append it to the dictionary
 
 # #Print
 # for cluster, df in cluster_dfs.items():
@@ -155,10 +155,61 @@ if not os.path.exists(dotplots):
 # d1 = {f'{k}*': v for k, v in d1.items()}
 # print(d1)
 
+# adata.var['modified_gene_names'] = adata.var_names.copy()
+
+# # Iterate over the clusters and gene data in top_genes_cluster
+# for cluster, df in top_genes_cluster.items():
+#     # Iterate over the genes and their data
+#     for gene, row in df.iterrows():
+#         # Check if p-value is not statistically significant (adj_pval >= 0.05)
+#         if row['pvals_adj'] >= 0.05:
+#             # Update the gene name in the 'modified_gene_names' column by appending '*'
+#             adata.var.loc[gene, 'modified_gene_names'] = gene + '*'
+
+# # Now modify adata.var_names to be the modified names
+# adata.var_names = adata.var['modified_gene_names']
+
+# # You can now directly plot with the updated names in adata
+# dotplot1 = sc.pl.dotplot(
+#     adata,
+#     var_names=top_genes_cluster,   # The dictionary of top genes by cluster
+#     groupby='leiden_fusion',       # Cluster grouping
+#     cmap='bwr',                    # Colormap for logfoldchanges
+#     vmin=-4,                       # Minimum value for colormap
+#     vmax=4,                        # Maximum value for colormap
+#     values_to_plot='logfoldchanges',  # Plot logfoldchanges
+#     colorbar_title='log fold change',  # Title for color bar
+#     use_raw=False,                 # Use the raw data or not
+#     dendrogram=False,              # Do not display dendrogram
+#     return_fig=True                # Return the plot figure object
+# )
+
+# adjusted_top_genes = {}
+
+# for cluster, df in top_genes_cluster.items():
+#     # Initialize an empty list to store adjusted gene names for each cluster
+#     adjusted_genes = []
+    
+#     for gene, row in df.iterrows():
+#         # Check if p-value is not statistically significant (adj_pval >= 0.05)
+#         if row['pvals_adj'] >= 0.05:
+#             # Append a '*' to non-significant gene names
+#             adjusted_genes.append(gene + '*')
+#         else:
+#             # Keep the gene name unchanged for significant genes
+#             adjusted_genes.append(gene)
+    
+#     # Store the adjusted gene names for each cluster in the dictionary
+#     adjusted_top_genes[cluster] = adjusted_genes
+
+# lista de labels do eixo do x e quando tiver essa lista substituir por uma nova
+# apagar o NA
+# min de 30%, 40%, 50%
+
 # DotPlot 2 representing the ranked genes by top 5 filter
 dotplot1 = sc.pl.rank_genes_groups_dotplot(
     adata,
-    var_names=top_genes_names,
+    var_names = top_genes_names,
     groupby='leiden_fusion',
     key = 'rank_genes_groups_leiden_fusion',
     cmap='bwr',
@@ -171,13 +222,6 @@ dotplot1 = sc.pl.rank_genes_groups_dotplot(
     dendrogram=False,
     return_fig=True
 )
-
-
-# output_path1 = os.path.join(dotplots, "dotplot_1.png")
-# dotplot1.savefig(output_path1, bbox_inches="tight")
-# plt.close()
-
-
 
 output_path1 = os.path.join(dotplots, "dotplot_1.png")
 dotplot1.savefig(output_path1, bbox_inches="tight")
