@@ -110,3 +110,13 @@
 #     return_fig=True                
 # )
 
+
+#Deleting NA cluster 
+# remove_cluster = []
+
+# for cluster in cluster_dfs:
+#     if cluster.endswith("NA"):
+#         remove_cluster.append(cluster)
+
+# for cluster in remove_cluster:
+#     del cluster_dfs[cluster]

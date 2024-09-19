@@ -40,10 +40,22 @@ for i in range(len(gene_names.columns)): #for loop to take the nr of columns
         'pvals_adj': pvals_adj.iloc[:, i].values,
         'pts': pts_reindexed.values}, 
         index=gene_reindex.values)
-    one_sorted_df = cluster_df.sort_values(by='logfoldchange', ascending=False)
+    
+    mask_pts = (cluster_df['pts'] >= 0.5) 
+    filtered_df = cluster_df[mask_pts]
+    
+    one_sorted_df = filtered_df.sort_values(by='logfoldchange', ascending=False)
+
 
     cluster_names = gene_names.columns[i]
     cluster_dfs[cluster_names] = one_sorted_df    # append it to the dictionary
+
+# Delete the NA cluster
+
+clusters_to_delete = [cluster for cluster in cluster_dfs if cluster.endswith("NA")]
+
+for cluster in clusters_to_delete:
+    del cluster_dfs[cluster]
 
 # #Print
 # for cluster, df in cluster_dfs.items():
@@ -54,8 +66,8 @@ for i in range(len(gene_names.columns)): #for loop to take the nr of columns
 top_genes_cluster = {}
 
 for cluster, df in cluster_dfs.items():
-    mask = df['pvals_adj'] < 0.05
-    filtered_df = df[mask]
+    mask_pval = df['pvals_adj'] < 0.05
+    filtered_df = df[mask_pval]
     top_genes = filtered_df.head(5)
     
     if (top_genes['logfoldchange'] < 0).any(): # top 5 genes
@@ -91,10 +103,10 @@ for cluster, df in cluster_dfs.items():
         top_genes_cluster[cluster] = top_genes # Assigns the DataFrame (top_genes) to the key cluster in the dictionary top_genes_per_cluster.
 
 
-# # print 
-# for cluster, df in top_genes_cluster.items():
-#     print(f"\nTop genes in {cluster}:")
-#     print(df)
+# print 
+for cluster, df in top_genes_cluster.items():
+    print(f"\nTop genes in {cluster}:")
+    print(df)
 
 
 # Create a dictionary to hold top gene names for each cluster
@@ -136,7 +148,6 @@ dotplot1 = sc.pl.rank_genes_groups_dotplot(
     vmin=-4,
     vmax=4,
     values_to_plot='logfoldchanges',
-    #min_logfoldchange=1,
     colorbar_title='log fold change',
     use_raw=False,
     dendrogram=False,
@@ -145,9 +156,9 @@ dotplot1 = sc.pl.rank_genes_groups_dotplot(
 
 output_path1 = os.path.join(dotplots, "dotplot_1.png")
 dotplot1.savefig(output_path1, bbox_inches="tight")
-plt.close()  # Close the current figure to avoid overlap
+# plt.close()  # Close the current figure to avoid overlap
+plt.close()
 
-
-# lista de labels do eixo do x e quando tiver essa lista substituir por uma nova
-# apagar o NA
+# lista de labels do eixo do x e quando tiver essa lista substituir por uma nova - not done
+# apagar o NA - done
 # min de 30%, 40%, 50%
