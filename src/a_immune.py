@@ -33,7 +33,6 @@ cluster_dfs = {}
 for i in range(len(gene_names.columns)): #for loop to take the nr of columns
     gene_reindex = gene_names.iloc[:, i] # take the correct order of genes names
     pts_reindexed = pts.iloc[:, i].reindex(gene_reindex.values) # Reindex the pts
-    #print(f"Gene e\n{pts_reindexed}:")
 
     cluster_df = pd.DataFrame({ # creates a df that takes all the data corresponding to the cluster in loop
         'score': scores.iloc[:, i].values,
@@ -42,7 +41,6 @@ for i in range(len(gene_names.columns)): #for loop to take the nr of columns
         'pts': pts_reindexed.values}, 
         index=gene_reindex.values)
     one_sorted_df = cluster_df.sort_values(by='logfoldchange', ascending=False)
-    # cluster_df.index.name = 'gene'
 
     cluster_names = gene_names.columns[i]
     cluster_dfs[cluster_names] = one_sorted_df    # append it to the dictionary
@@ -58,8 +56,6 @@ top_genes_cluster = {}
 for cluster, df in cluster_dfs.items():
     mask = df['pvals_adj'] < 0.05
     filtered_df = df[mask]
-    #filtered_df = df.mask(df['pvals_adj'] >= 0.05) # padj < 0.05
-    #sorted_df = filtered_df.sort_values(by='logfoldchange', ascending=False) # orders by fold change
     top_genes = filtered_df.head(5)
     
     if (top_genes['logfoldchange'] < 0).any(): # top 5 genes
@@ -94,8 +90,6 @@ for cluster, df in cluster_dfs.items():
     else:
         top_genes_cluster[cluster] = top_genes # Assigns the DataFrame (top_genes) to the key cluster in the dictionary top_genes_per_cluster.
 
-#ordenar primeiro por logfoldchange por ordem decrescente, ver e dps quando for retirar os pvalue mais elevados ver quandos genes sobram que tenham um
-#logfoldchange inferior a 0, dependendo o numero vamos buscar os top n de genes com o logfoldchange superior da lista inicial de genes ordenados
 
 # # print 
 # for cluster, df in top_genes_cluster.items():
@@ -132,81 +126,7 @@ if not os.path.exists(dotplots):
   os.makedirs(dotplots)
 
 
-# # DotPlot 1 representing the ranked genes by deafault method
-# dotplot1 = sc.pl.rank_genes_groups_dotplot(
-#     adata,
-#     n_genes=5,
-#     groupby='leiden_fusion',
-#     key = 'rank_genes_groups_leiden_fusion',
-#     cmap='bwr',
-#     vmin=-4,
-#     vmax=4,
-#     values_to_plot = 'logfoldchanges',
-#     #var_names = ['Arhgap15','Parp14','Diaph3'],
-#     #min_logfoldchange=1,
-#     colorbar_title='log fold change',
-#     use_raw=False,
-#     dendrogram=False,
-#     return_fig=True
-# )
-
-# d1 = {'a': 1, 'b': 2, 'c': 3}
-# print(d1)
-# d1 = {f'{k}*': v for k, v in d1.items()}
-# print(d1)
-
-# adata.var['modified_gene_names'] = adata.var_names.copy()
-
-# # Iterate over the clusters and gene data in top_genes_cluster
-# for cluster, df in top_genes_cluster.items():
-#     # Iterate over the genes and their data
-#     for gene, row in df.iterrows():
-#         # Check if p-value is not statistically significant (adj_pval >= 0.05)
-#         if row['pvals_adj'] >= 0.05:
-#             # Update the gene name in the 'modified_gene_names' column by appending '*'
-#             adata.var.loc[gene, 'modified_gene_names'] = gene + '*'
-
-# # Now modify adata.var_names to be the modified names
-# adata.var_names = adata.var['modified_gene_names']
-
-# # You can now directly plot with the updated names in adata
-# dotplot1 = sc.pl.dotplot(
-#     adata,
-#     var_names=top_genes_cluster,   # The dictionary of top genes by cluster
-#     groupby='leiden_fusion',       # Cluster grouping
-#     cmap='bwr',                    # Colormap for logfoldchanges
-#     vmin=-4,                       # Minimum value for colormap
-#     vmax=4,                        # Maximum value for colormap
-#     values_to_plot='logfoldchanges',  # Plot logfoldchanges
-#     colorbar_title='log fold change',  # Title for color bar
-#     use_raw=False,                 # Use the raw data or not
-#     dendrogram=False,              # Do not display dendrogram
-#     return_fig=True                # Return the plot figure object
-# )
-
-# adjusted_top_genes = {}
-
-# for cluster, df in top_genes_cluster.items():
-#     # Initialize an empty list to store adjusted gene names for each cluster
-#     adjusted_genes = []
-    
-#     for gene, row in df.iterrows():
-#         # Check if p-value is not statistically significant (adj_pval >= 0.05)
-#         if row['pvals_adj'] >= 0.05:
-#             # Append a '*' to non-significant gene names
-#             adjusted_genes.append(gene + '*')
-#         else:
-#             # Keep the gene name unchanged for significant genes
-#             adjusted_genes.append(gene)
-    
-#     # Store the adjusted gene names for each cluster in the dictionary
-#     adjusted_top_genes[cluster] = adjusted_genes
-
-# lista de labels do eixo do x e quando tiver essa lista substituir por uma nova
-# apagar o NA
-# min de 30%, 40%, 50%
-
-# DotPlot 2 representing the ranked genes by top 5 filter
+# DotPlot representing the ranked genes by top 5 filter
 dotplot1 = sc.pl.rank_genes_groups_dotplot(
     adata,
     var_names = top_genes_names,
@@ -228,4 +148,6 @@ dotplot1.savefig(output_path1, bbox_inches="tight")
 plt.close()  # Close the current figure to avoid overlap
 
 
-print("hello world")
+# lista de labels do eixo do x e quando tiver essa lista substituir por uma nova
+# apagar o NA
+# min de 30%, 40%, 50%
