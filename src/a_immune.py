@@ -10,8 +10,6 @@ adata = sc.read_h5ad("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_
 
 ## DGEs ##
 
-#sc.tl.rank_genes_groups(adata, groupby='leiden_fusion', method='wilcoxon', use_raw=False, pts=True)
-
 dge_fusion = adata.uns['rank_genes_groups_leiden_fusion']
 # print(dge_fusion)
 
