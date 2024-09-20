@@ -43,7 +43,7 @@ def extract_dge_data(adata):
 
 
 # Step 3: Create cluster dataframes with filtered data
-def create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5):
+def create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=False, pts_threshold=0):
     """
     Create a dictionary of dataframes per cluster, with filtered and optionally sorted genes.
 
@@ -215,51 +215,6 @@ def select_top_genes(cluster_dfs):
 
     return top_genes_cluster
 
-# def select_top_genes(cluster_dfs):
-#     """
-#     Select the top 5 genes for each cluster, replacing genes with negative log fold change.
-
-#     Parameters:
-#     cluster_dfs (dict): Dictionary containing dataframes of each cluster.
-
-#     Returns:
-#     dict: Dictionary containing the top 5 genes per cluster.
-#     """
-#     top_genes_cluster = {}
-
-#     for cluster, df in cluster_dfs.items():
-#         mask_pval = df['pvals_adj'] < 0.05  # Filter by p-value
-#         filtered_df = df[mask_pval]
-#         top_genes = filtered_df.head(5)
-
-#         if (top_genes['logfoldchange'] < 0).any():  # Check for negative log fold changes
-#             num_nega_lfc = (top_genes['logfoldchange'] < 0).sum()
-#             pos_lfc = df.head(num_nega_lfc)
-
-#             mask1 = top_genes['logfoldchange'] > 0
-#             top_genes_positive = top_genes[mask1]
-
-#             replacements = []
-#             for gene, values in df.iterrows():
-#                 if gene not in top_genes_positive.index:
-#                     replacements.append(values)
-
-#                 if len(replacements) == num_nega_lfc:
-#                     break  # Stop once we have enough replacement genes
-
-#             replacements_df = pd.DataFrame(replacements)
-
-#             combined_top_genes = pd.concat([top_genes_positive, replacements_df])
-#             top_genes_cluster[cluster] = combined_top_genes
-
-#         elif top_genes.empty:
-#             top_genes_new = df.head(5)
-#             top_genes_cluster[cluster] = top_genes_new
-
-#         else:
-#             top_genes_cluster[cluster] = top_genes
-
-#     return top_genes_cluster
 
 # Step 6: Collect top gene names for each cluster
 def top_gene_names(top_genes_cluster):
@@ -328,7 +283,7 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.4)    
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
