@@ -243,7 +243,7 @@ def top_gene_names(top_genes_cluster):
 
 
 # Step 7: Visualize the DotPlots of the DGE's
-def create_dotplot(adata, top_genes_names, output_dir="dotplots"):
+def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune"):
     """
     Create and save a dotplot of the top genes per cluster.
 
