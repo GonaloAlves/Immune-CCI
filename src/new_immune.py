@@ -281,6 +281,19 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots"):
     plt.close()  # Close the current figure to avoid overlap
 
 
+def print_gene_names(top_genes_names):
+
+    for cluster, df in top_genes_names.items():
+        print(f"\nTop genes in {cluster}:")
+        print(df)
+
+def print_clusters(top_genes_cluster):
+
+    for cluster, df in top_genes_cluster.items():
+        print(f"\nTop genes in {cluster}:")
+        print(df)
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -303,3 +316,7 @@ if __name__ == "__main__":
     
     # Create dotplot of the top genes
     create_dotplot(adata, top_genes_names)
+
+    # # Prints
+    # print_gene_names(top_genes_names)
+    # print_clusters(top_genes_cluster)
