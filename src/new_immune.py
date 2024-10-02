@@ -19,6 +19,7 @@ def load_data(file_path):
     return sc.read_h5ad(file_path)
 
 
+
 # Step 2: Extract Differentially Expressed Genes (DEGs)
 def extract_dge_data(adata):
     """
@@ -293,14 +294,28 @@ def print_clusters(top_genes_cluster):
         print(f"\nTop genes in {cluster}:")
         print(df)
 
+def remove_NA_cat(adata: sc.AnnData):
+    
+    mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells
+    #print(mask_NA)    
+    adata2 = adata[mask_NA] #apply mask
+
+    #print(adata2.obs['leiden_fusion'].cat.categories.to_list())
+    adata2.obs['leiden_fusion'] = adata2.obs['leiden_fusion'].cat.remove_unused_categories()
+    #print(adata2.obs['leiden_fusion'].cat.categories.to_list())
+    #print(adata.obs['leiden_fusion'])
+
+    return adata2
 
 # Main execution block
 if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad")
     
+    filtered_adata = remove_NA_cat(adata)
+
     # Extract DGE data
-    gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(adata)
+    gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
     cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.4)    
@@ -315,7 +330,7 @@ if __name__ == "__main__":
     top_genes_names = top_gene_names(top_genes_cluster)
     
     # Create dotplot of the top genes
-    create_dotplot(adata, top_genes_names)
+    create_dotplot(filtered_adata, top_genes_names)
 
     # # Prints
     # print_gene_names(top_genes_names)
