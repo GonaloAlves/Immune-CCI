@@ -78,7 +78,7 @@ def create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_
             'pts': pts_reindexed.values},
             index=gene_reindex.values
         )
-
+        #startswith() INDEX
         # Filter by 'pts' using the user-specified threshold
         mask_pts = (cluster_df['pts'] >= pts_threshold)
         filtered_df = cluster_df[mask_pts]
@@ -244,7 +244,7 @@ def top_gene_names(top_genes_cluster):
 
 
 # Step 7: Visualize the DotPlots of the DGE's
-def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune"):
+def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune5"):
     """
     Create and save a dotplot of the top genes per cluster.
 
@@ -307,6 +307,26 @@ def remove_NA_cat(adata: sc.AnnData):
 
     return adata2
 
+def nonsigngene(top_genes):
+    
+    return (top_genes['pvals_adj'] > 0.05 ).any()
+
+
+def addasterix(top_genes_cluster):
+    
+    updated_cluster = {}
+
+    for cluster, df in top_genes_cluster.items():
+
+        # Check if the cluster has any non-significant genes
+        if nonsigngene(df):
+            # Add an asterisk to the cluster name
+            updated_cluster[cluster + '*'] = df
+        else:
+            updated_cluster[cluster]  = df
+
+    return updated_cluster
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -318,20 +338,23 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.4)    
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)    
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
     
     # Select the top genes for each cluster
     top_genes_cluster = select_top_genes(cluster_dfs)
+
+    # Add the asterisk to cluster names with non-significant genes
+    top_genes_cluster = addasterix(top_genes_cluster)
     
     # Collect top gene names for visualization
     top_genes_names = top_gene_names(top_genes_cluster)
-    
+
     # Create dotplot of the top genes
     create_dotplot(filtered_adata, top_genes_names)
 
     # # Prints
     # print_gene_names(top_genes_names)
-    # print_clusters(top_genes_cluster)
+    print_clusters(top_genes_cluster)
