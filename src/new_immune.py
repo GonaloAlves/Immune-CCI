@@ -244,7 +244,7 @@ def top_gene_names(top_genes_cluster):
 
 
 # Step 7: Visualize the DotPlots of the DGE's
-def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune5"):
+def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.3"):
     """
     Create and save a dotplot of the top genes per cluster.
 
@@ -300,17 +300,16 @@ def remove_NA_cat(adata: sc.AnnData):
     #print(mask_NA)    
     adata2 = adata[mask_NA] #apply mask
 
-    #print(adata2.obs['leiden_fusion'].cat.categories.to_list())
-    adata2.obs['leiden_fusion'] = adata2.obs['leiden_fusion'].cat.remove_unused_categories()
-    #print(adata2.obs['leiden_fusion'].cat.categories.to_list())
-    #print(adata.obs['leiden_fusion'])
+    # print(adata2.obs['leiden_fusion'].cat.categories.to_list())
+    # adata2.obs['leiden_fusion'] = adata2.obs['leiden_fusion'].cat.remove_unused_categories()
+    # print(adata2.obs['leiden_fusion'].cat.categories.to_list())
+    # print(adata.obs['leiden_fusion'])
 
     return adata2
 
 def nonsigngene(top_genes):
     
     return (top_genes['pvals_adj'] > 0.05 ).any()
-
 
 def addasterix(top_genes_cluster):
     
@@ -338,7 +337,7 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)    
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
@@ -357,4 +356,4 @@ if __name__ == "__main__":
 
     # # Prints
     # print_gene_names(top_genes_names)
-    print_clusters(top_genes_cluster)
+    # print_clusters(top_genes_cluster)
