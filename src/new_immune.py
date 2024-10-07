@@ -326,6 +326,26 @@ def addasterix(top_genes_cluster):
 
     return updated_cluster
 
+def export_to_excel(top_genes_cluster, output_file="Immune_clusters.xlsx"):
+    """
+    Export the top_genes_cluster dictionary to an Excel file.
+
+    Parameters:
+    top_genes_cluster (dict): Dictionary containing DataFrames of top genes for each cluster.
+    output_file (str): Path to the output Excel file.
+
+    Returns:
+    None
+    """
+    # Create an Excel writer object
+    with pd.ExcelWriter(output_file) as writer: 
+        # Loop through each cluster and its corresponding DataFrame
+        for cluster, df in top_genes_cluster.items():
+            # Write each DataFrame to a different sheet, named after the cluster
+            df.to_excel(writer, sheet_name=cluster)
+
+    # print(f"Data successfully exported to {output_file}")
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -337,7 +357,7 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)    
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
@@ -345,14 +365,16 @@ if __name__ == "__main__":
     # Select the top genes for each cluster
     top_genes_cluster = select_top_genes(cluster_dfs)
 
-    # Add the asterisk to cluster names with non-significant genes
-    top_genes_cluster = addasterix(top_genes_cluster)
+    # # Add the asterisk to cluster names with non-significant genes
+    # top_genes_cluster = addasterix(top_genes_cluster)
     
     # Collect top gene names for visualization
     top_genes_names = top_gene_names(top_genes_cluster)
 
     # Create dotplot of the top genes
     create_dotplot(filtered_adata, top_genes_names)
+
+    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.5.xlsx")
 
     # # Prints
     # print_gene_names(top_genes_names)
