@@ -362,7 +362,7 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)    
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
@@ -379,7 +379,7 @@ if __name__ == "__main__":
     # # Create dotplot of the top genes
     # create_dotplot(filtered_adata, top_genes_names)
 
-    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.5.xlsx")
+    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
 
     # # Prints
     # print_gene_names(top_genes_names)
