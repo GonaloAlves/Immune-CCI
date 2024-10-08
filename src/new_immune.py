@@ -78,7 +78,12 @@ def create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_
             'pts': pts_reindexed.values},
             index=gene_reindex.values
         )
-        #startswith() INDEX
+        
+        # Mask to remove mitochondrial genes (those starting with "mt-")
+        mask_mt = ~gene_reindex.str.startswith("mt-")  # Create mask where gene names don't start with "mt-"
+        filtered_gene_reindex = gene_reindex[mask_mt]  # Filter out mitochondrial genes in the gene names
+        cluster_df = cluster_df.loc[filtered_gene_reindex]  # Apply mask to the DataFrame
+
         # Filter by 'pts' using the user-specified threshold
         mask_pts = (cluster_df['pts'] >= pts_threshold)
         filtered_df = cluster_df[mask_pts]
@@ -357,7 +362,7 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)    
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
@@ -374,7 +379,7 @@ if __name__ == "__main__":
     # # Create dotplot of the top genes
     # create_dotplot(filtered_adata, top_genes_names)
 
-    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
+    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.5.xlsx")
 
     # # Prints
     # print_gene_names(top_genes_names)
