@@ -30,23 +30,24 @@ def collect_genes_from_source(sources):
     # Iterate through each source file (0.3, 0.4, 0.5)
     for source, name in sources:
         for cluster, df in source.items(): # Iterate through each cluster in the source file
-            if cluster not in all_genes: #??
+            if cluster not in all_genes: # if the cluster is not in the dictionary add it and ensures that each cluster is added only once 
                 all_genes[cluster] = {}
 
             # Iterate through rows in the cluster's DataFrame to collect gene data
             for _, row in df.iterrows():
-                gene = row['Unnamed: 0']  # gene name, assumed to be the first column # why unnamed: 0
+                gene = row['Unnamed: 0']  # gene name, assumed to be the first column #
                 pts = row['pts']  # the corresponding pts value
 
                 # If gene is not already collected for this cluster, add it
                 if gene not in all_genes[cluster]:
                     all_genes[cluster][gene] = {
-                        'pts': round(pts, 2),
-                        'analysis': [name]
-                    }  # Round pts and store the analysis source
+                        'pts': round(pts, 2), # pts values to 2 decimal 
+                        'analysis': [name] # store the analysis source
+                    }  
                 else:
-                    # Update pts if a higher value is found for the same gene
-                    all_genes[cluster][gene]['pts'] = round(max(all_genes[cluster][gene]['pts'], pts), 2)
+                    # Update pts if a higher value is found for the same gene (unnecessary)
+                    # all_genes[cluster][gene]['pts'] = round(max(all_genes[cluster][gene]['pts'], pts), 2)
+
                     # Append the current analysis to the analysis list if not already included
                     if name not in all_genes[cluster][gene]['analysis']:
                         all_genes[cluster][gene]['analysis'].append(name)
@@ -55,19 +56,23 @@ def collect_genes_from_source(sources):
 # Collect genes from all three sources and merge them into one dictionary
 all_genes = collect_genes_from_source([(df_0_3, "0.3"), (df_0_4, "0.4"), (df_0_5, "0.5")])
 
-# Export the merged data into a single Excel file (optional step, but kept for merging)
+# Export the merged data into a single Excel file 
 with pd.ExcelWriter(merged_output_file, engine='openpyxl') as writer:
     for cluster, genes in all_genes.items():
+        # Create a DataFrame for each cluster containing 'Gene', 'pts', and 'pts of origin' columns (explain all this steps bellow)
         cluster_df = pd.DataFrame({
-            'Gene': list(genes.keys()),
-            'pts': [gene_info['pts'] for gene_info in genes.values()],
-            'pts of origin': [', '.join(gene_info['analysis']) for gene_info in genes.values()]
+            'Gene': list(genes.keys()), # List of genes
+            'pts': [gene_info['pts'] for gene_info in genes.values()], # Corresponding 'pts'
+            'pts of origin': [', '.join(gene_info['analysis']) for gene_info in genes.values()] # Analysis origin
         })
+        # Write the DataFrame to a separate sheet in the Excel file
         cluster_df.to_excel(writer, sheet_name=cluster, index=False)
 
-print(f"Merged data successfully exported to {merged_output_file}")
+#print(f"Merged data successfully exported to {merged_output_file}")
 
-# Now let's gather all the data into one sheet
+
+
+# Combined view of all genes per cluster
 
 # Load the merged Excel file (each sheet represents a cluster)
 merged_data = pd.read_excel(merged_output_file, sheet_name=None)
@@ -78,13 +83,14 @@ combined_df = pd.DataFrame()
 # Iterate through each cluster (sheet) in the merged Excel
 for cluster, df in merged_data.items():
     # Add three columns for each cluster: one for Gene, one for pts, and one for 'pts of origin'
-    combined_df[cluster] = df['Gene']
+    combined_df[cluster] = df['Gene'] # gene names
     combined_df[cluster + "_pts"] = df['pts'].round(2)  # Round pts values to 2 decimal places
     combined_df[cluster + "_pts of origin"] = df['pts of origin']  # Add the analysis source column
 
-# Now rename the 'pts' and 'pts of origin' columns to remove the cluster name prefix
+# Rename the 'pts' and 'pts of origin' columns to remove the cluster name prefix for better visualization 
 for col in combined_df.columns:
     if "_pts" in col or "_pts of origin" in col:
+        # Strip the cluster prefix and keep only 'pts' and 'pts of origin'
         new_col_name = col.split("_", 1)[-1]  # Remove everything before the first underscore
         combined_df.rename(columns={col: new_col_name}, inplace=True)
 

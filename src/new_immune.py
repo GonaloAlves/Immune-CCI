@@ -244,7 +244,7 @@ def top_gene_names(top_genes_cluster):
 
 
 # Step 7: Visualize the DotPlots of the DGE's
-def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.3"):
+def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.5"):
     """
     Create and save a dotplot of the top genes per cluster.
 
@@ -277,7 +277,7 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.3"):
         return_fig=True
     )
 
-    output_path = os.path.join(output_dir, "dotplot_1.png")
+    output_path = os.path.join(output_dir, "dotplot_0.5.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 
@@ -357,7 +357,7 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)    
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
@@ -371,10 +371,10 @@ if __name__ == "__main__":
     # Collect top gene names for visualization
     top_genes_names = top_gene_names(top_genes_cluster)
 
-    # Create dotplot of the top genes
-    create_dotplot(filtered_adata, top_genes_names)
+    # # Create dotplot of the top genes
+    # create_dotplot(filtered_adata, top_genes_names)
 
-    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.5.xlsx")
+    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
 
     # # Prints
     # print_gene_names(top_genes_names)
