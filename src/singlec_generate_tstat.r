@@ -5,27 +5,26 @@
 # Requires to have cluster information generated in the .h5ad file
 # The input for limma is log-normalized X matrix 
 #
-# Daniel Ribeiro, 2023
+# Daniel Ribeiro, 2023, ft Gonçalo Alves 2024
 
-#library("rstudioapi")
 library("limma")
 library("Matrix")
 library("anndata")
 library("R.utils")
 
-# Set WD
-isRStudio <- Sys.getenv("RSTUDIO") == "1"
-if (isRStudio)
-{
-  setwd(getSrcDirectory(function() { })[1])
-} else
-{
-  argv = commandArgs(trailingOnly = FALSE)
-  base_dir = dirname(substring(argv[grep("--file=", argv)], 8))
-  setwd(base_dir)
-}
-print(getwd())
-options(Ncpus = parallel::detectCores())
+# # Set WD
+# isRStudio <- Sys.getenv("RSTUDIO") == "1"
+# if (isRStudio)
+# {
+#   setwd(getSrcDirectory(function() { })[1])
+# } else
+# {
+#   argv = commandArgs(trailingOnly = FALSE)
+#   base_dir = dirname(substring(argv[grep("--file=", argv)], 8))
+#   setwd(base_dir)
+# }
+# print(getwd())
+# options(Ncpus = parallel::detectCores())
 
 # Dataset suffix
 output_dir = "output"
