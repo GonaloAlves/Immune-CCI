@@ -5,6 +5,33 @@ import scanpy as sc
 import pandas as pd
 import matplotlib.pyplot as plt
 
+def umap_reso_cluster(adata, resolution_name):
+    """
+    Plot UMAP for a specific resolution with cluster numbers displayed at the centroid of each cluster.
+
+    Parameters:
+    adata (AnnData): The AnnData object containing the data.
+    resolution_name (str): The resolution name to be used for coloring the UMAP plot (e.g., 'leiden_fusion').
+
+    Returns:
+    None
+    """
+
+    # Plot UMAP for the specified resolution
+    ax = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}", return_fig=True)
+    ax_ondata = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}",legend_loc = 'on data',legend_fontweight = 'bold', legend_fontsize = 8, legend_fontoutline = 1,return_fig=True)
+
+    
+    # Save the UMAP plot as an image (optional)
+    output_path = f"umap_{resolution_name}_n.png"
+    output_path_leg = f"umap_{resolution_name}_l.png"
+    ax.figure.savefig(output_path, bbox_inches="tight")
+    ax_ondata.figure.savefig(output_path_leg, bbox_inches="tight")
+    # print(f"UMAP plot saved as {output_path}")
+    plt.close()  # Close the plot to avoid overlap
+
+
+
 # Step 1: Load the dataset
 def load_data(file_path):
     """
@@ -356,6 +383,8 @@ if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad")
     
+    umap_reso_cluster(adata, 'leiden_fusion')
+
     filtered_adata = remove_NA_cat(adata)
 
     # Extract DGE data
@@ -370,8 +399,8 @@ if __name__ == "__main__":
     # Select the top genes for each cluster
     top_genes_cluster = select_top_genes(cluster_dfs)
 
-    # # Add the asterisk to cluster names with non-significant genes
-    # top_genes_cluster = addasterix(top_genes_cluster)
+    # Add the asterisk to cluster names with non-significant genes
+    top_genes_cluster = addasterix(top_genes_cluster)
     
     # Collect top gene names for visualization
     top_genes_names = top_gene_names(top_genes_cluster)
@@ -379,7 +408,7 @@ if __name__ == "__main__":
     # # Create dotplot of the top genes
     # create_dotplot(filtered_adata, top_genes_names)
 
-    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
+    #export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
 
     # # Prints
     # print_gene_names(top_genes_names)
