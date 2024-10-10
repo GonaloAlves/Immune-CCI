@@ -33,12 +33,12 @@ def umap_reso_cluster(adata, resolution_name):
 
     # Plot UMAP for the specified resolution
     ax = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}", return_fig=True)
-    ax_ondata = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}",legend_loc = 'on data',legend_fontweight = 'bold', legend_fontsize = 6, legend_fontoutline = 1,return_fig=True)
+    ax_ondata = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}",legend_loc = 'on data',legend_fontweight = 'bold', legend_fontsize = 8, legend_fontoutline = 1,return_fig=True)
 
     
     # Save the UMAP plot as an image (optional)
-    output_path = f"umap_{resolution_name}_n.png"
-    output_path_leg = f"umap_{resolution_name}_l.png"
+    output_path = f"umap_Meningeal_{resolution_name}_n.png"
+    output_path_leg = f"umap_Meningeal_{resolution_name}_l.png"
     ax.figure.savefig(output_path, bbox_inches="tight")
     ax_ondata.figure.savefig(output_path_leg, bbox_inches="tight")
     # print(f"UMAP plot saved as {output_path}")
