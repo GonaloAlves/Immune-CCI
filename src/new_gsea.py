@@ -166,101 +166,44 @@ def gsea_tstat(dataset: str,
 
 
 
-
-# def run_gsea_for_cluster(tstat_file, gene_sets, output_dir):
-#     """
-#     Run GSEA analysis for a given t-statistic file.
-
-#     Parameters:
-#     - tstat_file (str): Path to the t-stat Excel file.
-#     - gene_sets (str): Gene set database to use in the GSEA analysis.
-#     - output_dir (str): Directory to save the GSEA results.
-#     """
-#     # Load the t-stat file into a DataFrame
-#     df = pd.read_excel(tstat_file)
-
-#     # Prepare the data for GSEA analysis
-#     # Extract Gene Names and t-statistics for ranking
-#     gsea_data = df[['Gene.Name', 't']]  # Replace 't' with the correct column containing t-statistics
-    
-#     # Sort by t-statistic for ranking
-#     gsea_data = gsea_data.sort_values(by='t', ascending=False)
-
-#     # Define output directory for the cluster
-#     cluster_name = os.path.basename(tstat_file).split("_tstat")[0]
-#     cluster_output_dir = os.path.join(output_dir, cluster_name)
-#     if not os.path.exists(cluster_output_dir):
-#         os.makedirs(cluster_output_dir)
-
-#     # Run GSEA analysis using the t-statistics
-#     print(f"Running GSEA for cluster {cluster_name}...")
-#     results = gp.prerank(
-#         rnk=gsea_data.values,  # Use Gene Name and t-statistics as ranking
-#         gene_sets=gene_sets,
-#         outdir=cluster_output_dir,  # Directory to save GSEA results
-#         min_size=15,        # Minimum gene set size to consider
-#         max_size=500,       # Maximum gene set size to consider
-#         permutation_num=100,  # Number of permutations
-#         seed=42  # For reproducibility
-#     )
-    
-#     print(f"GSEA results saved for {tstat_file} in {cluster_output_dir}")
-#     # Clean up memory
-#     gc.collect()
-
-
-# # Main function to process all t-stat files
-# def start_gsea_tstat():
-#     """
-#     Start GSEA analysis for all clusters using available t-statistic files.
-#     """
-#     # Iterate through each t-statistic file and run GSEA analysis
-#     for tstat_file in tstat_files:
-#         # Run GSEA for each t-stat file
-#         run_gsea_for_cluster(tstat_file, gene_sets, gsea_dir)
-
-
 def start(n_proc=None) -> None:
     import mygene
     import time
     import datetime
 
-    from src.globals import checkpoint_dir, annotation_dir, marker_genes_dir, gsea_dir
-    from src.globals import data, datasets_divided, lineage_resolution_final, n_neighbors_final, n_hvg_spi
+    from globals import data, lineage_resolution_final, n_neighbors_final, n_hvg_spi
     
     neigh = n_neighbors_final[0]
     # Load socres
     t1 = time.time()
-    for d in datasets_divided:
-        dest = f"{checkpoint_dir}/adata_final_{d}_raw_norm_ranked.h5ad"
-        if os.path.exists(dest):
-            print("Load gene rank data...")
-            print(dest)
-            data[d] = sc.read_h5ad(dest)
-        else:
-            continue
+    
+    dest = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad"
+    if os.path.exists(dest):
+        print("Load gene rank data...")
+        print(dest)
+        data = sc.read_h5ad(dest)
         
         # Convert mouse genes to humam
         t2 = time.time()
         mg = mygene.MyGeneInfo()
-        converted = mg.querymany(data[d].var_names, scopes='symbol,alias', species='human', fields='ensembl.gene,symbol', as_dataframe=True)
+        converted = mg.querymany(data.var_names, scopes='symbol,alias', species='human', fields='ensembl.gene,symbol', as_dataframe=True)
         converted.dropna(axis=0, subset='symbol', inplace=True)
         converted = converted['symbol']
         
         
         # Moderate t-statistic
         print("Calculate GSEA using R limma's moderate t-statistic...")
-        clusters = data[d].obs[f'leiden_n_r{lineage_resolution_final[d][0]}'].cat.categories.to_list()
-        gsea_tstat(dataset=d,
+        clusters = data.obs[f'leiden_fusion'].cat.categories.to_list()
+        gsea_tstat(dataset=data,
                   selected_genes=converted,
                   neighbor=neigh,
-                  resolution=lineage_resolution_final[d][0],
+                  resolution='leiden_fusion',
                   clusters=clusters,
                   gsea_dir=gsea_dir,
                   n_proc=n_proc)
        
         
-        print(f"Time for {d}: {datetime.timedelta(seconds=(time.time()-t2))}")
+        print(f"Time for Immune: {datetime.timedelta(seconds=(time.time()-t2))}")
         
     print(f"Time total: {datetime.timedelta(seconds=(time.time()-t1))}")
 
