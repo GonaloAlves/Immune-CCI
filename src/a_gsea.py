@@ -342,15 +342,15 @@ def start(n_proc=None) -> None:
         #                       gsea_dir=gsea_dir,
         #                       n_proc=n_proc)
         
-        ## Gene enrichment
-        #print("Calculate GSEA for gene enrichemnt (based on Zeisel A, et al., 2018)...")
-        #gsea_enrichment(dataset=d,
-        #                selected_genes=converted,
-        #                neighbor=neigh,
-        #                resolution=lineage_resolution_final[d][0],
-        #                enrichment_dir=annotation_dir,
-        #                gsea_dir=gsea_dir,
-        #                n_proc=n_proc)
+        # Gene enrichment
+        print("Calculate GSEA for gene enrichemnt (based on Zeisel A, et al., 2018)...")
+        gsea_enrichment(dataset=d,
+                       selected_genes=converted,
+                       neighbor=neigh,
+                       resolution=lineage_resolution_final[d][0],
+                       enrichment_dir=annotation_dir,
+                       gsea_dir=gsea_dir,
+                       n_proc=n_proc)
         
         # Moderate t-statistic
         print("Calculate GSEA using R limma's moderate t-statistic...")
