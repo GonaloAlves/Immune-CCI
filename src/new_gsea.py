@@ -6,8 +6,8 @@ import gseapy as gp  # GSEApy is a Python wrapper for GSEA (Gene Set Enrichment 
 import multiprocessing as mp  # For parallel processing
 
 # Directory paths for t-statistic files and GSEA output
-gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_dir/Immune'  # Directory for GSEA results
-tstat_dir = '/home/makowlg/Documents/Immune-CCI/src/tstat_files/Immune'  # Directory for t-statistic files
+gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_dir/Meningeal'  # Directory for GSEA results
+tstat_dir = '/home/makowlg/Documents/Immune-CCI/src/tstat_files/Meningeal'  # Directory for t-statistic files
 
 # Ensure the output directory exists
 if not os.path.exists(gsea_dir):
@@ -37,8 +37,8 @@ def prerank_gsea(kwargs: dict) -> None:
     print(f"Calculating GSEA for dataset {dataset} and cluster {cluster}...")
 
     # Sort by t-statistic values (scores)
-    kwargs['scores_df'].sort_values(by=f'{cluster}.scores', ascending=False, inplace=True)
-    kwargs['scores_df'].set_index(f'{cluster}.names', verify_integrity=True, inplace=True)  # Set gene names as index
+    kwargs['scores_df'].sort_values(by=f'{cluster}.scores', ascending=False, inplace=True) # Sort the rows of scores_df by the t-statistic values 
+    kwargs['scores_df'].set_index(f'{cluster}.names', verify_integrity=True, inplace=True) # Set the index of the scores_df DataFrame to the gene names and ensures that there are none duplicates
 
     # Build a DataFrame for prerank input (gene and scores)
     prerank_df = pd.DataFrame()
@@ -142,7 +142,7 @@ def start(n_proc=None) -> None:
     # Load scores from an h5ad file
     t1 = time.time()  # Start time tracking
     
-    dest = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad"
+    dest = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy.h5ad"
     if os.path.exists(dest):  # Check if the file exists
         print("Load gene rank data...")
         data = sc.read_h5ad(dest)  # Load the AnnData object containing the data
@@ -166,7 +166,7 @@ def start(n_proc=None) -> None:
         # Perform GSEA using the moderate t-statistic
         print("Calculate GSEA using R limma's moderate t-statistic...")
         
-        dataset = 'Immune'  # Set the dataset name
+        dataset = 'Meningeal_Vascular'  # Set the dataset name
         clusters = data.obs['leiden_fusion'].cat.categories.to_list()  # Get the list of clusters
         
         gsea_tstat(dataset=dataset,
