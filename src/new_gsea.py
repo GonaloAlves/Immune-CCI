@@ -41,23 +41,25 @@ def prerank_gsea(kwargs: dict) -> None:
     kwargs['scores_df'].set_index(f'{cluster}.names', verify_integrity=True, inplace=True) # Set the index of the scores_df DataFrame to the gene names and ensures that there are none duplicates
 
     # Build a DataFrame for prerank input (gene and scores)
-    prerank_df = pd.DataFrame()
-    prerank_df['gene'] = kwargs['converted_genes_df'].loc[kwargs['scores_df'].index[kwargs['scores_df'].index.isin(kwargs['converted_genes_df'].index)]]
+    prerank_df = pd.DataFrame() # create the dataframe
+    prerank_df['gene'] = kwargs['converted_genes_df'].loc[kwargs['scores_df'].index[kwargs['scores_df'].index.isin(kwargs['converted_genes_df'].index)]] 
+    # ensures that only genes present in both scores_df and converted_genes_df are included.
     prerank_df.drop_duplicates(subset='gene', inplace=True)  # Remove duplicate genes
     prerank_df['score'] = kwargs['scores_df'].loc[prerank_df.index, f'{cluster}.scores']
+    # Add the t-statistic scores to the prerank_df, aligning them with the human-readable gene names.
     prerank_df.set_index('gene', verify_integrity=True, inplace=True)  # Set gene as index
 
     # Run GSEA for each gene set defined earlier
     for set_collection, set_collection_name in gene_sets.items():
         for gene_set_path in set_collection_name:
-            print(f"Analyzing {dataset} leiden_{resolution}_c{cluster} {set_collection} - {gene_set_path}...")
+            print(f"Analyzing {dataset} leiden_{resolution}_c{cluster} {set_collection} - {gene_set_path}...") 
             # Set destination path for GSEA results
             dest = kwargs['gsea_dir'] + set_collection.replace(':', '_') + f"/{dataset}_leiden_{resolution}_c{cluster}_{gene_set_path}"
 
             # Perform pre-ranked GSEA using the prerank DataFrame
             pre_res = gp.prerank(
-                rnk=prerank_df,
-                gene_sets=gene_set_path,
+                rnk=prerank_df, # prerank dataframe
+                gene_sets=gene_set_path, # path to the gene set file
                 threads=kwargs['threads'],
                 min_size=10,  # Minimum gene set size for enrichment analysis
                 max_size=2000,  # Maximum gene set size
