@@ -4,5 +4,5 @@ cd /home/makowlg/Documents/Immune-CCI/src
 #conda init
 conda activate mkpy
 
-python new_gsea.py
+python gsea_summary.py
 

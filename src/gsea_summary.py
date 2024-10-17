@@ -10,6 +10,18 @@ import scanpy as sc
 import matplotlib
 matplotlib.use('cairo')
 
+gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_dir/Meningeal'  
+h5ad_dir = '/home/makowlg/Documents/Immune-CCI/h5ad_files'
+
+dataset = 'Meningeal_Vascular'
+resolution = 'fusion'
+
+gene_sets = {
+    "H:hallmark": ["MSigDB_Hallmark_2020"],  # Hallmark pathways
+    "C2:curated": ["KEGG_2016"],  # KEGG curated pathways
+    "C5:ontology": ["GO_Biological_Process_2021", "GO_Cellular_Component_2021", "GO_Molecular_Function_2021"],  # Gene Ontology
+}
+
 
 def collect_summary(df: pd.DataFrame,
                     pval: float = 0.05) -> pd.DataFrame:
@@ -27,7 +39,7 @@ def collection_summary(dataset: str,
     summary = pd.DataFrame()
     print("Load GSEA data...")
     for c in clusters:
-        dest = f"{collection_path}/{dataset}_weighted_SC_{c}_{geneset}/gseapy.gene_set.prerank.report.csv"      # TODO: change name
+        dest = f"{collection_path}/{dataset}_{c}_{geneset}/gseapy.gene_set.prerank.report.csv"      # TODO: change name
         if os.path.exists(dest):
             df = pd.read_csv(dest, sep=',', header=0, index_col=None)
             print(dest)
@@ -50,49 +62,45 @@ def collection_summary(dataset: str,
 
 
 def start() -> None:
-    import src.globals   # noqa:F401
-    from src.globals import checkpoint_dir, gsea_dir
-    from src.globals import data, datasets_divided, senescence_resolution, n_neighbors_final, gene_sets
-    
-    neigh = n_neighbors_final[0]
     # Load scores
-    for d in datasets_divided:
-        dest = f"{checkpoint_dir}/adata_final_{d}_weighted_SC_raw_norm_ranked_genes.h5ad"       # TODO: change name
-        if os.path.exists(dest):
-            print("Load gene rank data...")
-            print(dest)
-            data[d] = sc.read_h5ad(dest)
-        else:
-            continue
+    
+    dest = f"{h5ad_dir}/adata_final_{dataset}_raw_norm_ranked_copy.h5ad"    
+    if os.path.exists(dest):
+        print("Load gene rank data...")
+        print(dest)
+        data = sc.read_h5ad(dest)
+    
+    
+    # Find cluster names
+    if dataset.find('double') != -1:
+        integration = 'NES_INTEGRATED_DOUBLE'
+    elif dataset.find('triple') != -1:
+        integration = 'NES_INTEGRATED_TRIPLE'
+    else:
+        integration = 'NES_INTEGRATED'
+    cluster = f"leiden_{resolution}"      
+
+    cluster_list = data.obs[cluster].cat.categories.tolist()
+    cluster_list = [f'{cluster}_c{c}' for c in cluster_list]
+
+
+    # Collect summary analysis
+    scores = ["tstat"]           
+    for score in scores:
+        for collection, gsets in gene_sets.items():
+            dest = f"{gsea_dir}/{score}_{collection.replace(':', '_')}"
+            for g in gsets:
+                summary = collection_summary(dataset=dataset,
+                                            geneset=g,
+                                            clusters=cluster_list,
+                                            collection_path=dest)
+                if not summary.empty:
+                    print("Save summary data...")
+                    dest2 = f"{gsea_dir}/summary_{score}_{dataset}_raw_norm_ranked_{cluster}_{g}.xlsx"
+                    summary.to_csv(dest2, sep='\t', index=False)
+                    print(dest2)
+                    print()
         
-        # Find cluster names
-        if d.find('double') != -1:
-            integration = 'NES_INTEGRATED_DOUBLE'
-        elif d.find('triple') != -1:
-            integration = 'NES_INTEGRATED_TRIPLE'
-        else:
-            integration = 'NES_INTEGRATED'
-        cluster = f"leiden_n{neigh}_r{senescence_resolution[dataset][integration][0]}"      # TODO: get correct cluster resolution
-        cluster_list = data[d].obs[cluster].cat.categories.tolist()
-        cluster_list = [f'{cluster}_c{c}' for c in cluster_list]
-        
-        # Collect summary analysis
-        scores = ["wilcoxon", "tstat"]           # TODO: simplify, since only tstat was used
-        for score in scores:
-            for collection, gsets in gene_sets.items():
-                dest = f"{gsea_dir}/{score}_{collection.replace(':', '_')}"
-                for g in gsets:
-                    summary = collection_summary(dataset=d,
-                                                 geneset=g,
-                                                 clusters=cluster_list,
-                                                 collection_path=dest)
-                    if not summary.empty:
-                        print("Save summary data...")
-                        dest2 = f"{gsea_dir}/summary_{score}_{d}_weighted_SC_{cluster}_{g}.txt"
-                        summary.to_csv(dest2, sep='\t', index=False)
-                        print(dest2)
-                        print()
-            
     
 start()
 

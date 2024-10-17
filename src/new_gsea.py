@@ -50,11 +50,11 @@ def prerank_gsea(kwargs: dict) -> None:
     prerank_df.set_index('gene', verify_integrity=True, inplace=True)  # Set gene as index
 
     # Run GSEA for each gene set defined earlier
-    for set_collection, set_collection_name in gene_sets.items():
-        for gene_set_path in set_collection_name:
-            print(f"Analyzing {dataset} leiden_{resolution}_c{cluster} {set_collection} - {gene_set_path}...") 
+    for collection, gsets in gene_sets.items():
+        for gene_set_path in gsets:
+            print(f"Analyzing {dataset} leiden_{resolution}_c{cluster} {collection} - {gene_set_path}...") 
             # Set destination path for GSEA results
-            dest = kwargs['gsea_dir'] + set_collection.replace(':', '_') + f"/{dataset}_leiden_{resolution}_c{cluster}_{gene_set_path}"
+            dest = kwargs['gsea_dir'] + collection.replace(':', '_') + f"/{dataset}_leiden_{resolution}_c{cluster}_{gene_set_path}"
 
             # Perform pre-ranked GSEA using the prerank DataFrame
             pre_res = gp.prerank(
