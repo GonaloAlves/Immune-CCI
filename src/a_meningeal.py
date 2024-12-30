@@ -406,11 +406,11 @@ if __name__ == "__main__":
     # Collect top gene names for visualization
     top_genes_names = top_gene_names(top_genes_cluster)
 
-    # Create dotplot of the top genes
-    create_dotplot(filtered_adata, top_genes_names)
+    # # Create dotplot of the top genes
+    # create_dotplot(filtered_adata, top_genes_names)
 
     # export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.5.xlsx")
 
-    # # Prints
-    # print_gene_names(top_genes_names)
-    # print_clusters(top_genes_cluster)
+    # Prints
+    print_gene_names(top_genes_names)
+    print_clusters(top_genes_cluster)

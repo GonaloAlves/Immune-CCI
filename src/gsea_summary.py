@@ -10,10 +10,10 @@ import scanpy as sc
 import matplotlib
 matplotlib.use('cairo')
 
-gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_dir/Meningeal'  
+gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_dir/Immune'  
 h5ad_dir = '/home/makowlg/Documents/Immune-CCI/h5ad_files'
 
-dataset = 'Meningeal_Vascular'
+dataset = 'Immune'
 resolution = 'fusion'
 
 gene_sets = {
@@ -96,7 +96,7 @@ def start() -> None:
                                             collection_path=dest)
                 if not summary.empty:
                     print("Save summary data...")
-                    dest2 = f"{gsea_dir}/summary_{score}_{dataset}_raw_norm_ranked_{cluster}_{g}.xlsx"
+                    dest2 = f"{gsea_dir}/summary_{score}_{dataset}_raw_norm_ranked_{cluster}_{g}.csv"
                     summary.to_csv(dest2, sep='\t', index=False)
                     print(dest2)
                     print()

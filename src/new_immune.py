@@ -19,7 +19,7 @@ def umap_reso_cluster(adata, resolution_name):
 
     # Plot UMAP for the specified resolution
     ax = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}", return_fig=True)
-    ax_ondata = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}",legend_loc = 'on data',legend_fontweight = 'bold', legend_fontsize = 8, legend_fontoutline = 1,return_fig=True)
+    ax_ondata = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}",legend_loc = 'on data',legend_fontweight = 'bold', legend_fontsize = 12, legend_fontoutline = 1,return_fig=True)
 
     
     # Save the UMAP plot as an image (optional)
@@ -382,34 +382,36 @@ def export_to_excel(top_genes_cluster, output_file="Immune_clusters.xlsx"):
 if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad")
-    
-    umap_reso_cluster(adata, 'leiden_fusion')
 
-    # filtered_adata = remove_NA_cat(adata)
+    print(adata)
+    
+    #umap_reso_cluster(adata, 'leiden_fusion')
 
-    # # Extract DGE data
-    # gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
+    filtered_adata = remove_NA_cat(adata)
+
+    # Extract DGE data
+    gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
-    # # Create cluster DataFrames
-    # cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
+    # Create cluster DataFrames
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
     
-    # # Remove NA clusters
-    # cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
+    # Remove NA clusters
+    cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
     
-    # # Select the top genes for each cluster
-    # top_genes_cluster = select_top_genes(cluster_dfs)
+    # Select the top genes for each cluster
+    top_genes_cluster = select_top_genes(cluster_dfs)
 
     # # Add the asterisk to cluster names with non-significant genes
     # top_genes_cluster = addasterix(top_genes_cluster)
     
-    # # Collect top gene names for visualization
-    # top_genes_names = top_gene_names(top_genes_cluster)
+    # Collect top gene names for visualization
+    top_genes_names = top_gene_names(top_genes_cluster)
 
     # # Create dotplot of the top genes
     # create_dotplot(filtered_adata, top_genes_names)
 
     # export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
 
-    # # Prints
-    # print_gene_names(top_genes_names)
-    # print_clusters(top_genes_cluster)
+    # Prints
+    print_gene_names(top_genes_names)
+    print_clusters(top_genes_cluster)
