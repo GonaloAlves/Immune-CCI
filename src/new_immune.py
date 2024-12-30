@@ -289,9 +289,9 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.5"):
     None
     """
     # Create the directory if it doesn't exist
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
-    os.makedirs(output_dir)
+    # if os.path.exists(output_dir):
+    #     shutil.rmtree(output_dir)
+    # os.makedirs(output_dir)
 
     # Generate the dotplot
     dotplot = sc.pl.rank_genes_groups_dotplot(
@@ -378,6 +378,42 @@ def export_to_excel(top_genes_cluster, output_file="Immune_clusters.xlsx"):
 
     # print(f"Data successfully exported to {output_file}")
 
+def dendogram_sc(adata, output_dir="dendogram_immune"):
+    """
+    
+    """
+
+    # Create the directory if it doesn't exist
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+    os.makedirs(output_dir)
+
+    # Compute the dendrogram
+    print(f"Computing dendrogram for leiden_fusion...")
+    dotplot = sc.tl.dendrogram(
+        adata,
+        # var_names=top_genes_names,
+        groupby='leiden_fusion',
+        cor_method= 'spearman',
+        linkage_method='ward',
+        use_raw=False
+    )
+
+    # Plot the dendrogram
+    print(f"Plotting dendrogram for leiden_fusion...")
+    fig = sc.pl.dendrogram(
+        adata,
+        groupby='leiden_fusion',
+        dendrogram_key=None,
+        orientation='top',
+        show=False
+    )
+
+    # Save the plot
+    output_path = os.path.join(output_dir, f"leiden_fusion_dendrogram.png")
+    plt.savefig(output_path, bbox_inches="tight")
+    plt.close()  # Close the current figure to avoid overlap
+    
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -397,18 +433,21 @@ if __name__ == "__main__":
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
+
+    # Create dendogram ot the top genes
+    dendogram_sc(filtered_adata)
     
     # Select the top genes for each cluster
     top_genes_cluster = select_top_genes(cluster_dfs)
 
-    # # Add the asterisk to cluster names with non-significant genes
-    # top_genes_cluster = addasterix(top_genes_cluster)
+    # Add the asterisk to cluster names with non-significant genes
+    top_genes_cluster = addasterix(top_genes_cluster)
     
     # Collect top gene names for visualization
     top_genes_names = top_gene_names(top_genes_cluster)
 
-    # # Create dotplot of the top genes
-    # create_dotplot(filtered_adata, top_genes_names)
+    # Create dotplot of the top genes
+    create_dotplot(filtered_adata, top_genes_names)
 
     # export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
 
