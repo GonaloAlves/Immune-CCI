@@ -275,7 +275,7 @@ def top_gene_names(top_genes_cluster):
 
 
 # Step 7: Visualize the DotPlots of the DGE's
-def create_dotplot(adata, top_genes_names, output_dir="dotplots_meningeal_0.5"):
+def create_dotplot(adata, top_genes_names, output_dir="dotplots_meningeal"):
     """
     Create and save a dotplot of the top genes per cluster.
 
@@ -288,9 +288,11 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_meningeal_0.5"):
     None
     """
     # Create the directory if it doesn't exist
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
-    os.makedirs(output_dir)
+    # if os.path.exists(output_dir):
+    #     shutil.rmtree(output_dir)
+    #os.makedirs(output_dir)
+
+
 
     # Generate the dotplot
     dotplot = sc.pl.rank_genes_groups_dotplot(
@@ -304,13 +306,15 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_meningeal_0.5"):
         values_to_plot='logfoldchanges',
         colorbar_title='log fold change',
         use_raw=False,
-        dendrogram=False,
+        dendrogram=True,
         return_fig=True
     )
 
-    output_path = os.path.join(output_dir, "dotplot_0.5.png")
+    output_path = os.path.join(output_dir, "dotplot_0.3_dendro.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
+
+    
 
 # Print of gene names and clusters
 def print_gene_names(top_genes_names):
@@ -380,10 +384,47 @@ def export_to_excel(top_genes_cluster, output_file="Meningeal_clusters.xlsx"):
 
     # print(f"Data successfully exported to {output_file}")
 
+def dendogram_sc(adata, output_dir="dendogram_meningeal"):
+    """
+    
+    """
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Compute the dendrogram
+    print(f"Computing dendrogram for leiden_fusion...")
+    sc.tl.dendrogram(
+        adata,
+        groupby='leiden_fusion',
+        use_rep= 'X_pca',
+        cor_method= 'spearman',
+        linkage_method='ward',
+        use_raw=False
+    )
+
+    # Plot the dendrogram
+    print(f"Plotting dendrogram for leiden_fusion...")
+    sc.pl.dendrogram(
+        adata,
+        groupby='leiden_fusion',
+        dendrogram_key=None,
+        orientation='top',
+        show=False
+    )
+
+    # Save the plot
+    output_path = os.path.join(output_dir, f"leiden_fusion_dendro_0.3.png")
+    plt.savefig(output_path, bbox_inches="tight")
+    plt.close()  # Close the current figure to avoid overlap
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy.h5ad")
+
+    #print(adata)
     
     filtered_adata = remove_NA_cat(adata)
     umap_reso_cluster(adata, 'leiden_fusion')
@@ -392,10 +433,13 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)    
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
+
+    # Create dendogram ot the top genes
+    dendogram_sc(filtered_adata)
     
     # Select the top genes for each cluster
     top_genes_cluster = select_top_genes(cluster_dfs)
@@ -406,11 +450,13 @@ if __name__ == "__main__":
     # Collect top gene names for visualization
     top_genes_names = top_gene_names(top_genes_cluster)
 
-    # # Create dotplot of the top genes
-    # create_dotplot(filtered_adata, top_genes_names)
+    # Create dotplot of the top genes
+    create_dotplot(filtered_adata, top_genes_names)
+
+    print ("Done")
 
     # export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.5.xlsx")
 
     # Prints
-    print_gene_names(top_genes_names)
-    print_clusters(top_genes_cluster)
+    #print_gene_names(top_genes_names)
+    #print_clusters(top_genes_cluster)

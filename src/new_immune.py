@@ -289,9 +289,9 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.5"):
     None
     """
     # Create the directory if it doesn't exist
-    # if os.path.exists(output_dir):
-    #     shutil.rmtree(output_dir)
-    # os.makedirs(output_dir)
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+    os.makedirs(output_dir)
 
     # Generate the dotplot
     dotplot = sc.pl.rank_genes_groups_dotplot(
@@ -305,11 +305,11 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.5"):
         values_to_plot='logfoldchanges',
         colorbar_title='log fold change',
         use_raw=False,
-        dendrogram=False,
+        dendrogram=True,
         return_fig=True
     )
 
-    output_path = os.path.join(output_dir, "dotplot_0.5.png")
+    output_path = os.path.join(output_dir, "dotplot_0.5_dendro.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 
@@ -384,16 +384,15 @@ def dendogram_sc(adata, output_dir="dendogram_immune"):
     """
 
     # Create the directory if it doesn't exist
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
-    os.makedirs(output_dir)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     # Compute the dendrogram
     print(f"Computing dendrogram for leiden_fusion...")
-    dotplot = sc.tl.dendrogram(
+    sc.tl.dendrogram(
         adata,
-        # var_names=top_genes_names,
         groupby='leiden_fusion',
+        use_rep= 'X_pca',
         cor_method= 'spearman',
         linkage_method='ward',
         use_raw=False
@@ -401,7 +400,7 @@ def dendogram_sc(adata, output_dir="dendogram_immune"):
 
     # Plot the dendrogram
     print(f"Plotting dendrogram for leiden_fusion...")
-    fig = sc.pl.dendrogram(
+    sc.pl.dendrogram(
         adata,
         groupby='leiden_fusion',
         dendrogram_key=None,
@@ -410,7 +409,7 @@ def dendogram_sc(adata, output_dir="dendogram_immune"):
     )
 
     # Save the plot
-    output_path = os.path.join(output_dir, f"leiden_fusion_dendrogram.png")
+    output_path = os.path.join(output_dir, f"leiden_fusion_dendro_0.3.png")
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
     
@@ -452,5 +451,5 @@ if __name__ == "__main__":
     # export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
 
     # Prints
-    print_gene_names(top_genes_names)
-    print_clusters(top_genes_cluster)
+    #print_gene_names(top_genes_names)
+    #print_clusters(top_genes_cluster)
