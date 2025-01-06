@@ -312,6 +312,8 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune"):
     Returns:
     None
     """
+
+    print (top_genes_names)
     # Create the directory if it doesn't exist
     if os.path.exists(output_dir):
         shutil.rmtree(output_dir)
@@ -433,7 +435,8 @@ def dendogram_sc(adata, output_dir="dendogram_immune"):
     sc.pl.dendrogram(
         adata,
         groupby='leiden_fusion',
-        dendrogram_key=None,
+        dendrogram_key='dendrogram_leiden_fusion',
+        #dendrogram_key=None
         orientation='top',
         show=False
     )
