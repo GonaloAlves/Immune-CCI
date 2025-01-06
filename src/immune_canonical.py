@@ -77,6 +77,10 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
         return_fig=True
     )
 
+    #cmap cor continua
+    #standart_scale dar o X
+
+
     output_path = os.path.join(output_dir, "dotplot_immune_canonical.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
