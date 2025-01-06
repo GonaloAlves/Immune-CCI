@@ -73,7 +73,7 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
         colorbar_title='log fold change',
         use_raw=False,
         dendrogram=False,
-        #dendrogram='dendrogram_leiden_fusion',
+        #dendrogram='dendrogram_leiden_fusion
         return_fig=True
     )
 
