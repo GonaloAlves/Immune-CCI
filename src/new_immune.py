@@ -5,6 +5,7 @@ import scanpy as sc
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Step 0: Extract all resolutions
 def umap_reso_cluster(adata, resolution_name):
     """
     Plot UMAP for a specific resolution with cluster numbers displayed at the centroid of each cluster.
@@ -43,6 +44,7 @@ def load_data(file_path):
     Returns:
     AnnData: The loaded AnnData object.
     """
+    print("Loading h5ad file")
     return sc.read_h5ad(file_path)
 
 
@@ -58,9 +60,11 @@ def extract_dge_data(adata):
     Returns:
     tuple: DataFrames for gene names, logfoldchanges, adjusted p-values, scores, and pts.
     """
+    print(f"\nExtracting DGE data from Immune h5ad")
     dge_fusion = adata.uns['rank_genes_groups_leiden_fusion']
     
     # Convert the extracted data into DataFrames
+    
     gene_names = pd.DataFrame(dge_fusion['names'])
     logfoldchanges = pd.DataFrame(dge_fusion['logfoldchanges'])
     pvals_adj = pd.DataFrame(dge_fusion['pvals_adj'])
@@ -93,6 +97,7 @@ def create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_
     """
     cluster_dfs = {} # creates dictionary
 
+    print(f"\nConverting into Dataframes")
     for i in range(len(gene_names.columns)):  # For to read each cluster
         gene_reindex = gene_names.iloc[:, i]  # Takes correct order of the genes index of the gene names
         pts_reindexed = pts.iloc[:, i].reindex(gene_reindex.values)  # Reindex the pts with the gene names index
@@ -122,6 +127,7 @@ def create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_
         # Assigns the cluster name as the name of the resolution atributed
         cluster_names = gene_names.columns[i]
         cluster_dfs[cluster_names] = filtered_df  # Store the respective clusters in the dictionary
+        print(f"Converstion completed, exporting {cluster_names}")
 
     return cluster_dfs
 
@@ -138,6 +144,7 @@ def remove_clusters_by_suffix(cluster_dfs, suffix):
     Returns:
     dict: Updated dictionary with specified clusters removed.
     """
+    print(f"\nRemoving {suffix} clusters")
     clusters_to_delete = [cluster for cluster in cluster_dfs if cluster.endswith(suffix)]
 
     for cluster in clusters_to_delete: # Searches the specific cluster in the dic
@@ -159,6 +166,7 @@ def filter_pval(df):
     Returns:
     DataFrame: Filtered DataFrame with top 5 statisticaly significant genes .
     """
+    print(f"\nSelecting statisticaly significant genes from clusters")
     mask_pval = df['pvals_adj'] < 0.05
     filtered_df = df[mask_pval]
     return filtered_df.head(5)
@@ -204,11 +212,16 @@ def replace_neg_lfc(df, top_genes, num_nega_lfc):
     """
     # Replace the selected genes with the genes from the original df
     top_genes_positive = top_genes[top_genes['logfoldchange'] > 0]
+    top_genes_negative = top_genes[top_genes['logfoldchange'] < 0]
+    
+    for gene, values in top_genes_negative.iterrows():
+        print(f"\nGenes flagged: {gene}")
 
     replacements = []
     for gene, values in df.iterrows():
         if gene not in top_genes_positive.index:
             replacements.append(values) # Prevent of appending duplicated genes
+            print(f"\nGenes added to DF: {gene} ")
         if len(replacements) == num_nega_lfc:
             break  # Stop once enough replacement genes are found
 
@@ -226,10 +239,11 @@ def replace_all(df):
     Returns:
     DataFrame: DataFrame with the top 5 fallback genes.
     """
+
     return df.head(5)
 
 
-def select_top_genes(cluster_dfs):
+def select_top_genes(cluster_dfs: dict):
     """
     Final step of the selection of apropriated genes 6 of 6:
     Main function to select the top 5 genes per cluster, replacing genes with negative log fold change.
@@ -240,17 +254,27 @@ def select_top_genes(cluster_dfs):
     Returns:
     dict: Dictionary containing the top 5 genes per cluster.
     """
+
     top_genes_cluster = {}
     
-    for cluster, df in cluster_dfs.items():
-        top_genes = filter_pval(df) # First remove the not significant genes 
+    
 
+    for cluster, df in cluster_dfs.items():
+        print(f"\nStarting the gene filtering in {cluster}")
+        top_genes = filter_pval(df) # First remove the not significant genes 
+        print(f"\nNon significative genes removed from {cluster} ")
+
+        print(f"\nChecking if {cluster} has negative genes")
         if has_neg_lfc(top_genes): # If there is any neg lfc genes
+            print(f"\n{cluster} has negative genes")
             num_nega_lfc = count_neg_lfc(top_genes)
+            print(f"\nReplacing genes in {cluster}")
             top_genes_cluster[cluster] = replace_neg_lfc(df, top_genes, num_nega_lfc) # replace the neg genes
         elif top_genes.empty:
+            print(f"\n{cluster} has no positive genes, replacting with new genes")
             top_genes_cluster[cluster] = replace_all(df) # replace all if it is empty
         else:
+            print(f"\n{cluster} has no negative flagged genes")
             top_genes_cluster[cluster] = top_genes # if the cluster doesnt have neg genes just continues
 
     return top_genes_cluster
@@ -276,7 +300,7 @@ def top_gene_names(top_genes_cluster):
 
 
 # Step 7: Visualize the DotPlots of the DGE's
-def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.5"):
+def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune"):
     """
     Create and save a dotplot of the top genes per cluster.
 
@@ -294,6 +318,8 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.5"):
     os.makedirs(output_dir)
 
     # Generate the dotplot
+    print(f"\nGenerating a dotplot")
+
     dotplot = sc.pl.rank_genes_groups_dotplot(
         adata,
         var_names=top_genes_names,
@@ -305,7 +331,7 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.5"):
         values_to_plot='logfoldchanges',
         colorbar_title='log fold change',
         use_raw=False,
-        dendrogram=True,
+        dendrogram='dendrogram_leiden_fusion',
         return_fig=True
     )
 
@@ -316,18 +342,21 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune_0.5"):
 
 def print_gene_names(top_genes_names):
 
+    print("Printing top genes from each cluster")
     for cluster, df in top_genes_names.items():
         print(f"\nTop genes in {cluster}:")
         print(df)
 
 def print_clusters(top_genes_cluster):
 
+    print("Printing top genes from each cluster")
     for cluster, df in top_genes_cluster.items():
         print(f"\nTop genes in {cluster}:")
         print(df)
 
 def remove_NA_cat(adata: sc.AnnData):
     
+    print("Removing NA cells category")
     mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells
     #print(mask_NA)    
     adata2 = adata[mask_NA] #apply mask
@@ -346,12 +375,13 @@ def nonsigngene(top_genes):
 def addasterix(top_genes_cluster):
     
     updated_cluster = {}
+    print("Adding asterisk in non significative genes")
 
     for cluster, df in top_genes_cluster.items():
-
         # Check if the cluster has any non-significant genes
         if nonsigngene(df):
             # Add an asterisk to the cluster name
+            print (f"\n{cluster} got target")
             updated_cluster[cluster + '*'] = df
         else:
             updated_cluster[cluster]  = df
@@ -418,7 +448,7 @@ if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad")
 
-    print(adata)
+    #print(adata)
     
     #umap_reso_cluster(adata, 'leiden_fusion')
 
@@ -428,7 +458,7 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)    
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
@@ -447,6 +477,8 @@ if __name__ == "__main__":
 
     # Create dotplot of the top genes
     create_dotplot(filtered_adata, top_genes_names)
+
+    print("Done")
 
     # export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
 

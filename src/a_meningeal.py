@@ -290,7 +290,7 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_meningeal"):
     # Create the directory if it doesn't exist
     # if os.path.exists(output_dir):
     #     shutil.rmtree(output_dir)
-    #os.makedirs(output_dir)
+    # os.makedirs(output_dir)
 
 
 
@@ -306,11 +306,11 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_meningeal"):
         values_to_plot='logfoldchanges',
         colorbar_title='log fold change',
         use_raw=False,
-        dendrogram=True,
+        dendrogram='dendrogram_leiden_fusion',
         return_fig=True
     )
 
-    output_path = os.path.join(output_dir, "dotplot_0.3_dendro.png")
+    output_path = os.path.join(output_dir, "dotplot_0.5_dendro.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 
@@ -433,7 +433,7 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)    
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
@@ -453,7 +453,7 @@ if __name__ == "__main__":
     # Create dotplot of the top genes
     create_dotplot(filtered_adata, top_genes_names)
 
-    print ("Done")
+    print("Done")
 
     # export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.5.xlsx")
 
