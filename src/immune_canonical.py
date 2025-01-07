@@ -37,7 +37,7 @@ def load_canonical(genes_txt):
     genes = open(genes_txt).read().split()
     print(genes)
 
-    top_genes_names = {'Immune': genes }
+    top_genes_names = {'Immune': genes}
     print (top_genes_names)
 
     return top_genes_names
@@ -67,13 +67,14 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
         adata,
         var_names=top_genes_names,
         groupby='leiden_fusion',
-        cmap='bwr',
-        vmin=-4,
-        vmax=4,
-        colorbar_title='log fold change',
+        cmap='Greys',
+        vmin=0,
+        vmax=1,
+        colorbar_title='Mean expression',
         use_raw=False,
-        dendrogram=False,
-        #dendrogram='dendrogram_leiden_fusion
+        standard_scale='var',
+        #dendrogram=False,
+        dendrogram='dendrogram_leiden_fusion',
         return_fig=True
     )
 
@@ -109,6 +110,8 @@ def dendogram_sc(adata):
 if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad")
+
+    print (adata)
 
     filtered_adata = remove_NA_cat(adata)
 

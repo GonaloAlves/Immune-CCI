@@ -32,18 +32,21 @@ def remove_NA_cat(adata: sc.AnnData):
     return adata2
 
 # Load canonical genes
-def load_canonical(genes_txt):
+def load_canonical(immune_txt, meningeal_txt):
 
-    genes = open(genes_txt).read().split()
-    print(genes)
+    genes_immune = open(immune_txt).read().split()
 
-    top_genes_names = {'Meningeal': genes }
-    print (top_genes_names)
+    genes_meningal = open(meningeal_txt).read().split()
+
+    top_genes_names = {'Immune': genes_immune,
+                       'Meningeal_Vascular': genes_meningal 
+                    }
+    print(top_genes_names)
 
     return top_genes_names
 
 # Step 7: Visualize the DotPlots of the DGE's
-def create_dotplot(adata, top_genes_names, output_dir="canonical_meningeal"):
+def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
     """
     Create and save a dotplot of the top genes per cluster.
 
@@ -78,8 +81,11 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_meningeal"):
         return_fig=True
     )
 
+    #cmap cor continua
+    #standart_scale dar o X
 
-    output_path = os.path.join(output_dir, "dotplot_meningeal_canonical.png")
+
+    output_path = os.path.join(output_dir, "dotplot_immune_canonical.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 
@@ -110,10 +116,12 @@ if __name__ == "__main__":
 
     filtered_adata = remove_NA_cat(adata)
 
-    genes = load_canonical("/home/makowlg/Documents/Immune-CCI/src/MeV_canonical_genes.txt")
+    genes = load_canonical("/home/makowlg/Documents/Immune-CCI/src/Immune_canonical_genes.txt","/home/makowlg/Documents/Immune-CCI/src/MeV_canonical_genes.txt")
 
     # Create dendogram ot the top genes
     dendogram_sc(filtered_adata)
 
     # Create dotplot of the top genes
     create_dotplot(filtered_adata, genes)
+
+    
