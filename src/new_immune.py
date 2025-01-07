@@ -314,10 +314,10 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune"):
     """
 
     print (top_genes_names)
-    # Create the directory if it doesn't exist
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
-    os.makedirs(output_dir)
+    # # Create the directory if it doesn't exist
+    # if os.path.exists(output_dir):
+    #     shutil.rmtree(output_dir)
+    # os.makedirs(output_dir)
 
     # Generate the dotplot
     print(f"\nGenerating a dotplot")
@@ -333,11 +333,12 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune"):
         values_to_plot='logfoldchanges',
         colorbar_title='log fold change',
         use_raw=False,
-        dendrogram='dendrogram_leiden_fusion',
+        dendrogram=False,
+        #dendrogram='dendrogram_leiden_fusion',
         return_fig=True
     )
 
-    output_path = os.path.join(output_dir, "dotplot_0.5_dendro.png")
+    output_path = os.path.join(output_dir, "dotplot_0.5.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 

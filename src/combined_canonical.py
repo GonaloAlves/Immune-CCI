@@ -92,7 +92,6 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
 
 
 def dendogram_sc(adata):
-    
     """
     
     """

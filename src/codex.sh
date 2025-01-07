@@ -4,5 +4,5 @@ cd /home/makowlg/Documents/Immune-CCI/src
 #conda init
 conda activate mkpy
 
-python combined_canonical.py
+python new_immune.py
 
