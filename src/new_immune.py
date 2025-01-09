@@ -314,10 +314,10 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune"):
     """
 
     print (top_genes_names)
-    # # Create the directory if it doesn't exist
-    # if os.path.exists(output_dir):
-    #     shutil.rmtree(output_dir)
-    # os.makedirs(output_dir)
+    # Create the directory if it doesn't exist
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+    os.makedirs(output_dir)
 
     # Generate the dotplot
     print(f"\nGenerating a dotplot")
@@ -333,8 +333,8 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_immune"):
         values_to_plot='logfoldchanges',
         colorbar_title='log fold change',
         use_raw=False,
-        dendrogram=False,
-        #dendrogram='dendrogram_leiden_fusion',
+        #dendrogram=False,
+        dendrogram='dendrogram_leiden_fusion',
         return_fig=True
     )
 
@@ -384,7 +384,7 @@ def addasterix(top_genes_cluster):
         # Check if the cluster has any non-significant genes
         if nonsigngene(df):
             # Add an asterisk to the cluster name
-            print (f"\n{cluster} got target")
+            print (f"\n{cluster} got targeted")
             updated_cluster[cluster + '*'] = df
         else:
             updated_cluster[cluster]  = df
@@ -447,6 +447,40 @@ def dendogram_sc(adata, output_dir="dendogram_immune"):
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
     
+def reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram_key = 'dendrogram_leiden_fusion'):
+    """
+    
+    """
+
+    # Extract dendrogram order
+    print('begin')
+    ivl = adata.uns[dendrogram_key]['dendrogram_info']['ivl']
+    print(ivl)
+
+    print("End1") #string find se for -1 
+
+    #dendrogram_order = adata.uns[dendrogram_key]['ivl']
+    # for key in dendrogram:
+    #     print(key)
+    #     print(dendrogram[key])
+    #print(dendrogram_order)
+    #print("End3")
+
+    # Prepare a reordered dictionary
+    reordered_dict = {}
+
+    # Iterate through the dendrogram order and match clusters (ignoring '*')
+    for cluster in ivl:
+        # Handle cluster names with and without '*'
+        matched_cluster = next(
+            (key for key in top_genes_names if key.rstrip('*') == cluster), None
+        )
+        if matched_cluster:
+            reordered_dict[matched_cluster] = top_genes_names[matched_cluster]
+
+    return reordered_dict
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -481,8 +515,16 @@ if __name__ == "__main__":
     # Collect top gene names for visualization
     top_genes_names = top_gene_names(top_genes_cluster)
 
+    # Reorder the clusters to dendrogram order
+
+    dendrogram_clusters = reorder_clusters_to_dendrogram(filtered_adata, top_genes_names)
+
+    print("endddd")
+    print(dendrogram_clusters)
+    print("endddd")
+
     # Create dotplot of the top genes
-    create_dotplot(filtered_adata, top_genes_names)
+    create_dotplot(filtered_adata, dendrogram_clusters)
 
     print("Done")
 
