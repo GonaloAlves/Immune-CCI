@@ -452,10 +452,12 @@ if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad")
 
-    #print(adata)
+    print(adata)
     
+    # Create cluster resolutions UMAP
     #umap_reso_cluster(adata, 'leiden_fusion')
 
+    # Do a inicial filter in the a data
     filtered_adata = remove_NA_cat(adata)
 
     # Extract DGE data

@@ -283,6 +283,7 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_meningeal"):
     adata (AnnData): The AnnData object containing the data.
     top_genes_names (dict): Dictionary of top gene names per cluster.
     output_dir (str): Directory to save the dotplot.
+    filtered_adata = remove_NA_cat(adata)
 
     Returns:
     None
@@ -427,8 +428,11 @@ if __name__ == "__main__":
 
     #print(adata)
     
+    # Create cluster resolutions UMAP
+    #umap_reso_cluster(adata, 'leiden_fusion')
+
+    # Do a inicial filter in the a data
     filtered_adata = remove_NA_cat(adata)
-    umap_reso_cluster(adata, 'leiden_fusion')
 
     # Extract DGE data
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)

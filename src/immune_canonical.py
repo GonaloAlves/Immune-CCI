@@ -111,8 +111,6 @@ if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad")
 
-    print (adata)
-
     filtered_adata = remove_NA_cat(adata)
 
     genes = load_canonical("/home/makowlg/Documents/Immune-CCI/src/Immune_canonical_genes.txt")

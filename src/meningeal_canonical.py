@@ -27,7 +27,7 @@ def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
     
-    mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells 
+    mask_NA = adata.obs['leiden_fusion'] != 'MeV.NA' #creates mask for remove NA cells 
     adata2 = adata[mask_NA] #apply mask
     return adata2
 
