@@ -459,13 +459,6 @@ def reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram_key = 'den
 
     print("End1") #string find se for -1 
 
-    #dendrogram_order = adata.uns[dendrogram_key]['ivl']
-    # for key in dendrogram:
-    #     print(key)
-    #     print(dendrogram[key])
-    #print(dendrogram_order)
-    #print("End3")
-
     # Prepare a reordered dictionary
     reordered_dict = {}
 
@@ -517,14 +510,14 @@ if __name__ == "__main__":
 
     # Reorder the clusters to dendrogram order
 
-    dendrogram_clusters = reorder_clusters_to_dendrogram(filtered_adata, top_genes_names)
+    top_genes_names = reorder_clusters_to_dendrogram(filtered_adata, top_genes_names)
 
     print("endddd")
-    print(dendrogram_clusters)
+    print(top_genes_names)
     print("endddd")
 
     # Create dotplot of the top genes
-    create_dotplot(filtered_adata, dendrogram_clusters)
+    create_dotplot(filtered_adata, top_genes_names)
 
     print("Done")
 
