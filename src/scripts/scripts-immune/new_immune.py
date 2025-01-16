@@ -477,52 +477,52 @@ def reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram_key = 'den
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
 
     print(adata)
     
-    # Create cluster resolutions UMAP
-    #umap_reso_cluster(adata, 'leiden_fusion')
+    #Create cluster resolutions UMAP
+    umap_reso_cluster(adata, 'leiden_mako')
 
-    # Do a inicial filter in the a data
-    filtered_adata = remove_NA_cat(adata)
+    # # Do a inicial filter in the a data
+    # filtered_adata = remove_NA_cat(adata)
 
-    # Extract DGE data
-    gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
+    # # Extract DGE data
+    # gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
-    # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)    
+    # # Create cluster DataFrames
+    # cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)    
     
-    # Remove NA clusters
-    cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
+    # # Remove NA clusters
+    # cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
 
-    # Create dendogram ot the top genes
-    dendogram_sc(filtered_adata)
+    # # Create dendogram ot the top genes
+    # dendogram_sc(filtered_adata)
     
-    # Select the top genes for each cluster
-    top_genes_cluster = select_top_genes(cluster_dfs)
+    # # Select the top genes for each cluster
+    # top_genes_cluster = select_top_genes(cluster_dfs)
 
-    # Add the asterisk to cluster names with non-significant genes
-    top_genes_cluster = addasterix(top_genes_cluster)
+    # # Add the asterisk to cluster names with non-significant genes
+    # top_genes_cluster = addasterix(top_genes_cluster)
     
-    # Collect top gene names for visualization
-    top_genes_names = top_gene_names(top_genes_cluster)
+    # # Collect top gene names for visualization
+    # top_genes_names = top_gene_names(top_genes_cluster)
 
-    # Reorder the clusters to dendrogram order
+    # # Reorder the clusters to dendrogram order
 
-    top_genes_names = reorder_clusters_to_dendrogram(filtered_adata, top_genes_names)
+    # top_genes_names = reorder_clusters_to_dendrogram(filtered_adata, top_genes_names)
 
-    print("endddd")
-    print(top_genes_names)
-    print("endddd")
+    # print("endddd")
+    # print(top_genes_names)
+    # print("endddd")
 
-    # Create dotplot of the top genes
-    create_dotplot(filtered_adata, top_genes_names)
+    # # Create dotplot of the top genes
+    # create_dotplot(filtered_adata, top_genes_names)
 
-    print("Done")
+    # print("Done")
 
-    # export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
+    # # export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
 
-    # Prints
-    #print_gene_names(top_genes_names)
-    #print_clusters(top_genes_cluster)
+    # # Prints
+    # #print_gene_names(top_genes_names)
+    # #print_clusters(top_genes_cluster)
