@@ -50,10 +50,6 @@ def merge_clusters(adata, resolution, merge_groups, new_resolution):
 
         count_to = (adata.obs[new_resolution] == cluster_to).sum()
         
-        print('here')
-        print(cluster_to)
-        print('here')
-
         print(f"Cells in '{cluster_to}' before merging: {count_to}")
         for cluster, count in counts_from.items():
             print(f"  - Cluster '{cluster}': {count} cells")
