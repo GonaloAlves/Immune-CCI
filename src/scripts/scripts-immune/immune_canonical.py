@@ -27,7 +27,7 @@ def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
     
-    mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells 
+    mask_NA = adata.obs['leiden_mako'] != 'Imm.NA' #creates mask for remove NA cells 
     adata2 = adata[mask_NA] #apply mask
     return adata2
 
@@ -55,10 +55,10 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
     Returns:
     None
     """
-    # Create the directory if it doesn't exist
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
-    os.makedirs(output_dir)
+    # # Create the directory if it doesn't exist
+    # if os.path.exists(output_dir):
+    #     shutil.rmtree(output_dir)
+    # os.makedirs(output_dir)
 
     # Generate the dotplot
     print(f"\nGenerating a dotplot")
@@ -66,7 +66,7 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
     dotplot = sc.pl.dotplot(
         adata,
         var_names=top_genes_names,
-        groupby='leiden_fusion',
+        groupby='leiden_mako',
         cmap='Greys',
         vmin=0,
         vmax=1,
@@ -74,7 +74,7 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
         use_raw=False,
         standard_scale='var',
         #dendrogram=False,
-        dendrogram='dendrogram_leiden_fusion',
+        dendrogram='dendrogram_leiden_mako',
         return_fig=True
     )
 
@@ -82,7 +82,7 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
     #standart_scale dar o X
 
 
-    output_path = os.path.join(output_dir, "dotplot_immune_canonical.png")
+    output_path = os.path.join(output_dir, "dotplot_immune_canonical_dendro.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 
@@ -94,10 +94,10 @@ def dendogram_sc(adata):
     
     """
     # Compute the dendrogram
-    print(f"Computing dendrogram for leiden_fusion...")
+    print(f"Computing dendrogram for leiden_mako...")
     sc.tl.dendrogram(
         adata,
-        groupby='leiden_fusion',
+        groupby='leiden_mako',
         use_rep= 'X_pca',
         cor_method= 'spearman',
         linkage_method='ward',
@@ -109,7 +109,7 @@ def dendogram_sc(adata):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
 
     filtered_adata = remove_NA_cat(adata)
 

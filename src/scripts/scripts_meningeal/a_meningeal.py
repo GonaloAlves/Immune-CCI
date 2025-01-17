@@ -25,7 +25,7 @@ def umap_reso_cluster(adata, resolution_name):
 
     Parameters:
     adata (AnnData): The AnnData object containing the data.
-    resolution_name (str): The resolution name to be used for coloring the UMAP plot (e.g., 'leiden_fusion').
+    resolution_name (str): The resolution name to be used for coloring the UMAP plot (e.g., 'leiden_mako').
 
     Returns:
     None
@@ -57,7 +57,7 @@ def extract_dge_data(adata):
     Returns:
     tuple: DataFrames for gene names, logfoldchanges, adjusted p-values, scores, and pts.
     """
-    dge_fusion = adata.uns['rank_genes_groups_leiden_fusion']
+    dge_fusion = adata.uns['rank_genes_groups_leiden_mako']
     
     # Convert the extracted data into DataFrames
     gene_names = pd.DataFrame(dge_fusion['names'])
@@ -299,20 +299,20 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_meningeal"):
     dotplot = sc.pl.rank_genes_groups_dotplot(
         adata,
         var_names=top_genes_names,
-        groupby='leiden_fusion',
-        key='rank_genes_groups_leiden_fusion',
+        groupby='leiden_mako',
+        key='rank_genes_groups_leiden_mako',
         cmap='bwr',
         vmin=-4,
         vmax=4,
         values_to_plot='logfoldchanges',
         colorbar_title='log fold change',
         use_raw=False,
-        dendrogram='dendrogram_leiden_fusion',
-        #dendrogram=False,
+        #dendrogram='dendrogram_leiden_mako',
+        dendrogram=False,
         return_fig=True
     )
 
-    output_path = os.path.join(output_dir, "dotplot_0.3_dendro.png")
+    output_path = os.path.join(output_dir, "dotplot_0.5.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 
@@ -334,7 +334,7 @@ def print_clusters(top_genes_cluster):
 # Remove NA
 def remove_NA_cat(adata: sc.AnnData):
     
-    mask_NA = adata.obs['leiden_fusion'] != 'MeV.NA' #creates mask for remove NA cells
+    mask_NA = adata.obs['leiden_mako'] != 'MeV.NA' #creates mask for remove NA cells
     #print(mask_NA)    
     adata2 = adata[mask_NA] #apply mask
 
@@ -397,10 +397,10 @@ def dendogram_sc(adata, output_dir="dendogram_meningeal"):
         os.makedirs(output_dir)
 
     # Compute the dendrogram
-    print(f"Computing dendrogram for leiden_fusion...")
+    print(f"Computing dendrogram for leiden_mako...")
     sc.tl.dendrogram(
         adata,
-        groupby='leiden_fusion',
+        groupby='leiden_mako',
         use_rep= 'X_pca',
         cor_method= 'spearman',
         linkage_method='ward',
@@ -408,29 +408,67 @@ def dendogram_sc(adata, output_dir="dendogram_meningeal"):
     )
 
     # Plot the dendrogram
-    print(f"Plotting dendrogram for leiden_fusion...")
+    print(f"Plotting dendrogram for leiden_mako...")
     sc.pl.dendrogram(
         adata,
-        groupby='leiden_fusion',
+        groupby='leiden_mako',
         dendrogram_key=None,
         orientation='top',
         show=False
     )
 
     # Save the plot
-    output_path = os.path.join(output_dir, f"leiden_fusion_dendro_0.3.png")
+    output_path = os.path.join(output_dir, f"leiden_mako_dendrogram.png")
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
+
+def reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram, dendrogram_key = 'dendrogram_leiden_mako'):
+    """
+    Reorder clusters based on dendrogram order if reorder is True.
+
+    Parameters:
+    adata (AnnData): The AnnData object containing the dendrogram information.
+    top_genes_names (dict): Dictionary of top genes per cluster.
+    reorder (bool): Flag indicating whether to reorder clusters based on dendrogram.
+    dendrogram_key (str): The key in `adata.uns` containing the dendrogram information.
+
+    Returns:
+    dict: Reordered dictionary of top genes per cluster, or the original dictionary if reorder is False.
+    """
+
+    if not dendrogram:
+        print("Reordering is disabled. Returning original cluster order.")
+        return top_genes_names
+
+    # Extract dendrogram order
+    print("Reordering clusters based on dendrogram...")
+    ivl = adata.uns[dendrogram_key]['dendrogram_info']['ivl']
+    print(f"Dendrogram order: {ivl}")
+
+    # Prepare a reordered dictionary
+    reordered_dict = {}
+
+    # Iterate through the dendrogram order and match clusters (ignoring '*')
+    for cluster in ivl:
+        # Handle cluster names with and without '*'
+        matched_cluster = next(
+            (key for key in top_genes_names if key.rstrip('*') == cluster), None
+        )
+        if matched_cluster:
+            reordered_dict[matched_cluster] = top_genes_names[matched_cluster]
+
+    return reordered_dict
+
 
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
     #print(adata)
     
-    # Create cluster resolutions UMAP
-    #umap_reso_cluster(adata, 'leiden_fusion')
+    #Create cluster resolutions UMAP
+    umap_reso_cluster(adata, 'leiden_mako')
 
     # Do a inicial filter in the a data
     filtered_adata = remove_NA_cat(adata)
@@ -439,7 +477,7 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.5)
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
@@ -456,12 +494,17 @@ if __name__ == "__main__":
     # Collect top gene names for visualization
     top_genes_names = top_gene_names(top_genes_cluster)
 
+    # Reorder the clusters to dendrogram order
+
+    top_genes_names = reorder_clusters_to_dendrogram(filtered_adata, top_genes_names, dendrogram= False)
+
+
     # Create dotplot of the top genes
     create_dotplot(filtered_adata, top_genes_names)
 
     print("Done")
 
-    # export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.5.xlsx")
+    #export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.5.xlsx")
 
     # Prints
     #print_gene_names(top_genes_names)
