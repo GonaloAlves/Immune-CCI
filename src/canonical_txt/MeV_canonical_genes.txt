@@ -11,8 +11,6 @@ Col1a1
 Col1a2
 Bicc1
 Col25a1
-Slc47a1
-Acta2
 Pecam1
 Il1r1
 

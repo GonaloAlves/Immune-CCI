@@ -32,13 +32,16 @@ def remove_NA_cat(adata: sc.AnnData):
     return adata2
 
 # Load canonical genes
-def load_canonical(genes_txt):
+def load_canonical(meningeal_txt, other_txt):
 
-    genes = open(genes_txt).read().split()
-    print(genes)
+    genes_meningeal = open(meningeal_txt).read().split()
 
-    top_genes_names = {'Meningeal': genes }
-    print (top_genes_names)
+    genes_other = open(other_txt).read().split()
+
+    top_genes_names = {'Immune': genes_meningeal,
+                       'Other': genes_other
+                    }
+    print(top_genes_names)
 
     return top_genes_names
 
