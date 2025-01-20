@@ -6,8 +6,8 @@ import gseapy as gp  # GSEApy is a Python wrapper for GSEA (Gene Set Enrichment 
 import multiprocessing as mp  # For parallel processing
 
 # Directory paths for t-statistic files and GSEA output
-gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_mako/Immune'  # Directory for GSEA results
-tstat_dir = '/home/makowlg/Documents/Immune-CCI/src/tstat_files_mako/Immune'  # Directory for t-statistic files
+gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_mako/Meningeal'  # Directory for GSEA results
+tstat_dir = '/home/makowlg/Documents/Immune-CCI/src/tstat_files_mako/Meningeal'  # Directory for t-statistic files
 
 # Ensure the output directory exists
 if not os.path.exists(gsea_dir):
@@ -144,7 +144,7 @@ def start(n_proc=None) -> None:
     # Load scores from an h5ad file
     t1 = time.time()  # Start time tracking
     
-    dest = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
+    dest = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     if os.path.exists(dest):  # Check if the file exists
         print("Load gene rank data...")
         data = sc.read_h5ad(dest)  # Load the AnnData object containing the data
@@ -168,7 +168,7 @@ def start(n_proc=None) -> None:
         # Perform GSEA using the moderate t-statistic
         print("Calculate GSEA using R limma's moderate t-statistic...")
         
-        dataset = 'Immune'  # Set the dataset name
+        dataset = 'Meningeal_Vascular'  # Set the dataset name
         clusters = data.obs['leiden_mako'].cat.categories.to_list()  # Get the list of clusters
         
         gsea_tstat(dataset=dataset,

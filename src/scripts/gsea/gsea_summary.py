@@ -10,11 +10,11 @@ import scanpy as sc
 import matplotlib
 matplotlib.use('cairo')
 
-gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_dir/Immune'  
+gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_mako/Meningeal'  
 h5ad_dir = '/home/makowlg/Documents/Immune-CCI/h5ad_files'
 
-dataset = 'Immune'
-resolution = 'fusion'
+dataset = 'Meningeal_Vascular'
+resolution = 'mako'
 
 gene_sets = {
     "H:hallmark": ["MSigDB_Hallmark_2020"],  # Hallmark pathways
@@ -39,7 +39,7 @@ def collection_summary(dataset: str,
     summary = pd.DataFrame()
     print("Load GSEA data...")
     for c in clusters:
-        dest = f"{collection_path}/{dataset}_{c}_{geneset}/gseapy.gene_set.prerank.report.csv"      # TODO: change name
+        dest = f"{collection_path}/{dataset}_{c}_{geneset}/gseapy.gene_set.prerank.report.csv"     
         if os.path.exists(dest):
             df = pd.read_csv(dest, sep=',', header=0, index_col=None)
             print(dest)
@@ -64,7 +64,7 @@ def collection_summary(dataset: str,
 def start() -> None:
     # Load scores
     
-    dest = f"{h5ad_dir}/adata_final_{dataset}_raw_norm_ranked_copy.h5ad"    
+    dest = f"{h5ad_dir}/adata_final_{dataset}_raw_norm_ranked_copy_copy.h5ad"    
     if os.path.exists(dest):
         print("Load gene rank data...")
         print(dest)

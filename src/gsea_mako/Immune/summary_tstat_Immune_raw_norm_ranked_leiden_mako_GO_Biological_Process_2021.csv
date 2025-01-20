@@ -1,0 +1,306 @@
+Imm.0.8.0.index	Imm.0.8.0.Term	Imm.0.8.0.NES	Imm.0.8.0.FDR q-val	Imm.0.8.1.index	Imm.0.8.1.Term	Imm.0.8.1.NES	Imm.0.8.1.FDR q-val	Imm.0.8.6.index	Imm.0.8.6.Term	Imm.0.8.6.NES	Imm.0.8.6.FDR q-val	Imm.1.2.12.index	Imm.1.2.12.Term	Imm.1.2.12.NES	Imm.1.2.12.FDR q-val	Imm.1.2.13.index	Imm.1.2.13.Term	Imm.1.2.13.NES	Imm.1.2.13.FDR q-val	Imm.1.2.15.index	Imm.1.2.15.Term	Imm.1.2.15.NES	Imm.1.2.15.FDR q-val	Imm.1.2.4.index	Imm.1.2.4.Term	Imm.1.2.4.NES	Imm.1.2.4.FDR q-val	Imm.1.2.5.index	Imm.1.2.5.Term	Imm.1.2.5.NES	Imm.1.2.5.FDR q-val
+0	chemical synaptic transmission (GO:0007268)	2.7550561710959767	0.0	0.0	cellular response to copper ion (GO:0071280)	2.0879472110362	0.0483770680513893	0.0	type I interferon signaling pathway (GO:0060337)	2.3886706118390486	0.0	0.0	regulation of T cell proliferation (GO:0042129)	2.0859855111019328	0.0	0.0	regulation of immune response (GO:0050776)	2.1718795435443314	0.0009947695250614	0.0	microtubule cytoskeleton organization involved in mitosis (GO:1902850)	2.1682217438781737	0.0	0.0	SRP-dependent cotranslational protein targeting to membrane (GO:0006614)	2.59704212160978	0.0	0.0	T cell activation (GO:0042110)	1.960830264178339	0.0245056585435792
+1	anterograde trans-synaptic signaling (GO:0098916)	2.720089488171121	0.0	1.0	cellular zinc ion homeostasis (GO:0006882)	2.062992422170068	0.0375694251888449	1.0	cellular response to type I interferon (GO:0071357)	2.3886706118390486	0.0	1.0	triglyceride catabolic process (GO:0019433)	2.07058608104248	0.0	1.0	positive regulation of immune effector process (GO:0002699)	2.055610054222177	0.008455540963022	1.0	mitotic sister chromatid segregation (GO:0000070)	2.1335344117996464	0.0	1.0	cotranslational protein targeting to membrane (GO:0006613)	2.5526229106641165	0.0	1.0	regulation of sequestering of triglyceride (GO:0010889)	1.9557897177957495	0.0137844329307633
+2	cell-cell adhesion via plasma-membrane adhesion molecules (GO:0098742)	2.5423528135689395	0.0	2.0	central nervous system neuron development (GO:0021954)	-1.9251581061311025	0.0478428405565496	2.0	defense response to symbiont (GO:0140546)	2.387022509918305	0.0	2.0	cholesterol transport (GO:0030301)	2.009591755630172	0.0027508634234783	2.0	positive regulation of antigen receptor-mediated signaling pathway (GO:0050857)	2.00820674847639	0.0182374412927926	2.0	mitotic spindle organization (GO:0007052)	2.119044791501288	0.0	2.0	cytoplasmic translation (GO:0002181)	2.513450669941357	0.0	2.0	negative regulation of osteoclast differentiation (GO:0045671)	1.8799869034107024	0.0408427642392987
+3	regulation of synapse assembly (GO:0051963)	2.518011636488419	0.0	3.0	regulation of synaptic transmission, glutamatergic (GO:0051966)	-1.9257795073345592	0.0498464350534384	3.0	defense response to virus (GO:0051607)	2.373755841567318	0.0	3.0	acylglycerol catabolic process (GO:0046464)	1.996642076031565	0.0033526147973642	3.0	leukocyte cell-cell adhesion (GO:0007159)	2.0028912648368564	0.0154189276384519	3.0	chromosome condensation (GO:0030261)	2.0710155496636857	0.0	3.0	protein targeting to ER (GO:0045047)	2.490872396173037	0.0	3.0	innate immune response in mucosa (GO:0002227)	1.8634134331895005	0.0473776065175865
+4	modulation of chemical synaptic transmission (GO:0050804)	2.513799663135768	0.0	4.0	regulation of release of sequestered calcium ion into cytosol by sarcoplasmic reticulum (GO:0010880)	-1.943243648829348	0.0458184403016454	4.0	positive regulation of cytokine-mediated signaling pathway (GO:0001961)	2.324034665071829	0.0	4.0	cholesterol efflux (GO:0033344)	1.9791013390121417	0.0047452394055002	4.0	interferon-gamma-mediated signaling pathway (GO:0060333)	1.9981709594793529	0.0135288655408352	4.0	centromere complex assembly (GO:0034508)	2.0507243064847995	0.0	4.0	nuclear-transcribed mRNA catabolic process, nonsense-mediated decay (GO:0000184)	2.4592420677754534	0.0	4.0	positive regulation of nervous system development (GO:0051962)	-2.331623934360349	0.0089082906272291
+5	glutamate receptor signaling pathway (GO:0007215)	2.476806595503385	0.0	5.0	synaptic membrane adhesion (GO:0099560)	-1.9646403668301369	0.0363004179436318	5.0	negative regulation of viral process (GO:0048525)	2.2986339541635634	0.0	5.0	intestinal lipid absorption (GO:0098856)	1.9624932666490311	0.0079087323425003	5.0	T cell activation (GO:0042110)	1.993129485424209	0.013097798746642	5.0	sister chromatid segregation (GO:0000819)	2.0405977504468065	0.0	5.0	regulation of humoral immune response (GO:0002920)	2.3519072979384053	0.0				
+6	synapse assembly (GO:0007416)	2.4052730597175245	9.602761505924776e-05	6.0	cAMP-mediated signaling (GO:0019933)	-1.96465585651431	0.0385691940651088	6.0	regulation of viral genome replication (GO:0045069)	2.2945122858393945	0.0	6.0	fatty acid transport (GO:0015908)	1.9579473785760524	0.0073683841700313	6.0	regulation of T cell mediated cytotoxicity (GO:0001914)	1.9875226034924376	0.0136425534865565	6.0	mitotic metaphase plate congression (GO:0007080)	2.03559762755976	0.0	6.0	regulation of immune effector process (GO:0002697)	2.3474841195386165	0.0				
+7	neurotransmitter secretion (GO:0007269)	2.3675824071813487	8.402416317684178e-05	7.0	synapse assembly (GO:0007416)	-1.9698102002623257	0.0387694494860076	7.0	negative regulation of viral genome replication (GO:0045071)	2.2279093588176964	0.0	7.0	regulation of macrophage derived foam cell differentiation (GO:0010743)	1.919757500441488	0.0198577953382345	7.0	immune response-regulating cell surface receptor signaling pathway (GO:0002768)	1.9863866185809291	0.012310272872635	7.0	mitotic nuclear division (GO:0140014)	2.014630360972097	0.0	7.0	regulation of complement activation (GO:0030449)	2.222119913755724	0.0001341027729923				
+8	synaptic transmission, glutamatergic (GO:0035249)	2.3394048607618223	7.468814504608158e-05	8.0	receptor clustering (GO:0043113)	-1.9780805119284364	0.0374191557908043	8.0	interferon-gamma-mediated signaling pathway (GO:0060333)	2.1795926042844416	0.0	8.0	vacuolar acidification (GO:0007035)	1.9191686245355029	0.0178806122526095	8.0	Fc-gamma receptor signaling pathway involved in phagocytosis (GO:0038096)	1.9781384880130009	0.0132635936674855	8.0	positive regulation of cell cycle process (GO:0090068)	2.0080961399564363	0.0	8.0	receptor-mediated endocytosis (GO:0006898)	2.2108710473913336	0.0001192024648821				
+9	regulation of neurotransmitter receptor activity (GO:0099601)	2.3104907385922937	6.721933054147343e-05	9.0	anterograde trans-synaptic signaling (GO:0098916)	-1.9974537619051156	0.0312028754286622	9.0	negative regulation of cytokine-mediated signaling pathway (GO:0001960)	2.168437212987317	0.0	9.0	iron ion transport (GO:0006826)	1.917462383369133	0.0172272821895333	9.0	Fc receptor mediated stimulatory signaling pathway (GO:0002431)	1.9670091404223653	0.0159163124009826	9.0	mitotic chromosome condensation (GO:0007076)	2.0054304112982666	0.0	9.0	nuclear-transcribed mRNA catabolic process (GO:0000956)	2.192913322373376	0.0005364110919695				
+10	regulation of cation channel activity (GO:2001257)	2.306383301092397	6.110848231043039e-05	10.0	cGMP-mediated signaling (GO:0019934)	-2.002207216878257	0.0313199478285723	10.0	cellular response to interferon-gamma (GO:0071346)	2.16396161568126	0.0	10.0	intracellular pH reduction (GO:0051452)	1.913613601437389	0.0169740777153268	10.0	regulation of B cell proliferation (GO:0030888)	1.966882282088506	0.0145598085031716	10.0	cytoskeleton-dependent cytokinesis (GO:0061640)	2.0020702165624007	0.0	10.0	peptide biosynthetic process (GO:0043043)	2.171806557864026	0.001365410052286				
+11	calcium-dependent cell-cell adhesion via plasma membrane cell adhesion molecules (GO:0016339)	2.303339569616861	5.601610878456119e-05	11.0	chemical synaptic transmission (GO:0007268)	-2.0204969425809387	0.0268269443851337	11.0	negative regulation of innate immune response (GO:0045824)	2.16372924593028	0.0	11.0	regulation of sequestering of triglyceride (GO:0010889)	1.9008642772119524	0.0197718308562508	11.0	Fc-gamma receptor signaling pathway (GO:0038094)	1.9642707959915653	0.0140096708112816	11.0	chromatin remodeling at centromere (GO:0031055)	1.9956552676601196	0.0	11.0	regulation of B cell activation (GO:0050864)	2.115961710061639	0.0051853072223721				
+12	synapse organization (GO:0050808)	2.290422042424682	5.170717733959495e-05	12.0	modulation of excitatory postsynaptic potential (GO:0098815)	-2.02701526194835	0.0261453477525473	12.0	regulation of type I interferon-mediated signaling pathway (GO:0060338)	2.0912589242844635	0.0	12.0	reverse cholesterol transport (GO:0043691)	1.8994269834298396	0.0190444390856195	12.0	innate immune response (GO:0045087)	1.9546197086679464	0.0176762892530144	12.0	CENP-A containing chromatin organization (GO:0061641)	1.9851412291464183	0.0001287770497055	12.0	positive regulation of substrate adhesion-dependent cell spreading (GO:1900026)	2.053649862462382	0.0194758488776629				
+13	positive regulation of synapse assembly (GO:0051965)	2.277423244137306	4.801380752962388e-05	13.0	neuron cell-cell adhesion (GO:0007158)	-2.043463767797749	0.0237102418344179	13.0	positive regulation of response to biotic stimulus (GO:0002833)	2.050249302120833	0.0005021050759511	13.0	long-chain fatty acid transport (GO:0015909)	1.8972913389196409	0.0186420119501794	13.0	innate immune response activating cell surface receptor signaling pathway (GO:0002220)	1.9397934096687868	0.0233060288728675	13.0	CENP-A containing nucleosome assembly (GO:0034080)	1.9851412291464183	0.0001287770497055	13.0	acylglycerol catabolic process (GO:0046464)	-2.089657523871205	0.0494888180678372				
+14	positive regulation of nervous system development (GO:0051962)	2.259295072574094	4.481288702764895e-05	14.0	positive regulation of calcium ion transmembrane transporter activity (GO:1901021)	-2.0609534229646567	0.0207865126892954	14.0	positive regulation of innate immune response (GO:0045089)	2.031155356725832	0.0010711574953624	14.0	secretory granule organization (GO:0033363)	1.8926994004875048	0.0196686734778704	14.0	regulation of T cell receptor signaling pathway (GO:0050856)	1.937369782243471	0.0228133811080751	14.0	mitotic cytokinesis (GO:0000281)	1.976072268557812	0.0003004797826462								
+15	signal release from synapse (GO:0099643)	2.257115904212668	4.201208158842089e-05	15.0	regulation of synapse assembly (GO:0051963)	-2.072836234300751	0.0197737924178929	15.0	response to interferon-gamma (GO:0034341)	2.0185841686823247	0.0012552626898779	15.0	positive regulation of leukocyte migration (GO:0002687)	1.892011842132228	0.0185038547469913	15.0	cellular response to lectin (GO:1990858)	1.937126233531254	0.020305001482136	15.0	regulation of cell cycle process (GO:0010564)	1.9644903370058904	0.0003943797147232								
+16	neuron cell-cell adhesion (GO:0007158)	2.246736314682952	7.908156534290992e-05	16.0	regulation of NMDA receptor activity (GO:2000310)	-2.113064686816292	0.0136173686211183	16.0	regulation of interferon-gamma-mediated signaling pathway (GO:0060334)	2.013709186564719	0.0014767796351504	16.0	transferrin transport (GO:0033572)	1.8824184093369245	0.0222091767572004	16.0	stimulatory C-type lectin receptor signaling pathway (GO:0002223)	1.937126233531254	0.020305001482136	16.0	regulation of mitotic nuclear division (GO:0007088)	1.963444963077968	0.0003711809079747								
+17	regulation of potassium ion transport (GO:0043266)	2.2443677543929432	7.468814504608158e-05	17.0	regulation of neurotransmitter receptor activity (GO:0099601)	-2.146896164357968	0.007497562958451	17.0	negative regulation of type I interferon-mediated signaling pathway (GO:0060339)	2.01287072415098	0.00145052577497	17.0	insulin receptor signaling pathway (GO:0008286)	1.8770090565382247	0.02401274530078	17.0	inflammatory response (GO:0006954)	1.9197075244775117	0.0283509314642504	17.0	DNA replication-independent nucleosome assembly (GO:0006336)	1.9588477012229752	0.0004507196739693								
+18	neurotransmitter transport (GO:0006836)	2.198038219526733	0.0003184073551964	18.0	regulation of MHC class II biosynthetic process (GO:0045346)	-2.164686514174797	0.0072091951523567	18.0	NAD biosynthesis via nicotinamide riboside salvage pathway (GO:0034356)	1.984333954063907	0.0031711899533757	18.0	positive regulation of cholesterol transport (GO:0032376)	1.8603169081406343	0.0327388942965289	18.0	regulation of neutrophil chemotaxis (GO:0090022)	1.908081174135148	0.0342410141784298	18.0	histone exchange (GO:0043486)	1.9575820635464904	0.0004269975858657								
+19	nervous system development (GO:0007399)	2.163902563295979	0.0007730223012269	19.0	glutamate receptor signaling pathway (GO:0007215)	-2.230144861045612	0.0022428607140665	19.0	positive regulation of type I interferon production (GO:0032481)	1.9758553328372088	0.0032134724860874	19.0	cellular response to insulin stimulus (GO:0032869)	1.857927101956132	0.0327008889465993	19.0	regulation of interleukin-8 production (GO:0032677)	1.9057685575174983	0.0342200716621127	19.0	positive regulation of cytokinesis (GO:0032467)	1.9554077430291696	0.0004507196739693								
+20	presynapse assembly (GO:0099054)	2.156288513032828	0.0009282669455727	20.0	regulation of cation channel activity (GO:2001257)	-2.2415868002746686	0.0028836780609427	20.0	protein mono-ADP-ribosylation (GO:0140289)	1.953516948606423	0.0051645093526405	20.0	negative regulation of macrophage derived foam cell differentiation (GO:0010745)	1.8564911420703252	0.032322645225871	20.0	positive regulation of interleukin-2 production (GO:0032743)	1.8949500486787787	0.0405013306632148	20.0	kinetochore organization (GO:0051383)	1.9484429941692336	0.0006009595652924								
+21	cell junction assembly (GO:0034329)	2.152798923538346	0.0009166272346564	21.0	cyclic-nucleotide-mediated signaling (GO:0019935)	-2.295777320536419	0.0019224520406284	21.0	protein ADP-ribosylation (GO:0006471)	1.9438028441899355	0.0059796149954184	21.0	response to glucocorticoid (GO:0051384)	1.85485455604504	0.0321194564502732					21.0	positive regulation of cell division (GO:0051781)	1.9367136109673944	0.0009014393479387								
+22	regulation of postsynaptic membrane potential (GO:0060078)	2.151840907697751	0.0008767738766279					22.0	regulation of type I interferon production (GO:0032479)	1.9348682694747923	0.0071604549961731	22.0	negative regulation of T cell proliferation (GO:0042130)	1.853930387331017	0.0309023624800533					22.0	mitotic spindle assembly (GO:0090307)	1.9184272542953729	0.0025475459833051								
+23	positive regulation of synaptic transmission (GO:0050806)	2.142270641795744	0.0011483302300835					23.0	positive regulation of tyrosine phosphorylation of STAT protein (GO:0042531)	1.9318957740471825	0.0071968394219667	23.0	positive regulation of cholesterol efflux (GO:0010875)	1.851831424448142	0.0306893200681807					23.0	negative regulation of mitotic metaphase/anaphase transition (GO:0045841)	1.9176189789306	0.0024789582068315								
+24	potassium ion transmembrane transport (GO:0071805)	2.141535047220447	0.0011023970208801					24.0	positive regulation of interferon-beta production (GO:0032728)	1.9259691584124936	0.0074713235301533	24.0	cellular response to glucocorticoid stimulus (GO:0071385)	1.8512035612450537	0.0299981656330317					24.0	apoptotic nuclear changes (GO:0030262)	1.910585199059396	0.0031370089308268								
+25	potassium ion transport (GO:0006813)	2.141389759416559	0.0010599971354616					25.0	regulation of RIG-I signaling pathway (GO:0039535)	1.9210773718835223	0.0084585393564081	25.0	negative regulation of lipid storage (GO:0010888)	1.846697385894109	0.0315820281503191					25.0	regulation of mitotic metaphase/anaphase transition (GO:0030071)	1.9062116053398437	0.003536415903452								
+26	regulation of dendrite development (GO:0050773)	2.1398314183100555	0.0010456340306451					26.0	positive regulation of defense response to virus by host (GO:0002230)	1.9154144885037403	0.0095213999587776	26.0	negative regulation of lymphocyte proliferation (GO:0050672)	1.8435906811768832	0.0329721546453034					26.0	establishment of mitotic spindle localization (GO:0040001)	1.9046204895079712	0.0036725306767874								
+27	cell-cell junction organization (GO:0045216)	2.132491937432989	0.0011043175731813					27.0	NAD biosynthetic process (GO:0009435)	1.899236385618432	0.0142382653680438	27.0	regulation of cholesterol efflux (GO:0010874)	1.8434052962953449	0.031941945377086					27.0	mitotic spindle checkpoint signaling (GO:0071174)	1.897924298278405	0.0042067169570474								
+28	regulation of release of sequestered calcium ion into cytosol by sarcoplasmic reticulum (GO:0010880)	2.1298537880570314	0.0011357748953559					28.0	detection of light stimulus involved in sensory perception (GO:0050962)	1.8972671315838452	0.0139919947831725	28.0	phagosome maturation (GO:0090382)	1.8410174952447609	0.0329392180621679					28.0	mitotic spindle assembly checkpoint signaling (GO:0007094)	1.897924298278405	0.0042067169570474								
+29	regulation of synaptic transmission, glutamatergic (GO:0051966)	2.114640963354758	0.0013443866108294					29.0	detection of light stimulus involved in visual perception (GO:0050908)	1.8972671315838452	0.0139919947831725	29.0	phagosome acidification (GO:0090383)	1.836009473062337	0.0345921075502407					29.0	spindle assembly checkpoint signaling (GO:0071173)	1.897924298278405	0.0042067169570474								
+30	modulation of excitatory postsynaptic potential (GO:0098815)	2.1144135324600564	0.0013010193008027					30.0	positive regulation of interferon-alpha production (GO:0032727)	1.896244648043877	0.0137997911196901	30.0	positive regulation of p38MAPK cascade (GO:1900745)	1.8340391794115292	0.0348738492073227					30.0	regulation of nuclear division (GO:0051783)	1.89106199974681	0.0054377147762756								
+31	regulation of presynapse assembly (GO:1905606)	2.1099940752799444	0.001242539140312					31.0	response to interferon-beta (GO:0035456)	1.887161433176684	0.0164439412374007	31.0	neutrophil activation involved in immune response (GO:0002283)	1.8318512633744957	0.0355892955412516					31.0	microtubule depolymerization (GO:0007019)	1.8872069355045984	0.0061128855782096								
+32	regulation of presynapse organization (GO:0099174)	2.1099940752799444	0.001242539140312					32.0	regulation of innate immune response (GO:0045088)	1.8813306472862024	0.0180453521235783	32.0	toll-like receptor signaling pathway (GO:0002224)	1.8312674036804677	0.0349172095911972					32.0	regulation of cytokinesis (GO:0032465)	1.8792578201531829	0.0077578416610486								
+33	positive regulation of excitatory postsynaptic potential (GO:2000463)	2.099878524657696	0.0016409424808653					33.0	regulation of tyrosine phosphorylation of STAT protein (GO:0042509)	1.8736383089007875	0.0209407352264339	33.0	positive regulation of vascular endothelial growth factor production (GO:0010575)	1.8307988754563649	0.034163296487169					33.0	regulation of attachment of spindle microtubules to kinetochore (GO:0051988)	1.8760475296532493	0.0081924928974433								
+34	homophilic cell adhesion via plasma membrane adhesion molecules (GO:0007156)	2.0965044389516367	0.0016324694560072					34.0	negative regulation of leukocyte apoptotic process (GO:2000107)	1.8647803343165692	0.0247609531740489	34.0	neutrophil mediated immunity (GO:0002446)	1.825977280019491	0.0361050824331538					34.0	establishment of spindle orientation (GO:0051294)	1.8625994805226067	0.0127746833307891								
+35	regulation of NMDA receptor activity (GO:2000310)	2.088796917993593	0.0017364993723213					35.0	regulation of mesenchymal cell proliferation (GO:0010464)	1.8633829130956536	0.0244636750893985	35.0	regulation of vascular endothelial growth factor production (GO:0010574)	1.824530720220897	0.0358185341598748					35.0	establishment of mitotic spindle orientation (GO:0000132)	1.8602662157699728	0.0133963903096452								
+36	positive regulation of cell communication (GO:0010647)	2.0859297898214573	0.0017259017301189					36.0	cellular response to virus (GO:0098586)	1.8577742129329615	0.026923688396949	36.0	neutrophil degranulation (GO:0043312)	1.823960160122076	0.0353244320021667					36.0	resolution of meiotic recombination intermediates (GO:0000712)	1.859193304524516	0.0132535947372615								
+37	regulation of cation transmembrane transport (GO:1904062)	2.085854931554899	0.0016804832635368					37.0	interleukin-27-mediated signaling pathway (GO:0070106)	1.857547546916454	0.026453009527743	37.0	wound healing, spreading of cells (GO:0044319)	1.8188916447725625	0.037761029822945					37.0	interstrand cross-link repair (GO:0036297)	1.8581947344935423	0.0136876448358067								
+38	axonogenesis (GO:0007409)	2.0856177065483563	0.0016373939490871					38.0	regulation of interferon-alpha production (GO:0032647)	1.8538676243057832	0.0278861434489802	38.0	acute inflammatory response (GO:0002526)	1.818312993137061	0.0373218104858461					38.0	recombinational repair (GO:0000725)	1.8562642667103997	0.0140994359549393								
+39	heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules (GO:0007157)	2.083840007097635	0.0016132639329953					39.0	regulation of interferon-beta production (GO:0032648)	1.844969890018176	0.0324359879064454	39.0	sterol homeostasis (GO:0055092)	1.814575226239236	0.0394834865751132					39.0	protein localization to chromosome, centromeric region (GO:0071459)	1.853118262252392	0.0151216450616724								
+40	synaptic membrane adhesion (GO:0099560)	2.0769042787605456	0.001836235370889					40.0	cellular response to interferon-beta (GO:0035458)	1.838031743471021	0.0355147492745947	40.0	response to lipid (GO:0033993)	1.8113678542169025	0.0413635926969371					40.0	negative regulation of cell cycle process (GO:0010948)	1.8517565201213948	0.0156102911472319								
+41	regulation of trans-synaptic signaling (GO:0099177)	2.0682634816111243	0.0021286121338133					41.0	regulation of defense response to virus by host (GO:0050691)	1.83057583638728	0.0399771279519215	41.0	pattern recognition receptor signaling pathway (GO:0002221)	1.8046871081833016	0.0456594205736278					41.0	regulation of cyclin-dependent protein kinase activity (GO:1904029)	1.849515579928498	0.0161615197380446								
+42	adherens junction organization (GO:0034332)	2.049983826186062	0.0030795832829465					42.0	positive regulation of response to cytokine stimulus (GO:0060760)	1.8179767764853836	0.0490895288209001	42.0	secondary alcohol metabolic process (GO:1902652)	1.8007157874871134	0.0476443147589657					42.0	regulation of chromosome segregation (GO:0051983)	1.8435859497786804	0.0187205892490535								
+43	heart contraction (GO:0060047)	2.033433590857295	0.0037276174209362					43.0	regulation of protein kinase C signaling (GO:0090036)	1.8168372866880844	0.0490237137792321	43.0	regulation of synaptic transmission, glutamatergic (GO:0051966)	-1.9905053056026043	0.0496890609772619					43.0	regulation of cell cycle G2/M phase transition (GO:1902749)	1.8428816678451487	0.0187458409855444								
+44	chloride transmembrane transport (GO:1902476)	2.0293680715900666	0.0038240330263593									44.0	cell-cell adhesion via plasma-membrane adhesion molecules (GO:0098742)	-2.07512614679761	0.0178370988123504					44.0	positive regulation of mitotic cell cycle phase transition (GO:1901992)	1.8359003612245384	0.0224358237709199								
+45	neuronal action potential (GO:0019228)	2.0186256695857288	0.0044130951790271									45.0	synaptic transmission, glutamatergic (GO:0035249)	-2.091787926750687	0.0174803568361034					45.0	mitotic cell cycle checkpoint signaling (GO:0007093)	1.8338365921795017	0.0233198440010241								
+46	cardiac muscle cell action potential (GO:0086001)	2.0135113984948467	0.0048197690196758									46.0	regulation of NMDA receptor activity (GO:2000310)	-2.099295255895071	0.0205126636342029					46.0	cell cycle checkpoint signaling (GO:0000075)	1.8313583165390024	0.0243580419549406								
+47	heart process (GO:0003015)	2.0066464555042622	0.0053355343617294									47.0	regulation of ventricular cardiac muscle cell action potential (GO:0098911)	-2.1023436671428417	0.0258637932779081					47.0	DNA-dependent DNA replication maintenance of fidelity (GO:0045005)	1.83045349726772	0.0245078822720847								
+48	detection of calcium ion (GO:0005513)	2.006007128235708	0.0052952370589813									48.0	regulation of heart rate by cardiac conduction (GO:0086091)	-2.1740480540916662	0.0098104043467927					48.0	microtubule polymerization or depolymerization (GO:0031109)	1.822546204294481	0.0297474984819786								
+49	axon development (GO:0061564)	2.005833958564552	0.0052296639161266									49.0	cellular potassium ion homeostasis (GO:0030007)	-2.379038420722185	0.0008918549406175					49.0	protein localization to kinetochore (GO:0034501)	1.8210380113919005	0.0303965348124945								
+50	regulation of cardiac muscle cell contraction (GO:0086004)	1.999899743377605	0.0056147911393466																	50.0	attachment of mitotic spindle microtubules to kinetochore (GO:0051315)	1.8181291887957325	0.0323811154004664								
+51	chemical synaptic transmission, postsynaptic (GO:0099565)	1.995039146468428	0.0058558378337091																	51.0	retrograde vesicle-mediated transport, Golgi to endoplasmic reticulum (GO:0006890)	1.812350487474282	0.037340391451155								
+52	muscle cell differentiation (GO:0042692)	1.992815649634204	0.0059482766082926																	52.0	double-strand break repair via homologous recombination (GO:0000724)	1.8113556807336493	0.0376053282696711								
+53	synaptic vesicle exocytosis (GO:0016079)	1.9905927144844415	0.0060870838212556																	53.0	regulation of chromosome organization (GO:0033044)	1.8107706134309527	0.0374931995457486								
+54	neuropeptide signaling pathway (GO:0007218)	1.9671795163275807	0.008958503506709																	54.0	protein depolymerization (GO:0051261)	1.808755338727901	0.0387455021550399								
+55	synaptic vesicle cycle (GO:0099504)	1.9625995915481305	0.0093266821126294																	55.0	positive regulation of G2/M transition of mitotic cell cycle (GO:0010971)	1.8078139576509664	0.0387457948301529								
+56	central nervous system development (GO:0007417)	1.9606264108934564	0.0093281562207553																	56.0	positive regulation of mitotic nuclear division (GO:0045840)	1.8041361843819068	0.0411499154971337								
+57	axon guidance (GO:0007411)	1.9605126423918893	0.0091789154808356																	57.0	protein localization to condensed chromosome (GO:1903083)	1.8030240335974304	0.0415128361783516								
+58	regulation of potassium ion transmembrane transport (GO:1901379)	1.958956097971592	0.0092056303521204																	58.0	DNA recombination (GO:0006310)	1.796956219694805	0.0466151093315444								
+59	excitatory postsynaptic potential (GO:0060079)	1.957858033790594	0.0092650643929664																	59.0	regulation of exit from mitosis (GO:0007096)	1.7964698999828073	0.046303934505787								
+60	action potential (GO:0001508)	1.9542996313586207	0.0095209018996447																	60.0	regulation of G0 to G1 transition (GO:0070316)	1.7963080873049695	0.0457221859429915								
+61	cardiac muscle cell action potential involved in contraction (GO:0086002)	1.9465573570582364	0.0101696342012745																												
+62	sensory perception of smell (GO:0007608)	1.9447220549716293	0.0103283034863724																												
+63	regulation of cardiac muscle contraction by regulation of the release of sequestered calcium ion (GO:0010881)	1.934643442820854	0.011784388885552																												
+64	adenylate cyclase-inhibiting G protein-coupled receptor signaling pathway (GO:0007193)	1.919146069849302	0.0147365455417845																												
+65	G protein-coupled glutamate receptor signaling pathway (GO:0007216)	1.9189220096881163	0.0145336340428306																												
+66	calcium ion transport into cytosol (GO:0060402)	1.9149618105567965	0.0150290383807652																												
+67	response to alcohol (GO:0097305)	1.9110295843462928	0.015668035133564																												
+68	protein localization to synapse (GO:0035418)	1.908975386397248	0.0158208975071525																												
+69	sodium ion transport (GO:0006814)	1.903964668757178	0.0166703939742854																												
+70	central nervous system neuron differentiation (GO:0021953)	1.9022567742387249	0.0168048326353683																												
+71	regulation of cardiac muscle contraction by calcium ion signaling (GO:0010882)	1.8937789976869024	0.0182425794275054																												
+72	regulation of ryanodine-sensitive calcium-release channel activity (GO:0060314)	1.8927457170398831	0.0182413005209121																												
+73	atrial cardiac muscle cell action potential (GO:0086014)	1.892627366516616	0.0180129638464515																												
+74	membrane depolarization during cardiac muscle cell action potential (GO:0086012)	1.891647921994076	0.0179699676980872																												
+75	sodium ion transmembrane transport (GO:0035725)	1.8875193810939	0.0188567911466343																												
+76	regulation of dendrite morphogenesis (GO:0048814)	1.8819146354703389	0.0197467695694562																												
+77	calcium ion-regulated exocytosis of neurotransmitter (GO:0048791)	1.872476902315559	0.0219238431919882																												
+78	positive regulation of cell junction assembly (GO:1901890)	1.8715248274615317	0.0218505368139878																												
+79	positive regulation of cation transmembrane transport (GO:1904064)	1.8705143511157143	0.0218210751770258																												
+80	regulation of sodium ion transmembrane transporter activity (GO:2000649)	1.8704078960179271	0.0215848739183175																												
+81	positive regulation of calcium ion transmembrane transport (GO:1904427)	1.8662269354548475	0.0222971437893667																												
+82	cell differentiation in spinal cord (GO:0021515)	1.8518976182592977	0.0259806761900056																												
+83	regulation of heart rate by cardiac conduction (GO:0086091)	1.8517598679040184	0.0257273985346234																												
+84	receptor clustering (GO:0043113)	1.8393151624814623	0.0292601791768766																												
+85	negative regulation of voltage-gated calcium channel activity (GO:1901386)	1.8388631606359476	0.0290450037548971																												
+86	detection of mechanical stimulus involved in sensory perception (GO:0050974)	1.8352040422200588	0.0298701071118777																												
+87	synaptic transmission, GABAergic (GO:0051932)	1.828249503161627	0.0318146036028678																												
+88	ventricular septum morphogenesis (GO:0060412)	1.8267446153457076	0.0319707220429277																												
+89	mesonephric tubule development (GO:0072164)	1.822187574813691	0.0333706632065892																												
+90	cell morphogenesis involved in neuron differentiation (GO:0048667)	1.8211301707441896	0.0333880630821384																												
+91	long-term synaptic potentiation (GO:0060291)	1.8208334166483613	0.033149358985507																												
+92	negative chemotaxis (GO:0050919)	1.8138598319527317	0.0352359393967401																												
+93	regulation of exocytosis (GO:0017157)	1.8128319093937575	0.0352758465490519																												
+94	inorganic anion transmembrane transport (GO:0098661)	1.8069488796100672	0.0369918589548234																												
+95	inorganic cation transmembrane transport (GO:0098662)	1.7987753959851616	0.0397994452914307																												
+96	neuron projection fasciculation (GO:0106030)	1.798712304262068	0.0393960715596161																												
+97	regulation of dendritic spine morphogenesis (GO:0061001)	1.7980548690040572	0.0392409989824254																												
+98	regulation of neuron projection development (GO:0010975)	1.7964895630768645	0.0394285507529632																												
+99	positive regulation of potassium ion transport (GO:0043268)	1.786852812877202	0.0431279224754093																												
+100	positive regulation of dendrite development (GO:1900006)	1.7761272438901972	0.0472731588946619																												
+101	chloride transport (GO:0006821)	1.77114053525142	0.049162373121509																												
+102	positive regulation of interferon-alpha production (GO:0032727)	-1.722464383502371	0.0498613874047814																												
+103	phagosome acidification (GO:0090383)	-1.722763288309946	0.0499677641406906																												
+104	response to laminar fluid shear stress (GO:0034616)	-1.72361153079563	0.0497376413218822																												
+105	regulation of protein metabolic process (GO:0051246)	-1.725510902675179	0.0486971954130604																												
+106	response to zinc ion (GO:0010043)	-1.727285710936806	0.0479562478275399																												
+107	adaptive immune response based on somatic recombination of immune receptors built from immunoglobulin superfamily domains (GO:0002460)	-1.7296626366074146	0.0468900650173288																												
+108	MyD88-dependent toll-like receptor signaling pathway (GO:0002755)	-1.730792620279172	0.0465832884885385																												
+109	gene expression (GO:0010467)	-1.732311705436928	0.0460656800646481																												
+110	hepatocyte growth factor receptor signaling pathway (GO:0048012)	-1.733006168312908	0.0458843810046511																												
+111	cellular response to low-density lipoprotein particle stimulus (GO:0071404)	-1.733746501584371	0.0457139306261292																												
+112	positive regulation of transport (GO:0051050)	-1.734319537618426	0.0455992402979223																												
+113	regulation of myoblast fusion (GO:1901739)	-1.7353618060235865	0.045226350869819																												
+114	regulation of transcription from RNA polymerase II promoter in response to stress (GO:0043618)	-1.7362183966307976	0.044972273081729																												
+115	regulation of cellular biosynthetic process (GO:0031326)	-1.7416532044697317	0.0425209736688954																												
+116	regulation of I-kappaB kinase/NF-kappaB signaling (GO:0043122)	-1.7429545193654072	0.0421062969476566																												
+117	response to lipopolysaccharide (GO:0032496)	-1.744528762140253	0.0413853652958608																												
+118	negative regulation of cytokine production (GO:0001818)	-1.744862831531795	0.0414615455082022																												
+119	T cell activation involved in immune response (GO:0002286)	-1.7452939743862044	0.0414722211441659																												
+120	positive regulation of fibroblast proliferation (GO:0048146)	-1.745931519334016	0.0414229981898815																												
+121	superoxide anion generation (GO:0042554)	-1.7466011664829273	0.0412391509466275																												
+122	regulation of transcription from RNA polymerase II promoter in response to hypoxia (GO:0061418)	-1.7470536771997838	0.0412150808259293																												
+123	positive regulation of double-strand break repair via homologous recombination (GO:1905168)	-1.7471501574960655	0.0414144247609488																												
+124	protein sumoylation (GO:0016925)	-1.7482610358035255	0.0410707244684694																												
+125	response to lipid (GO:0033993)	-1.749232822508186	0.0408260070474422																												
+126	negative regulation of extrinsic apoptotic signaling pathway via death domain receptors (GO:1902042)	-1.7504316692405415	0.0404131536333633																												
+127	fatty acid transmembrane transport (GO:1902001)	-1.751516366046037	0.0402174360079967																												
+128	negative regulation of T cell activation (GO:0050868)	-1.7518264507872614	0.040305260938766																												
+129	positive regulation of cell-substrate adhesion (GO:0010811)	-1.7521927127945582	0.0403590378243425																												
+130	negative regulation of MAP kinase activity (GO:0043407)	-1.7523887352320586	0.0404909712045771																												
+131	regulation of Ras protein signal transduction (GO:0046578)	-1.7526982833460665	0.0405251641852552																												
+132	inflammatory response (GO:0006954)	-1.7542466684351907	0.0401675607612587																												
+133	integrin-mediated signaling pathway (GO:0007229)	-1.7545127719232378	0.0402433043378473																												
+134	regulation of type I interferon production (GO:0032479)	-1.7561006836088042	0.039475877218947																												
+135	cellular response to zinc ion (GO:0071294)	-1.7561202057133516	0.0397080882614114																												
+136	TRIF-dependent toll-like receptor signaling pathway (GO:0035666)	-1.757110826826616	0.0394320800178905																												
+137	response to copper ion (GO:0046688)	-1.759348401162977	0.0385873762621961																												
+138	toll-like receptor 9 signaling pathway (GO:0034162)	-1.759523132819974	0.0386928601932718																												
+139	negative regulation of ubiquitin-dependent protein catabolic process (GO:2000059)	-1.759845475990816	0.0387698892039244																												
+140	tryptophan metabolic process (GO:0006568)	-1.760998899828928	0.0384216918613956																												
+141	regulation of reactive oxygen species biosynthetic process (GO:1903426)	-1.7612488212630493	0.0385506613466279																												
+142	positive regulation of interleukin-10 production (GO:0032733)	-1.7624225532505082	0.0382044149158827																												
+143	cellular response to lipopolysaccharide (GO:0071222)	-1.7645079179619498	0.0374198419471268																												
+144	positive regulation of programmed cell death (GO:0043068)	-1.7656164677551802	0.0371159062982491																												
+145	cellular zinc ion homeostasis (GO:0006882)	-1.7672995195391237	0.0365460269566033																												
+146	regulation of fatty acid metabolic process (GO:0019217)	-1.7676211860504023	0.0366517382040695																												
+147	negative regulation of B cell activation (GO:0050869)	-1.7677699193413146	0.0368368648573955																												
+148	translation (GO:0006412)	-1.7683843876582837	0.036804340942187																												
+149	neutrophil activation (GO:0042119)	-1.7685796486110783	0.036953280096983																												
+150	regulation of peptidyl-tyrosine phosphorylation (GO:0050730)	-1.770610144885701	0.0362286679638401																												
+151	regulation of fibroblast proliferation (GO:0048145)	-1.7707122591440208	0.036423866419349																												
+152	DNA repair (GO:0006281)	-1.7710609645026325	0.0365087361207908																												
+153	positive regulation of leukocyte cell-cell adhesion (GO:1903039)	-1.7720701136570565	0.036351244667694																												
+154	regulation of small GTPase mediated signal transduction (GO:0051056)	-1.7727524386776703	0.0362161762648162																												
+155	phagosome maturation (GO:0090382)	-1.7742463978923793	0.0357996861529325																												
+156	lipoprotein catabolic process (GO:0042159)	-1.7777139104034243	0.034615906596564																												
+157	microvillus organization (GO:0032528)	-1.779672285854848	0.0340996228257416																												
+158	positive regulation of macrophage derived foam cell differentiation (GO:0010744)	-1.7803021092061977	0.0339959138209937																												
+159	regulation of response to biotic stimulus (GO:0002831)	-1.780387623876953	0.0342203130857738																												
+160	lipoprotein biosynthetic process (GO:0042158)	-1.7816710333149517	0.0338437585295196																												
+161	adipose tissue development (GO:0060612)	-1.7822552077248106	0.0338817479168696																												
+162	mononuclear cell differentiation (GO:1903131)	-1.7823925356289383	0.0340410427242056																												
+163	Arp2/3 complex-mediated actin nucleation (GO:0034314)	-1.7853735459229771	0.0330123973221828																												
+164	positive regulation of T cell activation (GO:0050870)	-1.7880995101272126	0.0321266447579728																												
+165	negative regulation of proteasomal ubiquitin-dependent protein catabolic process (GO:0032435)	-1.788152344576879	0.0323561207919583																												
+166	protein transport (GO:0015031)	-1.7910361195377071	0.0314262772554612																												
+167	positive regulation of p38MAPK cascade (GO:1900745)	-1.791596557433493	0.0314126432398958																												
+168	regulation of phagocytosis (GO:0050764)	-1.7917399542706651	0.0315518872662386																												
+169	positive regulation of cellular response to transforming growth factor beta stimulus (GO:1903846)	-1.7928601294715618	0.0313575614765395																												
+170	positive regulation of transforming growth factor beta receptor signaling pathway (GO:0030511)	-1.7928601294715618	0.0313575614765395																												
+171	cellular response to copper ion (GO:0071280)	-1.793729120514482	0.0314389274026828																												
+172	positive regulation of leukocyte degranulation (GO:0043302)	-1.7940386177408392	0.0315269047620303																												
+173	response to interferon-gamma (GO:0034341)	-1.7941053437358927	0.0317377081050057																												
+174	positive regulation of gene expression, epigenetic (GO:0045815)	-1.7949893740087512	0.0315185498692308																												
+175	response to muramyl dipeptide (GO:0032495)	-1.795455183073399	0.0315807017751576																												
+176	negative regulation of interferon-gamma production (GO:0032689)	-1.7962089473206542	0.031509935909988																												
+177	regulation of chemokine production (GO:0032642)	-1.7979772505105107	0.0309850940573522																												
+178	regulation of establishment of cell polarity (GO:2000114)	-1.798174655721109	0.0311319356512611																												
+179	negative regulation of apoptotic process (GO:0043066)	-1.798358444824471	0.0313398519290301																												
+180	cellular response to cytokine stimulus (GO:0071345)	-1.7989241977494113	0.0313537154811486																												
+181	reverse cholesterol transport (GO:0043691)	-1.7995608349528458	0.0313479055234128																												
+182	regulation of establishment or maintenance of cell polarity (GO:0032878)	-1.8017412575056952	0.0306299108299451																												
+183	polarized epithelial cell differentiation (GO:0030859)	-1.8021038105961396	0.0306686310463797																												
+184	natural killer cell mediated cytotoxicity (GO:0042267)	-1.802457923387644	0.030769162563735																												
+185	positive regulation of lymphocyte differentiation (GO:0045621)	-1.802684892597494	0.0309844515463297																												
+186	MyD88-independent toll-like receptor signaling pathway (GO:0002756)	-1.8036875128916152	0.0308094293841151																												
+187	antigen processing and presentation of exogenous peptide antigen via MHC class I, TAP-dependent (GO:0002479)	-1.805043829104631	0.0305478054114839																												
+188	T cell receptor signaling pathway (GO:0050852)	-1.8110559383740856	0.0285630746223631																												
+189	positive regulation of chemokine production (GO:0032722)	-1.8123474868581024	0.0282563054339284																												
+190	DNA metabolic process (GO:0006259)	-1.8124990888451848	0.028405468172764																												
+191	double-strand break repair (GO:0006302)	-1.8129653916674329	0.0284165717042091																												
+192	regulation of apoptotic process (GO:0042981)	-1.815895475840392	0.0277182666645206																												
+193	recombinational repair (GO:0000725)	-1.8182725496298453	0.0269414050439577																												
+194	regulation of RNA metabolic process (GO:0051252)	-1.818374440521179	0.02716189299637																												
+195	negative regulation of programmed cell death (GO:0043069)	-1.8185187368903568	0.0273191013935667																												
+196	T cell activation (GO:0042110)	-1.8197822760743925	0.0271170303373271																												
+197	regulation of RIG-I signaling pathway (GO:0039535)	-1.819993012041264	0.0273110018606777																												
+198	androgen receptor signaling pathway (GO:0030521)	-1.822572605244852	0.0268053196653188																												
+199	positive regulation of antigen receptor-mediated signaling pathway (GO:0050857)	-1.823739246198904	0.0265810446839843																												
+200	regulation of inflammatory response (GO:0050727)	-1.8243781319541643	0.0265522269389346																												
+201	positive regulation of cholesterol efflux (GO:0010875)	-1.8264862525555825	0.026024661844462																												
+202	DNA replication (GO:0006260)	-1.8267687991364496	0.0262054670373349																												
+203	positive regulation of interleukin-8 production (GO:0032757)	-1.831539349548588	0.0246724232618418																												
+204	positive regulation of inflammatory response (GO:0050729)	-1.8337375476556736	0.0240250775029915																												
+205	leukocyte cell-cell adhesion (GO:0007159)	-1.83385350413018	0.0242283196431287																												
+206	negative regulation of type I interferon production (GO:0032480)	-1.8352054581980588	0.0239746173514059																												
+207	purinergic nucleotide receptor signaling pathway (GO:0035590)	-1.83876673227062	0.0228219915172037																												
+208	lymphocyte differentiation (GO:0030098)	-1.8401069495050355	0.0225104067904433																												
+209	natural killer cell mediated immunity (GO:0002228)	-1.8414435396374904	0.0222951324787998																												
+210	regulation of interleukin-1 beta production (GO:0032651)	-1.8437062017990784	0.0218156163578391																												
+211	positive regulation of B cell proliferation (GO:0030890)	-1.8439261375055296	0.0219558319771603																												
+212	regulation of erythrocyte differentiation (GO:0045646)	-1.844615221048412	0.0219664155492527																												
+213	phospholipid transport (GO:0015914)	-1.846009598510209	0.0217358685366552																												
+214	positive regulation of immune effector process (GO:0002699)	-1.850757830000584	0.0204157524353482																												
+215	regulation of interleukin-10 production (GO:0032653)	-1.8519347850769872	0.0203273353873952																												
+216	regulation of interferon-gamma-mediated signaling pathway (GO:0060334)	-1.8527231345247657	0.0203478187350471																												
+217	negative regulation of lipid storage (GO:0010888)	-1.854795589125972	0.0200603623225544																												
+218	regulation of cytokine production involved in inflammatory response (GO:1900015)	-1.855409060151598	0.0202058638782325																												
+219	regulation of response to cytokine stimulus (GO:0060759)	-1.8569841060025167	0.0199531050914081																												
+220	positive regulation of cytokine-mediated signaling pathway (GO:0001961)	-1.861301033396448	0.0188090944396159																												
+221	positive regulation of cytokine production involved in inflammatory response (GO:1900017)	-1.8614394508287568	0.0189889543318818																												
+222	response to exogenous dsRNA (GO:0043330)	-1.863079169857487	0.0186826723133344																												
+223	antigen processing and presentation of exogenous peptide antigen via MHC class I (GO:0042590)	-1.864345310081681	0.0185193616069069																												
+224	lysosome localization (GO:0032418)	-1.8646648846570053	0.0186870761372098																												
+225	double-strand break repair via homologous recombination (GO:0000724)	-1.86566073740578	0.0186585200917679																												
+226	regulation of cytokine production (GO:0001817)	-1.868249764991388	0.0183013164954928																												
+227	regulation of double-strand break repair via homologous recombination (GO:0010569)	-1.8762853722338653	0.0161319690558197																												
+228	regulation of platelet activation (GO:0010543)	-1.8764790335752828	0.0162453488230569																												
+229	positive regulation of response to external stimulus (GO:0032103)	-1.8808831825076089	0.0152579459645601																												
+230	positive regulation of I-kappaB kinase/NF-kappaB signaling (GO:0043123)	-1.890030600350549	0.0133560051257437																												
+231	response to cadmium ion (GO:0046686)	-1.8920660991978295	0.013119727775047																												
+232	cellular response to cadmium ion (GO:0071276)	-1.8970286296569936	0.0122517170307091																												
+233	mitotic sister chromatid segregation (GO:0000070)	-1.902966085905214	0.0109483878224423																												
+234	regulation of necroptotic process (GO:0060544)	-1.9031047156819985	0.0111025904678288																												
+235	myeloid leukocyte differentiation (GO:0002573)	-1.910211311408447	0.0100099545805187																												
+236	cytokine-mediated signaling pathway (GO:0019221)	-1.9143339487553237	0.0094935193855348																												
+237	regulation of cellular component size (GO:0032535)	-1.9144038104987	0.0096331299647338																												
+238	positive regulation of response to biotic stimulus (GO:0002833)	-1.91604018206238	0.0095743732060879																												
+239	superoxide metabolic process (GO:0006801)	-1.918645557849602	0.0092895411826783																												
+240	positive regulation of reactive oxygen species metabolic process (GO:2000379)	-1.9251494941121168	0.0085594329931466																												
+241	positive regulation of ERBB signaling pathway (GO:1901186)	-1.9257132055301671	0.0086160728109713																												
+242	fatty acid transport (GO:0015908)	-1.927626565674196	0.0084199539703111																												
+243	regulation of extrinsic apoptotic signaling pathway via death domain receptors (GO:1902041)	-1.927935459320941	0.0085358625639759																												
+244	plasma membrane invagination (GO:0099024)	-1.9281622309278983	0.0086353481416446																												
+245	regulation of myeloid cell differentiation (GO:0045637)	-1.929350069513445	0.0086147877889264																												
+246	regulation of interleukin-8 production (GO:0032677)	-1.9364559504503127	0.0076317241445527																												
+247	bone development (GO:0060348)	-1.9380442065617105	0.0076356896129321																												
+248	Fc-epsilon receptor signaling pathway (GO:0038095)	-1.94335987484856	0.0071203747834613																												
+249	positive regulation of type I interferon production (GO:0032481)	-1.9462893123937268	0.0068069453463474																												
+250	regulation of programmed necrotic cell death (GO:0062098)	-1.946408213935168	0.0069307079890083																												
+251	Fc receptor signaling pathway (GO:0038093)	-1.9479683305444784	0.0068991405787743																												
+252	defense response to symbiont (GO:0140546)	-1.9485236980941196	0.0069594854295195																												
+253	cellular macromolecule biosynthetic process (GO:0034645)	-1.95080255647458	0.0068560868487233																												
+254	I-kappaB kinase/NF-kappaB signaling (GO:0007249)	-1.9509671132042188	0.0069905199241885																												
+255	positive regulation of interferon-beta production (GO:0032728)	-1.951871873534261	0.0070316406296249																												
+256	regulation of macrophage derived foam cell differentiation (GO:0010743)	-1.9539734233433823	0.0068982081364741																												
+257	B cell differentiation (GO:0030183)	-1.9670162240713605	0.0057054978793009																												
+258	cellular response to type I interferon (GO:0071357)	-1.967478930008892	0.0056431606396766																												
+259	type I interferon signaling pathway (GO:0060337)	-1.967478930008892	0.0056431606396766																												
+260	positive regulation of cellular catabolic process (GO:0031331)	-1.9775251763640012	0.0049344846523683																												
+261	regulation of B cell activation (GO:0050864)	-1.9781427877549729	0.0050466320308312																												
+262	defense response to virus (GO:0051607)	-1.9832863532555087	0.0047623514668206																												
+263	positive regulation of B cell activation (GO:0050871)	-2.001392805799372	0.0037008634892762																												
+264	antigen receptor-mediated signaling pathway (GO:0050851)	-2.0045989842949483	0.0036406868471742																												
+265	positive regulation of defense response (GO:0031349)	-2.0069186508175503	0.0035466608438897																												
+266	regulation of defense response (GO:0031347)	-2.006949301652617	0.0036376008655279																												
+267	regulation of innate immune response (GO:0045088)	-2.0090461361322896	0.0035385449151852																												
+268	regulation of mast cell degranulation (GO:0043304)	-2.017745924253103	0.0029673590139242																												
+269	regulation of interleukin-6 production (GO:0032675)	-2.02036953015152	0.0028784493805482																												
+270	regulation of sequestering of triglyceride (GO:0010889)	-2.024043500035768	0.0027139665588026																												
+271	positive regulation of tumor necrosis factor superfamily cytokine production (GO:1903557)	-2.024650966900653	0.0027937891046497																												
+272	regulation of immune response (GO:0050776)	-2.0262756143273304	0.0027663020020853																												
+273	positive regulation of interleukin-1 beta production (GO:0032731)	-2.030434499516667	0.002582894310224																												
+274	positive regulation of tumor necrosis factor production (GO:0032760)	-2.0329917215821487	0.0025866250193866																												
+275	nuclear-transcribed mRNA catabolic process (GO:0000956)	-2.0411650180844383	0.0022205180935657																												
+276	positive regulation of immune response (GO:0050778)	-2.0427408321310234	0.0022120103614065																												
+277	cotranslational protein targeting to membrane (GO:0006613)	-2.0536644070240686	0.0019385475420018																												
+278	regulation of cholesterol storage (GO:0010885)	-2.0543158317726986	0.0019646559264059																												
+279	nuclear-transcribed mRNA catabolic process, nonsense-mediated decay (GO:0000184)	-2.0551300735746745	0.002040219615883																												
+280	regulation of interferon-beta production (GO:0032648)	-2.058418923674349	0.002023138707471																												
+281	positive regulation of interleukin-1 production (GO:0032732)	-2.065233684099565	0.0019018326264336																												
+282	positive regulation of interleukin-6 production (GO:0032755)	-2.069571245014275	0.0017163424877803																												
+283	regulation of antigen receptor-mediated signaling pathway (GO:0050854)	-2.0703208157943327	0.0017943580554066																												
+284	SRP-dependent cotranslational protein targeting to membrane (GO:0006614)	-2.071064061395959	0.0018210598121835																												
+285	cytoplasmic translation (GO:0002181)	-2.0728015956509416	0.0017887506864835																												
+286	positive regulation of cytokine production (GO:0001819)	-2.083811353935224	0.0014284034520013																												
+287	protein targeting to ER (GO:0045047)	-2.0964396213570606	0.001233621163092																												
+288	regulation of tumor necrosis factor production (GO:0032680)	-2.099394237907057	0.0013061871138622																												
+289	regulation of B cell proliferation (GO:0030888)	-2.099489508664826	0.0013878238084786																												
+290	regulation of B cell receptor signaling pathway (GO:0050855)	-2.107747552645713	0.001233621163092																												
+291	positive regulation of phagocytosis (GO:0050766)	-2.1173888165645893	0.0011455053657283																												
+292	B cell activation (GO:0042113)	-2.118593908628316	0.0011387272274696																												
+293	vascular endothelial growth factor receptor signaling pathway (GO:0048010)	-2.154063577644985	0.000308405290773																												
+294	innate immune response (GO:0045087)	-2.175097559977503	0.0002242947569258																												
+295	neutrophil mediated immunity (GO:0002446)	-2.175259467904022	0.0002467242326184																												
+296	neutrophil degranulation (GO:0043312)	-2.175794341636643	0.0002741380362426																												
+297	Fc receptor mediated stimulatory signaling pathway (GO:0002431)	-2.1829558221397654	0.000308405290773																												
+298	neutrophil activation involved in immune response (GO:0002283)	-2.186711647485143	0.0001762315947274																												
+299	Fc-gamma receptor signaling pathway involved in phagocytosis (GO:0038096)	-2.1940799832812203	0.000205603527182																												
+300	toll-like receptor signaling pathway (GO:0002224)	-2.197643828959302	0.0002467242326184																												
+301	Fc-gamma receptor signaling pathway (GO:0038094)	-2.2094419233191456	0.000308405290773																												
+302	B cell receptor signaling pathway (GO:0050853)	-2.210769062236825	0.000411207054364																												
+303	regulation of cytokine-mediated signaling pathway (GO:0001959)	-2.276130450173208	0.0																												
+304	pattern recognition receptor signaling pathway (GO:0002221)	-2.291420081907852	0.0																												
