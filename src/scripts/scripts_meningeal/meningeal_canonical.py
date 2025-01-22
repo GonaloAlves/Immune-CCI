@@ -32,18 +32,28 @@ def remove_NA_cat(adata: sc.AnnData):
     return adata2
 
 # Load canonical genes
-def load_canonical(meningeal_txt, other_txt):
+def load_canonical_from_dir(directory):
+    """
+    Load gene lists from all .txt files in a directory.
 
-    genes_meningeal = open(meningeal_txt).read().split()
+    Parameters:
+    directory (str): Path to the directory containing .txt files.
 
-    genes_other = open(other_txt).read().split()
+    Returns:
+    dict: Dictionary of gene lists with filenames (without extensions) as keys.
+    """
+    print(f"Loading canonical gene lists from: {directory}")
+    gene_files = [f for f in os.listdir(directory) if f.endswith('.txt')]
 
-    top_genes_names = {'Immune': genes_meningeal,
-                       'Other': genes_other
-                    }
-    print(top_genes_names)
+    gene_dict = {}
+    for gene_file in gene_files:
+        file_path = os.path.join(directory, gene_file)
+        gene_name = os.path.splitext(gene_file)[0]  # Use the filename without the extension
+        with open(file_path, 'r') as f:
+            gene_dict[gene_name] = f.read().splitlines()
 
-    return top_genes_names
+    print(f"Loaded gene lists: {list(gene_dict.keys())}")
+    return gene_dict
 
 # Step 7: Visualize the DotPlots of the DGE's
 def create_dotplot(adata, top_genes_names, output_dir="canonical_meningeal"):
@@ -58,13 +68,16 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_meningeal"):
     Returns:
     None
     """
-    # # Create the directory if it doesn't exist
-    # if os.path.exists(output_dir):
-    #     shutil.rmtree(output_dir)
-    # os.makedirs(output_dir)
+    # Create the directory if it doesn't exist
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
 
     # Generate the dotplot
     print(f"\nGenerating a dotplot")
+
+    # Sort the gene groups (keys) alphabetically
+    top_genes_names = {key: top_genes_names[key] for key in sorted(top_genes_names.keys())}
 
     dotplot = sc.pl.dotplot(
         adata,
@@ -82,7 +95,7 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_meningeal"):
     )
 
 
-    output_path = os.path.join(output_dir, "dotplot_meningeal_canonical.png")
+    output_path = os.path.join(output_dir, "dotplot_meningeal_canonical_ordered_dani.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 
@@ -113,7 +126,9 @@ if __name__ == "__main__":
 
     filtered_adata = remove_NA_cat(adata)
 
-    genes = load_canonical("/home/makowlg/Documents/Immune-CCI/src/MeV_canonical_genes.txt")
+    # Load canonical gene lists from a directory
+    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical_txt/Meningeal"
+    genes = load_canonical_from_dir(canonical_genes_dir)
 
     # Create dendogram ot the top genes
     dendogram_sc(filtered_adata)

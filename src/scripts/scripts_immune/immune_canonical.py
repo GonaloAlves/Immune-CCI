@@ -76,7 +76,7 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
     top_genes_names = {key: top_genes_names[key] for key in sorted(top_genes_names.keys())}
 
     # Generate the dotplot
-    print(f"\nGenerating a dotplot ordered by gene group (alphabetical order)")
+    print(f"\nGenerating a dotplot")
     dotplot = sc.pl.dotplot(
         adata,
         var_names=top_genes_names,
@@ -93,7 +93,7 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
     )
 
     # Save the plot
-    output_path = os.path.join(output_dir, "dotplot_immune_canonical_ordered_dendro.png")
+    output_path = os.path.join(output_dir, "dotplot_immune_canonical_ordered_dani_dendro.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 
