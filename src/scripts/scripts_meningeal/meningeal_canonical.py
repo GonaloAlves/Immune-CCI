@@ -95,7 +95,7 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_meningeal"):
     )
 
 
-    output_path = os.path.join(output_dir, "dotplot_meningeal_canonical_ordered_dani.png")
+    output_path = os.path.join(output_dir, "dotplot_meningeal_canonical_ordered.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 
