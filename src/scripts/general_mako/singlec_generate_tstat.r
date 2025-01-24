@@ -36,7 +36,7 @@ if (!dir.exists(tstat_dir)) {
 
 # Dataset
 d = "Meningeal_Vascular"
-resolution = "leiden_mako"
+resolution = "leiden_fusion"
 
 print("Export moderated t-statistic values...")
 
@@ -51,7 +51,7 @@ print("H5AD file contents:")
 print(ann)
 
 ### Cluster analysis ###
-clusters = sprintf("leiden_mako")
+clusters = sprintf("leiden_fusion")
 printf("Analysing cluster %s...\n", clusters)
 printf("Clusters: %s \n", paste(levels(ann$obs[[clusters]]), collapse = " "))
 for (c in levels(ann$obs[[clusters]]))

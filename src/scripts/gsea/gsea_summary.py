@@ -14,7 +14,7 @@ gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_mako/Meningeal'
 h5ad_dir = '/home/makowlg/Documents/Immune-CCI/h5ad_files'
 
 dataset = 'Meningeal_Vascular'
-resolution = 'mako'
+resolution = 'fusion'
 
 gene_sets = {
     "H:hallmark": ["MSigDB_Hallmark_2020"],  # Hallmark pathways

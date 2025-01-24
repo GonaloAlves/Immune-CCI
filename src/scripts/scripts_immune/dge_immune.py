@@ -36,7 +36,7 @@ def dge_data(adata, groupby, uns_key):
     # Save the results in `uns` under the specified key
     adata.uns[uns_key] = adata.uns['rank_genes_groups']
 
-    if 'rank_genes_groups_leiden_mako' in adata.uns:
+    if 'rank_genes_groups_leiden_fusion' in adata.uns:
         print(f"Ranked genes stored in `uns` with key '{uns_key}'.")
     
     return adata
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     adata = load_data(file_path)
 
     # Perform DGE analysis
-    adata = dge_data(adata, 'leiden_mako', 'rank_genes_groups_leiden_mako')
+    adata = dge_data(adata, 'leiden_fusion', 'rank_genes_groups_leiden_fusion')
 
     # Save the updated AnnData object
     output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"

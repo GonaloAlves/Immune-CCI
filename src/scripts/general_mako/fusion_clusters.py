@@ -115,7 +115,7 @@ if __name__ == "__main__":
     (['MeV.1.4.12', 'MeV.NA'], 'MeV.NA')  
 ]
 
-    adata = merge_clusters(adata, 'leiden_fusion', merge_groups, 'leiden_mako')
+    adata = merge_clusters(adata, 'leiden_fusion_old2', merge_groups, 'leiden_fusion')
 
     print_cell_counts(adata, 'leiden_mako')
 

@@ -169,11 +169,11 @@ def start(n_proc=None) -> None:
         print("Calculate GSEA using R limma's moderate t-statistic...")
         
         dataset = 'Meningeal_Vascular'  # Set the dataset name
-        clusters = data.obs['leiden_mako'].cat.categories.to_list()  # Get the list of clusters
+        clusters = data.obs['leiden_fusion'].cat.categories.to_list()  # Get the list of clusters
         
         gsea_tstat(dataset=dataset,
                    selected_genes=converted,
-                   resolution='mako',  # Use 'mako' as resolution
+                   resolution='fusion',  # Use 'fusion' as resolution
                    clusters=clusters,  # List of clusters
                    gsea_dir=gsea_dir,
                    tstat_dir=tstat_dir,
