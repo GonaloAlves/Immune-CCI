@@ -111,12 +111,13 @@ if __name__ == "__main__":
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
     merge_groups = [
-    (['MeV.1.4.12', 'MeV.NA'], 'MeV.NA'),  
+    (['MeV.4.4', 'MeV.1.4.0'], 'MeV.4.4'),
+    (['MeV.1.4.12', 'MeV.NA'], 'MeV.NA')  
 ]
 
-adata = merge_clusters(adata, 'leiden_fusion', merge_groups, 'leiden_mako')
+    adata = merge_clusters(adata, 'leiden_fusion', merge_groups, 'leiden_mako')
 
-print_cell_counts(adata, 'leiden_mako')
+    print_cell_counts(adata, 'leiden_mako')
 
-output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
-save_adata(adata, output_file)
+    output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
+    save_adata(adata, output_file)
