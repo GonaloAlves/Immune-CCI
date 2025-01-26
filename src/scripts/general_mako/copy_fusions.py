@@ -43,9 +43,9 @@ def copy_leidens(adata, old_reso1, new_reso1, old_reso2, new_reso2, fusion):
     adata.obs[new_reso2] = adata.obs[old_reso2]  # Copy old_reso2 to new_reso2
     adata.obs[fusion] = adata.obs[old_reso2]     # Copy old_reso2 to fusion
     
-    # Remove the 'leiden_mako' column (or `old_reso2`) from adata.obs
-    adata.obs.drop(columns=[old_reso2], inplace=True)
-    print(f"Removed '{old_reso2}' from adata.obs.")
+    # # Remove the 'leiden_mako' column (or `old_reso2`) from adata.obs
+    # adata.obs.drop(columns=[old_reso2], inplace=True)
+    # print(f"Removed '{old_reso2}' from adata.obs.")
     
     # Extract unique clusters for each remaining resolution
     unique_clusters = {

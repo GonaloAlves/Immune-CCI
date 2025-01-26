@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
     adata = merge_clusters(adata, 'leiden_fusion_old2', merge_groups, 'leiden_fusion')
 
-    print_cell_counts(adata, 'leiden_mako')
+    print_cell_counts(adata, 'leiden_fusion')
 
     output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     save_adata(adata, output_file)

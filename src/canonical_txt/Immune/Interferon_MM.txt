@@ -1,6 +1,10 @@
 Ifi204
 Ifi209
 Oasl2
+Usp18
 Stat1
 Stat2
-Usp18
+Stat3
+Stat4
+Stat5
+Stat6

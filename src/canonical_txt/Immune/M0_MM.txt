@@ -2,5 +2,4 @@ Capn3
 Siglech
 Sall1
 Rab6b
-Usp18
 Cldn5

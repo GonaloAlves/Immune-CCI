@@ -27,7 +27,7 @@ def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
     
-    mask_NA = adata.obs['leiden_mako'] != 'Imm.NA' #creates mask for remove NA cells 
+    mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells 
     adata2 = adata[mask_NA] #apply mask
     return adata2
 
@@ -80,15 +80,15 @@ def create_dotplot(adata, top_genes_names, output_dir="canonical_immune"):
     dotplot = sc.pl.dotplot(
         adata,
         var_names=top_genes_names,
-        groupby='leiden_mako',
+        groupby='leiden_fusion',
         cmap='Greys',
         vmin=0,
         vmax=1,
-        colorbar_title='Mean expression',
+        colorbar_title='Scaled expression',
         use_raw=False,
         standard_scale='var',
         #dendrogram = False,
-        dendrogram='dendrogram_leiden_mako',
+        dendrogram='dendrogram_leiden_fusion',
         return_fig=True
     )
 
@@ -104,10 +104,10 @@ def dendogram_sc(adata):
     
     """
     # Compute the dendrogram
-    print(f"Computing dendrogram for leiden_mako...")
+    print(f"Computing dendrogram for leiden_fusion...")
     sc.tl.dendrogram(
         adata,
-        groupby='leiden_mako',
+        groupby='leiden_fusion',
         use_rep= 'X_pca',
         cor_method= 'spearman',
         linkage_method='ward',
