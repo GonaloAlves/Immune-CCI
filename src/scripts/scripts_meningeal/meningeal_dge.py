@@ -118,7 +118,7 @@ if __name__ == "__main__":
     # Perform new DGE analysis
     adata = dge_data(adata, 'leiden_fusion', 'rank_genes_groups_leiden_fusion')
 
-    #data = drop_mako(adata)
+    #adata = drop_mako(adata)
 
 
     print(adata)

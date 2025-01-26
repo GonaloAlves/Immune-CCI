@@ -5,6 +5,5 @@ Col1a2
 Col5a1
 Pdgfra
 Loxl1
-Fbln1
 Fbln2
 Cd34

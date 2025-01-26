@@ -41,6 +41,29 @@ def dge_data(adata, groupby, uns_key):
     
     return adata
 
+def drop_mako(adata, dge_key='rank_genes_groups_leiden_mako'):
+    """
+    Remove the 'leiden_mako' column and its corresponding DGE key from AnnData.
+
+    Parameters:
+    adata (AnnData): The AnnData object.
+    old_reso2 (str): The column name in `adata.obs` to remove (e.g., 'leiden_mako').
+    dge_key (str): The key in `adata.uns` to remove (default: 'rank_genes_groups_leiden_mako').
+
+    Returns:
+    AnnData: The updated AnnData object with the specified column and key removed.
+    """
+
+    # Remove the 'rank_genes_groups_leiden_mako' key from adata.uns
+    if dge_key in adata.uns:
+        del adata.uns[dge_key]
+        print(f"Removed '{dge_key}' from adata.uns.")
+    else:
+        print(f"'{dge_key}' not found in adata.uns. No action taken.")
+
+    return adata
+
+
 # Step 3: Save the AnnData object
 def save_adata(adata, file_path):
     """
@@ -69,6 +92,9 @@ if __name__ == "__main__":
 
     # Perform DGE analysis
     adata = dge_data(adata, 'leiden_fusion', 'rank_genes_groups_leiden_fusion')
+        
+    # adata = drop_mako(adata)
+    # print(adata)
 
     # Save the updated AnnData object
     output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"

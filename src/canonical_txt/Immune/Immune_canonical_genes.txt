@@ -1,12 +1,9 @@
-Ptprc
-Cx3cr1
 C1qa
 Ctss
 Ly86
 Csf1r
 Csf3r
 Myo1f
-Gpnmb
 Lgals3
 Itgax
 Ms4a4b
@@ -17,4 +14,3 @@ Cd247
 Cd19
 Ms4a1
 Nkg7
-Myd88
