@@ -24,7 +24,7 @@ output_dir = "/home/makowlg/Documents/Immune-CCI/src"
 
 # Define dirs
 checkpoint_dir = "/home/makowlg/Documents/Immune-CCI/h5ad_files/"
-tstat_dir = sprintf("%s/tstat_files/Immune", output_dir)
+tstat_dir = sprintf("%s/tstat_files/Meningeal", output_dir)
 
 # Create the directory for t-stat files if it doesn't exist
 if (!dir.exists(tstat_dir)) {
@@ -35,7 +35,7 @@ if (!dir.exists(tstat_dir)) {
 }
 
 # Dataset
-d = "Immune"
+d = "Meningeal_Vascular"
 resolution = "leiden_fusion"
 
 print("Export moderated t-statistic values...")

@@ -503,7 +503,7 @@ if __name__ == "__main__":
 
     print("Done")
 
-    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.3.xlsx")
+    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.4.xlsx")
 
     # Prints
     #print_gene_names(top_genes_names)
