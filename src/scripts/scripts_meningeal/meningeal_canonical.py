@@ -5,7 +5,7 @@ import scanpy as sc
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# This script will display the gene expression values of the canonical genes from Immune dataset
+# This script will display the gene expression values of the canonical genes from Meningeal dataset
 
 
 # Load the dataset
@@ -27,7 +27,7 @@ def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
     
-    mask_NA = adata.obs['leiden_fusion'] != 'MeV.NA' #creates mask for remove NA cells 
+    mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells 
     adata2 = adata[mask_NA] #apply mask
     return adata2
 
@@ -55,50 +55,140 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-# Step 7: Visualize the DotPlots of the DGE's
-def create_dotplot(adata, top_genes_names, output_dir="canonical_meningeal"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir="canonical_meningeal/updated_pts"):
     """
-    Create and save a dotplot of the top genes per cluster.
+    Create and save dotplots for different pts thresholds.
 
     Parameters:
     adata (AnnData): The AnnData object containing the data.
-    top_genes_names (dict): Dictionary of top gene names per cluster.
-    output_dir (str): Directory to save the dotplot.
+    genes (dict): Dictionary of canonical genes grouped by gene groups.
+    thresholds (list of float): List of pts thresholds to generate dotplots for.
+    output_dir (str): Directory to save the dotplots.
 
     Returns:
     None
     """
-    # Create the directory if it doesn't exist
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+
+    for threshold in thresholds:
+        print(f"\nProcessing pts threshold: {threshold}")
+
+        # Extract DGE data
+        gene_names, pts = extract_dge_data(adata)
+
+        # Create cluster DataFrames with the current threshold
+        cluster_dfs = create_cluster_dfs(gene_names, pts, pts_threshold=threshold)
+
+        # Compare canonical genes with cluster-specific genes
+        filtered_genes = compare_canonical(genes, cluster_dfs)
+
+        # Aggregate filtered genes by gene group
+        top_genes_names = top_gene_names(filtered_genes)
+
+        # Sort the gene groups alphabetically
+        top_genes_names = {key: top_genes_names[key] for key in sorted(top_genes_names.keys())}
+
+        # Generate the dotplot
+        print(f"Generating dotplot for pts threshold: {threshold}")
+        dotplot = sc.pl.dotplot(
+            adata,
+            var_names=top_genes_names,
+            groupby='leiden_fusion',
+            cmap='Greys',
+            vmin=0,
+            vmax=1,
+            colorbar_title='Scaled expression',
+            use_raw=False,
+            standard_scale='var',
+            dendrogram=False,
+            #dendrogram='dendrogram_leiden_fusion',
+            return_fig=True
+        )
+
+        # Save the dotplot with the threshold in the filename
+        output_path = os.path.join(output_dir, f"dotplot_meningeal_canonical_ordered_{threshold}.png")
+        dotplot.savefig(output_path, bbox_inches="tight")
+        plt.close()
+        print(f"Dotplot saved: {output_path}")
+
+
+def extract_dge_data(adata):
+    """
+    Extract the different type of data from the AnnData object like the differential gene expression values from each cell.
+
+    Parameters:
+    adata (AnnData): The AnnData object containing the DGE data.
+
+    Returns:
+    tuple: DataFrames for gene names and pts.
+    """
+    dge_fusion = adata.uns['rank_genes_groups_leiden_fusion']
     
-
-    # Generate the dotplot
-    print(f"\nGenerating a dotplot")
-
-    # Sort the gene groups (keys) alphabetically
-    top_genes_names = {key: top_genes_names[key] for key in sorted(top_genes_names.keys())}
-
-    dotplot = sc.pl.dotplot(
-        adata,
-        var_names=top_genes_names,
-        groupby='leiden_fusion',
-        cmap='Greys',
-        vmin=0,
-        vmax=1,
-        colorbar_title='Scaled expression',
-        use_raw=False,
-        standard_scale='var',
-        dendrogram=False,
-        #dendrogram='dendrogram_leiden_fusion',
-        return_fig=True
-    )
+    # Convert the extracted data into DataFrames
+    gene_names = pd.DataFrame(dge_fusion['names'])
+    pts = pd.DataFrame(dge_fusion['pts'])
+    
+    return gene_names, pts
 
 
-    output_path = os.path.join(output_dir, "dotplot_meningeal_canonical_ordered.png")
-    dotplot.savefig(output_path, bbox_inches="tight")
-    plt.close()  # Close the current figure to avoid overlap
+# Step 3: Create cluster dataframes with filtered data
+def create_cluster_dfs(gene_names, pts, pts_threshold=0):
+    """
+    Create a dictionary of dataframes per cluster, with the respective gene expression data.
+    By default this function will not order the genes by fold change and the default minimun pts is 0
 
+    Parameters:
+    gene_names (DataFrame): DataFrame with gene names.
+    pts (DataFrame): DataFrame with p values for each gene from each cell.
+    pts_threshold (float): The minimum percentage of expression value to filter genes.
+
+    Pts: Proportion of cells in each group that express a particular gene
+
+    Returns:
+    dict: Dictionary of DataFrames for each cluster.
+    """
+    cluster_dfs = {} # creates dictionary
+
+    for i in range(len(gene_names.columns)):  # For to read each cluster
+        gene_reindex = gene_names.iloc[:, i]  # Takes correct order of the genes index of the gene names
+        pts_reindexed = pts.iloc[:, i].reindex(gene_reindex.values)  # Reindex the pts with the gene names index
+
+        # Create dataframe for each cluster
+        cluster_df = pd.DataFrame({
+            'pts': pts_reindexed.values},
+            index=gene_reindex.values
+        )
+
+        # Mask to remove mitochondrial genes (those starting with "mt-")
+        mask_mt = ~gene_reindex.str.startswith("mt-")  # Create mask where gene names don't start with "mt-"
+        filtered_gene_reindex = gene_reindex[mask_mt]  # Filter out mitochondrial genes in the gene names
+        cluster_df = cluster_df.loc[filtered_gene_reindex]  # Apply mask to the DataFrame
+        
+        # Filter by 'pts' using the user-specified threshold
+        mask_pts = (cluster_df['pts'] >= pts_threshold)
+        filtered_df = cluster_df[mask_pts]
+
+
+        # Assigns the cluster name as the name of the resolution atributed
+        cluster_names = gene_names.columns[i]
+        cluster_dfs[cluster_names] = filtered_df  # Store the respective clusters in the dictionary
+
+    return cluster_dfs
+
+
+# Step 6: Compare canonical genes
+def compare_canonical(genes, cluster_dfs):
+    new_dic = {}
+    for group_name, canonical_genes in genes.items():
+        print(f"Processing canonical gene group: {group_name}")
+        group_results = {}
+        for cluster_name, cluster_df in cluster_dfs.items():
+            filtered_cluster = cluster_df[cluster_df.index.isin(canonical_genes)]
+            if not filtered_cluster.empty:
+                group_results[cluster_name] = filtered_cluster
+        new_dic[group_name] = group_results
+    return new_dic
 
 
 def dendogram_sc(adata):
@@ -118,6 +208,27 @@ def dendogram_sc(adata):
     )
 
 
+def top_gene_names(filtered_genes):
+    """
+    Aggregate the remaining filtered genes for each gene group.
+
+    Parameters:
+    filtered_genes (dict): Dictionary containing filtered genes per group and cluster.
+
+    Returns:
+    dict: Dictionary where the keys are gene group names (e.g., txt file titles),
+          and the values are lists of remaining genes after filtering.
+    """
+    top_genes_names = {}
+    
+    for group_name, clusters in filtered_genes.items():
+        # Combine gene names across all clusters for this group
+        combined_genes = set()  # Use a set to avoid duplicates
+        for cluster_name, df in clusters.items():
+            combined_genes.update(df.index.tolist())
+        top_genes_names[group_name] = list(combined_genes)  # Convert back to a list
+    
+    return top_genes_names
 
 # Main execution block
 if __name__ == "__main__":
@@ -133,5 +244,10 @@ if __name__ == "__main__":
     # Create dendogram ot the top genes
     dendogram_sc(filtered_adata)
 
-    # Create dotplot of the top genes
-    create_dotplot(filtered_adata, genes)
+    # Define thresholds
+    pts_thresholds = [0.2, 0.3, 0.4]
+
+    # Generate dotplots for each threshold
+    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds)
+
+    

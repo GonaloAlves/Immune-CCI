@@ -4,4 +4,4 @@
 #conda init
 conda activate mkpy
 
-python /home/makowlg/Documents/Immune-CCI/src/scripts/gsea/gsea_summary.py
+python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_immune/new_immune.py

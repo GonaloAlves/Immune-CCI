@@ -1,5 +1,13 @@
-Capn3
+Tmem119
+P2ry12
+P2ry13
+Cx3cr1
+Iba1
+Csf1r
+Ptprc
 Siglech
+Hexb
+Spi1
+Irf8
 Sall1
-Rab6b
-Cldn5
+Itgam

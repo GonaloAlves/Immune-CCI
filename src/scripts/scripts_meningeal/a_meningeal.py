@@ -275,7 +275,7 @@ def top_gene_names(top_genes_cluster):
 
 
 # Step 7: Visualize the DotPlots of the DGE's
-def create_dotplot(adata, top_genes_names, output_dir="dotplots_meningeal"):
+def create_dotplot(adata, top_genes_names, output_dir="dotplots/meningeal/leiden_fusion"):
     """
     Create and save a dotplot of the top genes per cluster.
 
@@ -306,16 +306,16 @@ def create_dotplot(adata, top_genes_names, output_dir="dotplots_meningeal"):
         values_to_plot='logfoldchanges',
         colorbar_title='log fold change',
         use_raw=False,
-        #dendrogram='dendrogram_leiden_fusion',
-        dendrogram=False,
+        dendrogram='dendrogram_leiden_fusion',
+        #dendrogram=False,
         return_fig=True
     )
 
-    output_path = os.path.join(output_dir, "dotplot_0.4.png")
+    output_path = os.path.join(output_dir, "dotplot_0.3_dendro.png")
     dotplot.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
 
-    
+
 
 # Print of gene names and clusters
 def print_gene_names(top_genes_names):
@@ -476,7 +476,7 @@ if __name__ == "__main__":
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
     
     # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.4)
+    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)
     
     # Remove NA clusters
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
