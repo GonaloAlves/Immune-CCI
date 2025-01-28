@@ -64,11 +64,14 @@ if __name__ == "__main__":
     ]
     
     rename_pairs = [
-        ('Imm.0.8.6', 'Imm.Interferon'),
-        ('Imm.0.8.0', 'Imm.M0_like1'),
-        ('Imm.0.8.1', 'Imm.M0_like2'),
-        ('Imm.0.8.2', 'Imm.M0_like3'),
-        ('Imm.1.2.15', 'Imm.Proliferation')
+        ('Imm.Interferon', 'Imm.Interferon.0'),
+        ('Imm.M0_like1', 'Imm.M0_like.0'),
+        ('Imm.M0_like2', 'Imm.M0_like.1'),
+        ('Imm.M0_like3', 'Imm.M0_like.2'),
+        ('Imm.Proliferation','Imm.Proliferative.0'),
+        ('Imm.1.2.4', 'Imm.PVM.0'),
+        ('Imm.1.2.12', 'Imm.DAM.0'),
+        ('Imm.1.2.5', 'Imm.DAM.1')
     ]
 
     # Rename the clusters

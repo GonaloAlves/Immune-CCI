@@ -395,17 +395,6 @@ def dendogram_sc(adata, output_dir="dendogram_meningeal"):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # Compute the dendrogram
-    print(f"Computing dendrogram for leiden_fusion...")
-    sc.tl.dendrogram(
-        adata,
-        groupby='leiden_fusion',
-        use_rep= 'X_pca',
-        cor_method= 'spearman',
-        linkage_method='ward',
-        use_raw=False
-    )
-
     # Plot the dendrogram
     print(f"Plotting dendrogram for leiden_fusion...")
     sc.pl.dendrogram(
@@ -465,12 +454,12 @@ if __name__ == "__main__":
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
     #print(adata)
-    
-    #Create cluster resolutions UMAP
-    umap_reso_cluster(adata, 'leiden_fusion')
 
     # Do a inicial filter in the a data
     filtered_adata = remove_NA_cat(adata)
+    
+    #Create cluster resolutions UMAP
+    umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
     # Extract DGE data
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
@@ -503,7 +492,7 @@ if __name__ == "__main__":
 
     print("Done")
 
-    export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.4.xlsx")
+    #export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.4.xlsx")
 
     # Prints
     #print_gene_names(top_genes_names)

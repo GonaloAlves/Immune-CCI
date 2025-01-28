@@ -27,7 +27,7 @@ def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
     
-    mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells 
+    mask_NA = adata.obs['leiden_fusion'] != 'MeV.NA' #creates mask for remove NA cells 
     adata2 = adata[mask_NA] #apply mask
     return adata2
 
@@ -191,22 +191,6 @@ def compare_canonical(genes, cluster_dfs):
     return new_dic
 
 
-def dendogram_sc(adata):
-    
-    """
-    
-    """
-    # Compute the dendrogram
-    print(f"Computing dendrogram for leiden_fusion...")
-    sc.tl.dendrogram(
-        adata,
-        groupby='leiden_fusion',
-        use_rep= 'X_pca',
-        cor_method= 'spearman',
-        linkage_method='ward',
-        use_raw=False
-    )
-
 
 def top_gene_names(filtered_genes):
     """
@@ -241,8 +225,6 @@ if __name__ == "__main__":
     canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical_txt/Meningeal"
     genes = load_canonical_from_dir(canonical_genes_dir)
 
-    # Create dendogram ot the top genes
-    dendogram_sc(filtered_adata)
 
     # Define thresholds
     pts_thresholds = [0.2, 0.3, 0.4]

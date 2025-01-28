@@ -55,7 +55,7 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir="canonical_immune/updated_pts"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir="canonical_immune/updated_pts2"):
     """
     Create and save dotplots for different pts thresholds.
 
@@ -101,13 +101,13 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir="canoni
             colorbar_title='Scaled expression',
             use_raw=False,
             standard_scale='var',
-            #dendrogram=False,
-            dendrogram='dendrogram_leiden_fusion',
+            dendrogram=False,
+            #dendrogram='dendrogram_leiden_fusion',
             return_fig=True
         )
 
         # Save the dotplot with the threshold in the filename
-        output_path = os.path.join(output_dir, f"dotplot_immune_canonical_ordered_dendro_{threshold}.png")
+        output_path = os.path.join(output_dir, f"dotplot_immune_canonical_ordered{threshold}.png")
         dotplot.savefig(output_path, bbox_inches="tight")
         plt.close()
         print(f"Dotplot saved: {output_path}")
@@ -133,7 +133,7 @@ def extract_dge_data(adata):
 
 
 # Step 3: Create cluster dataframes with filtered data
-def create_cluster_dfs(gene_names, pts, pts_threshold=0):
+def create_cluster_dfs(gene_names, pts, pts_threshold):
     """
     Create a dictionary of dataframes per cluster, with the respective gene expression data.
     By default this function will not order the genes by fold change and the default minimun pts is 0
@@ -173,6 +173,10 @@ def create_cluster_dfs(gene_names, pts, pts_threshold=0):
         # Assigns the cluster name as the name of the resolution atributed
         cluster_names = gene_names.columns[i]
         cluster_dfs[cluster_names] = filtered_df  # Store the respective clusters in the dictionary
+
+        print("==========================")
+        print(cluster_dfs)
+        print("==========================. in this script i noticed that some genes that are being ploted on the dotplot, go through the pts treshold and some how have less expression that the treshold minimal. I want to visualize some genes that i know that are wrongly placed like for example, Stat6 and Il1a . ")
 
     return cluster_dfs
 

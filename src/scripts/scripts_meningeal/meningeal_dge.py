@@ -104,24 +104,70 @@ def save_adata(adata, file_path):
     
     print(f"File saved in '{file_path}'. Time elapsed: {time.time() - t0:.1f} seconds.")
 
+    
+def dendogram_sc(adata):
+    """
+    Compute and save the dendrogram for a specific group and store it in a specified key.
+
+    Parameters:
+    adata (AnnData): The AnnData object containing the data.
+    dendrogram_key (str): The key to save the dendrogram in `adata.uns`.
+
+    Returns:
+    None
+    """
+
+    # Compute the dendrogram
+    print(f"Computing dendrogram for leiden_fusion...")
+    sc.tl.dendrogram(
+        adata,
+        groupby='leiden_fusion',
+        use_rep='X_pca',
+        cor_method='spearman',
+        linkage_method='ward',
+        use_raw=False
+    )
+
+def remove_NA_cat(adata: sc.AnnData):
+    
+    print("Removing NA cells category")
+    mask_NA = adata.obs['leiden_fusion'] != 'MeV.NA' #creates mask for remove NA cells
+    #print(mask_NA)    
+    adata2 = adata[mask_NA] #apply mask
+
+    # print(adata2.obs['leiden_fusion'].cat.categories.to_list())
+    # adata2.obs['leiden_fusion'] = adata2.obs['leiden_fusion'].cat.remove_unused_categories()
+    # print(adata2.obs['leiden_fusion'].cat.categories.to_list())
+    # print(adata.obs['leiden_fusion'])
+
+    return adata2
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
     file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     adata = load_data(file_path)
 
-    # Backup the existing DGE data
-    adata = backup_dge_data(adata, 
-                             old_key='rank_genes_groups_leiden_fusion', 
-                             backup_key='rank_genes_groups_leiden_fusion_old1')
+    # # Backup the existing DGE data
+    # adata = backup_dge_data(adata, 
+    #                          old_key='rank_genes_groups_leiden_fusion', 
+    #                          backup_key='rank_genes_groups_leiden_fusion_old1')
 
     # Perform new DGE analysis
     adata = dge_data(adata, 'leiden_fusion', 'rank_genes_groups_leiden_fusion')
 
+
+    filtered_adata = remove_NA_cat(adata)
+
+    # Preform Dendrogram
+    dendogram_sc(filtered_adata)
+
+
     #adata = drop_mako(adata)
 
 
-    print(adata)
+    print(filtered_adata)
     # Save the updated AnnData object
     output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
-    save_adata(adata, output_file)
+    save_adata(filtered_adata, output_file)

@@ -411,7 +411,7 @@ def export_to_excel(top_genes_cluster, output_file="Immune_clusters.xlsx"):
 
     # print(f"Data successfully exported to {output_file}")
 
-def dendogram_sc(adata, output_dir="dendogram_immune"):
+def plot_dendogram(adata, output_dir="dendogram_immune"):
     """
     
     """
@@ -419,17 +419,6 @@ def dendogram_sc(adata, output_dir="dendogram_immune"):
     # Create the directory if it doesn't exist
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-
-    # Compute the dendrogram
-    print(f"Computing dendrogram for leiden_fusion...")
-    sc.tl.dendrogram(
-        adata,
-        groupby='leiden_fusion',
-        use_rep= 'X_pca',
-        cor_method= 'spearman',
-        linkage_method='ward',
-        use_raw=False
-    )
 
     # Plot the dendrogram
     print(f"Plotting dendrogram for leiden_fusion...")
@@ -490,13 +479,14 @@ if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
 
-    print(adata)
+    print(adata.obs['leiden_fusion'])
+
+    filtered_adata = remove_NA_cat(adata)
+
+    print(filtered_adata.obs['leiden_fusion'])
     
     #Create cluster resolutions UMAP
-    umap_reso_cluster(adata, 'leiden_fusion')
-
-    # Do a inicial filter in the a data
-    filtered_adata = remove_NA_cat(adata)
+    umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
     # Extract DGE data
     gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
@@ -508,7 +498,7 @@ if __name__ == "__main__":
     cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
 
     # Create dendogram ot the top genes
-    dendogram_sc(filtered_adata)
+    plot_dendogram(filtered_adata)
     
     # Select the top genes for each cluster
     top_genes_cluster = select_top_genes(cluster_dfs)
