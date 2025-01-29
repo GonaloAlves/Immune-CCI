@@ -1,0 +1,17 @@
+Tmem119
+P2ry12
+P2ry13
+Cx3cr1
+Iba1
+Csf1r
+Hexb
+Ctss
+Csf3r
+Ly86
+Mertk
+Ptprc
+Siglech
+Sall1
+Itgam
+Spi1
+Irf8

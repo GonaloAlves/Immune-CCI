@@ -10,10 +10,10 @@ import scanpy as sc
 import matplotlib
 matplotlib.use('cairo')
 
-gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_dir/Meningeal'  
+gsea_dir = '/home/makowlg/Documents/Immune-CCI/src/gsea_dir/Immune'  
 h5ad_dir = '/home/makowlg/Documents/Immune-CCI/h5ad_files'
 
-dataset = 'Meningeal_Vascular'
+dataset = 'Immune'
 resolution = 'fusion'
 
 gene_sets = {
