@@ -17,5 +17,3 @@ Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/singlec_gene
 python /home/makowlg/Documents/Immune-CCI/src/scripts/gsea/new_gsea.py
 
 python /home/makowlg/Documents/Immune-CCI/src/scripts/gsea/gsea_summary.py
-
-

@@ -31,6 +31,28 @@ def remove_NA_cat(adata: sc.AnnData):
     adata2 = adata[mask_NA] #apply mask
     return adata2
 
+
+# Step 4: Remove any cluster
+def remove_clusters_by_suffix(cluster_dfs, suffix):
+    """
+    Remove clusters whose names end with a specific suffix corresponding to the resolution number, or if the case is the NA cluster, all are integrated in the dictionary with every cluster.
+
+    Parameters:
+    cluster_dfs (dict): Dictionary of clusters and their data.
+    suffix (str): The suffix that determines which clusters to remove (e.g., 'NA', '8.0.2').
+
+    Returns:
+    dict: Updated dictionary with specified clusters removed.
+    """
+    print(f"\nRemoving {suffix} clusters")
+    clusters_to_delete = [cluster for cluster in cluster_dfs if cluster.endswith(suffix)]
+
+    for cluster in clusters_to_delete: # Searches the specific cluster in the dic
+        del cluster_dfs[cluster]
+
+    return cluster_dfs
+
+
 # Load canonical genes
 def load_canonical_from_dir(directory):
     """
@@ -55,9 +77,9 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir="canonical_meningeal/updated_pts"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir="canonical/canonical_meningeal/updated_pts2"):
     """
-    Create and save dotplots for different pts thresholds.
+    Create and save dotplots for different pts thresholds, with and without dendrograms.
 
     Parameters:
     adata (AnnData): The AnnData object containing the data.
@@ -80,37 +102,86 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir="canoni
         # Create cluster DataFrames with the current threshold
         cluster_dfs = create_cluster_dfs(gene_names, pts, pts_threshold=threshold)
 
+        # Remove NA clusters
+        cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
+
         # Compare canonical genes with cluster-specific genes
         filtered_genes = compare_canonical(genes, cluster_dfs)
 
         # Aggregate filtered genes by gene group
-        top_genes_names = top_gene_names(filtered_genes)
+        top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Sort the gene groups alphabetically
         top_genes_names = {key: top_genes_names[key] for key in sorted(top_genes_names.keys())}
 
-        # Generate the dotplot
-        print(f"Generating dotplot for pts threshold: {threshold}")
-        dotplot = sc.pl.dotplot(
+        # Generate four different dotplots per threshold
+        print(f"Generating dotplots for pts threshold: {threshold}")
+
+        # (1) Scaled expression (Greys) without dendrogram
+        dotplot_scaled_no_dendro = sc.pl.dotplot(
             adata,
             var_names=top_genes_names,
             groupby='leiden_fusion',
             cmap='Greys',
-            vmin=0,
-            vmax=1,
             colorbar_title='Scaled expression',
             use_raw=False,
             standard_scale='var',
             dendrogram=False,
-            #dendrogram='dendrogram_leiden_fusion',
             return_fig=True
         )
 
-        # Save the dotplot with the threshold in the filename
-        output_path = os.path.join(output_dir, f"dotplot_meningeal_canonical_ordered_{threshold}.png")
-        dotplot.savefig(output_path, bbox_inches="tight")
+        # (2) Scaled expression (Greys) with dendrogram
+        dotplot_scaled_dendro = sc.pl.dotplot(
+            adata,
+            var_names=top_genes_names,
+            groupby='leiden_fusion',
+            cmap='Greys',
+            colorbar_title='Scaled expression',
+            use_raw=False,
+            standard_scale='var',
+            dendrogram='dendrogram_leiden_fusion',
+            return_fig=True
+        )
+
+        # (3) Raw expression (Reds) without dendrogram
+        dotplot_normal_no_dendro = sc.pl.dotplot(
+            adata,
+            var_names=top_genes_names,
+            groupby='leiden_fusion',
+            cmap='Reds',
+            use_raw=False,
+            dendrogram=False,
+            return_fig=True
+        )
+
+        # (4) Raw expression (Reds) with dendrogram
+        dotplot_normal_dendro = sc.pl.dotplot(
+            adata,
+            var_names=top_genes_names,
+            groupby='leiden_fusion',
+            cmap='Reds',
+            use_raw=False,
+            dendrogram='dendrogram_leiden_fusion',
+            return_fig=True
+        )
+
+        # Save dotplots with appropriate filenames
+        output_scaled_no_dendro = os.path.join(output_dir, f"dotplot_scaled_no_dendro_{threshold}.png")
+        output_scaled_dendro = os.path.join(output_dir, f"dotplot_scaled_dendro_{threshold}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"dotplot_normal_no_dendro_{threshold}.png")
+        output_normal_dendro = os.path.join(output_dir, f"dotplot_normal_dendro_{threshold}.png")
+
+        dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
+        dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
+        dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
+        dotplot_normal_dendro.savefig(output_normal_dendro, bbox_inches="tight")
+
         plt.close()
-        print(f"Dotplot saved: {output_path}")
+        print(f"Saved dotplots for threshold {threshold}:")
+        print(f"  - {output_scaled_no_dendro}")
+        print(f"  - {output_scaled_dendro}")
+        print(f"  - {output_normal_no_dendro}")
+        print(f"  - {output_normal_dendro}")
 
 
 def extract_dge_data(adata):
@@ -192,26 +263,30 @@ def compare_canonical(genes, cluster_dfs):
 
 
 
-def top_gene_names(filtered_genes):
+def top_gene_names(filtered_genes, original_gene_dict):
     """
-    Aggregate the remaining filtered genes for each gene group.
+    Aggregate the remaining filtered genes for each gene group while maintaining the original order.
 
     Parameters:
     filtered_genes (dict): Dictionary containing filtered genes per group and cluster.
+    original_gene_dict (dict): Dictionary of gene groups as they appear in the original .txt files.
 
     Returns:
-    dict: Dictionary where the keys are gene group names (e.g., txt file titles),
-          and the values are lists of remaining genes after filtering.
+    dict: Dictionary where the keys are gene group names (txt file titles),
+          and the values are lists of remaining genes, maintaining their original order.
     """
     top_genes_names = {}
-    
+
     for group_name, clusters in filtered_genes.items():
-        # Combine gene names across all clusters for this group
-        combined_genes = set()  # Use a set to avoid duplicates
+        # Combine gene names across all clusters for this group while maintaining order
+        combined_genes = set()
         for cluster_name, df in clusters.items():
-            combined_genes.update(df.index.tolist())
-        top_genes_names[group_name] = list(combined_genes)  # Convert back to a list
-    
+            combined_genes.update(df.index.tolist())  # Store unique genes from all clusters
+        
+        # Preserve original order of genes from the text file
+        ordered_genes = [gene for gene in original_gene_dict[group_name] if gene in combined_genes]
+        top_genes_names[group_name] = ordered_genes  # Maintain original order
+
     return top_genes_names
 
 # Main execution block
@@ -222,12 +297,12 @@ if __name__ == "__main__":
     filtered_adata = remove_NA_cat(adata)
 
     # Load canonical gene lists from a directory
-    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical_txt/Meningeal"
+    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal"
     genes = load_canonical_from_dir(canonical_genes_dir)
 
 
     # Define thresholds
-    pts_thresholds = [0.2, 0.3, 0.4]
+    pts_thresholds = [0.2, 0.3]
 
     # Generate dotplots for each threshold
     create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds)

@@ -51,7 +51,7 @@ def rename_clusters(adata, rename_pairs, resolution="leiden_fusion"):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
+    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     adata = load_data(file_path)
 
     # List of clusters to rename
@@ -67,7 +67,12 @@ if __name__ == "__main__":
     ]
     
     rename_pairs = [
-        ('Imm.1.2.13', 'Imm.MHCII.0')
+        ('MeV.1.4.1', 'MeV.Vascular.0'),
+        ('MeV.4.21', 'MeV.Vascular.1'),
+        ('MeV.1.4.5', 'MeV.Vascular.2'),
+        ('MeV.4.31', 'MeV.SMC.0'),
+        ('MeV.4.1', 'MeV.Pericytes.0'),
+        ('MeV.3.30', 'MeV.Proliferative_Fibr.0')
     ]
 
     # Rename the clusters
@@ -76,7 +81,7 @@ if __name__ == "__main__":
     print(adata.obs['leiden_fusion'])
 
     # Save the modified AnnData object
-    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
+    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     print(f"Saving modified AnnData to '{output_path}'...")
     adata.write_h5ad(output_path, compression="gzip")
     print("Save complete.")

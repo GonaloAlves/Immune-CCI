@@ -274,46 +274,104 @@ def top_gene_names(top_genes_cluster):
     return top_genes_names
 
 
-# Step 7: Visualize the DotPlots of the DGE's
-def create_dotplot(adata, top_genes_names, output_dir="dotplots/meningeal/leiden_fusion"):
+def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/meningeal/leiden_fusion"):
     """
-    Create and save a dotplot of the top genes per cluster.
+    Create and save dotplots for different pts thresholds, with and without dendrograms.
 
     Parameters:
     adata (AnnData): The AnnData object containing the data.
-    top_genes_names (dict): Dictionary of top gene names per cluster.
-    output_dir (str): Directory to save the dotplot.
-    filtered_adata = remove_NA_cat(adata)
+    thresholds (list of float): List of pts thresholds to generate dotplots for.
+    output_dir (str): Directory to save the dotplots.
 
     Returns:
     None
     """
-    # Create the directory if it doesn't exist
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+    for threshold in thresholds:
+        print(f"\n🔹 Processing dotplots for pts threshold: {threshold}")
+
+        # Extract DGE data dynamically for each threshold
+        print("   - Extracting differential gene expression data...")
+        gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(adata)
+
+        # Create cluster DataFrames with current threshold
+        print(f"   - Applying pts threshold: {threshold}")
+        cluster_dfs = create_cluster_dfs(
+            gene_names, logfoldchanges, pvals_adj, scores, pts, 
+            sort_by_logfc=True, pts_threshold=threshold
+        )
+
+        # Remove NA clusters
+        cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
+
+        # Create dendrogram (if not already present)
+        print("   - Checking and creating dendrogram if necessary...")
+        plot_dendrogram(adata)
+
+        # Select the top genes for each cluster
+        print("   - Selecting top genes for each cluster...")
+        top_genes_cluster = select_top_genes(cluster_dfs)
+
+        # Add an asterisk to clusters with non-significant genes
+        top_genes_cluster = addasterix(top_genes_cluster)
+
+        # Collect top gene names for visualization
+        top_genes_names = top_gene_names(top_genes_cluster)
+
+        # Reorder clusters (ON and OFF for dendrogram)
+        print("   - Reordering clusters based on dendrogram...")
+        ordered_genes_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=True)
+        ordered_genes_no_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=False)
+
+        print("   - Generating dotplots...")
+
+        # (1) With Dendrogram
+        dotplot_dendro = sc.pl.rank_genes_groups_dotplot(
+            adata,
+            var_names=ordered_genes_dendro,
+            groupby='leiden_fusion',
+            key='rank_genes_groups_leiden_fusion',
+            cmap='bwr',
+            vmin=-4,
+            vmax=4,
+            values_to_plot='logfoldchanges',
+            colorbar_title='log fold change',
+            use_raw=False,
+            dendrogram='dendrogram_leiden_fusion',
+            return_fig=True
+        )
+
+        # (2) Without Dendrogram
+        dotplot_no_dendro = sc.pl.rank_genes_groups_dotplot(
+            adata,
+            var_names=ordered_genes_no_dendro,
+            groupby='leiden_fusion',
+            key='rank_genes_groups_leiden_fusion',
+            cmap='bwr',
+            vmin=-4,
+            vmax=4,
+            values_to_plot='logfoldchanges',
+            colorbar_title='log fold change',
+            use_raw=False,
+            dendrogram=False,
+            return_fig=True
+        )
+
+        # Save plots
+        output_dendro = os.path.join(output_dir, f"dotplot_dendro_{threshold}.png")
+        output_no_dendro = os.path.join(output_dir, f"dotplot_no_dendro_{threshold}.png")
+
+        dotplot_dendro.savefig(output_dendro, bbox_inches="tight")
+        dotplot_no_dendro.savefig(output_no_dendro, bbox_inches="tight")
+
+        plt.close()
+        print(f" Saved: {output_dendro}")
+        print(f" Saved: {output_no_dendro}")
 
 
-    # Generate the dotplot
-    dotplot = sc.pl.rank_genes_groups_dotplot(
-        adata,
-        var_names=top_genes_names,
-        groupby='leiden_fusion',
-        key='rank_genes_groups_leiden_fusion',
-        cmap='bwr',
-        vmin=-4,
-        vmax=4,
-        values_to_plot='logfoldchanges',
-        colorbar_title='log fold change',
-        use_raw=False,
-        dendrogram='dendrogram_leiden_fusion',
-        #dendrogram=False,
-        return_fig=True
-    )
-
-    output_path = os.path.join(output_dir, "dotplot_0.3_dendro.png")
-    dotplot.savefig(output_path, bbox_inches="tight")
-    plt.close()  # Close the current figure to avoid overlap
+        export_to_excel(top_genes_cluster, threshold)
 
 
 
@@ -366,17 +424,27 @@ def addasterix(top_genes_cluster):
 
 
 # export to excel
-def export_to_excel(top_genes_cluster, output_file="Meningeal_clusters.xlsx"):
+def export_to_excel(top_genes_cluster, threshold, output_dir="excels/immune/updates"):
     """
-    Export the top_genes_cluster dictionary to an Excel file.
+    Export the top_genes_cluster dictionary to an Excel file, using the threshold in the filename.
 
     Parameters:
     top_genes_cluster (dict): Dictionary containing DataFrames of top genes for each cluster.
-    output_file (str): Path to the output Excel file.
+    threshold (float): The threshold value used for filtering.
+    output_dir (str): Directory where the Excel file will be saved.
 
     Returns:
     None
     """
+    # Ensure output directory exists
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Define file path dynamically using the threshold
+    output_file = os.path.join(output_dir, f"top_genes_cluster_{threshold}.xlsx")
+
+    print(f"\n Exporting top genes to Excel: {output_file}")
+
     # Create an Excel writer object
     with pd.ExcelWriter(output_file) as writer: 
         # Loop through each cluster and its corresponding DataFrame
@@ -384,9 +452,9 @@ def export_to_excel(top_genes_cluster, output_file="Meningeal_clusters.xlsx"):
             # Write each DataFrame to a different sheet, named after the cluster
             df.to_excel(writer, sheet_name=cluster)
 
-    # print(f"Data successfully exported to {output_file}")
+    print(f"Excel file saved: {output_file}")
 
-def dendogram_sc(adata, output_dir="dendogram_meningeal"):
+def plot_dendrogram(adata, output_dir="excels/meningeal/updates"):
     """
     
     """
@@ -455,44 +523,17 @@ if __name__ == "__main__":
 
     #print(adata)
 
-    # Do a inicial filter in the a data
     filtered_adata = remove_NA_cat(adata)
-    
+
     #Create cluster resolutions UMAP
     umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
-    # Extract DGE data
-    gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(filtered_adata)
-    
-    # Create cluster DataFrames
-    cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, scores, pts, sort_by_logfc=True, pts_threshold=0.3)
-    
-    # Remove NA clusters
-    cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
-
-    # Create dendogram ot the top genes
-    dendogram_sc(filtered_adata)
-    
-    # Select the top genes for each cluster
-    top_genes_cluster = select_top_genes(cluster_dfs)
-
-    # Add the asterisk to cluster names with non-significant genes
-    top_genes_cluster = addasterix(top_genes_cluster)
-    
-    # Collect top gene names for visualization
-    top_genes_names = top_gene_names(top_genes_cluster)
-
-    # Reorder the clusters to dendrogram order
-
-    top_genes_names = reorder_clusters_to_dendrogram(filtered_adata, top_genes_names, dendrogram= False)
-
+    pts_thresholds = [0.3, 0.4, 0.5]
 
     # Create dotplot of the top genes
-    create_dotplot(filtered_adata, top_genes_names)
+    create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
 
-    print("Done")
-
-    #export_to_excel(top_genes_cluster, output_file="top_genes_cluster_0.4.xlsx")
+    print("\n********\n* DONE *\n********")  # Indicate completion
 
     # Prints
     #print_gene_names(top_genes_names)
