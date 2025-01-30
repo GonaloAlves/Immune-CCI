@@ -19,7 +19,7 @@ def load_data(file_path):
     return sc.read_h5ad(file_path)
 
 
-def umap_reso_cluster(adata, resolution_name):
+def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_meninge/updates"):
     """
     Plot UMAP for a specific resolution with cluster numbers displayed at the centroid of each cluster.
 
@@ -37,8 +37,8 @@ def umap_reso_cluster(adata, resolution_name):
 
     
     # Save the UMAP plot as an image (optional)
-    output_path = f"umap_Meningeal_{resolution_name}_n.png"
-    output_path_leg = f"umap_Meningeal_{resolution_name}_l.png"
+    output_path = os.path.join(output_dir, f"umap_Immune_{resolution_name}_n.png") 
+    output_path_leg = os.path.join(output_dir, f"umap_Immune_{resolution_name}_l.png")
     ax.figure.savefig(output_path, bbox_inches="tight")
     ax_ondata.figure.savefig(output_path_leg, bbox_inches="tight")
     # print(f"UMAP plot saved as {output_path}")

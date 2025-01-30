@@ -24,9 +24,9 @@ def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_immune/updat
 
     
     # Save the UMAP plot as an image (optional)
-    output_dir = f"umap_Immune_{resolution_name}_n.png"
-    output_dir_leg = f"umap_Immune_{resolution_name}_l.png"
-    ax.figure.savefig(output_dir, bbox_inches="tight")
+    output_path= os.path.join(output_dir, f"umap_Immune_{resolution_name}_n.png") 
+    output_dir_leg = os.path.join(output_dir, f"umap_Immune_{resolution_name}_l.png")
+    ax.figure.savefig(output_path, bbox_inches="tight")
     ax_ondata.figure.savefig(output_dir_leg, bbox_inches="tight")
     # print(f"UMAP plot saved as {output_path}")
     plt.close()  # Close the plot to avoid overlap
