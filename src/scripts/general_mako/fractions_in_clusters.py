@@ -4,9 +4,8 @@
 # 3. Plot fractions per cluster
 #
 #
-# Daniel Ribeiro, 2023
+# Daniel Ribeiro, 2023, ft Gonçalo Alves, 2025
 import os
-import gc
 import re
 import numpy as np
 import pandas as pd
@@ -16,6 +15,40 @@ import matplotlib
 matplotlib.use('cairo')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+
+checkpoint_dir = "/home/makowlg/Documents/Immune-CCI/h5ad_files"
+fractions_dir = "/home/makowlg/Documents/Immune-CCI/src/fractions_related/Immune"
+data: dict[str, sc.AnnData] = {}
+
+proportion_colors = {
+    'all': '#899499',
+    'uninjured_0': '#428bca',
+    'sham_15': '#5cb85c',
+    'injured_15': '#ff9922',
+    'injured_60': '#d9534f',
+    'uninjured_0_central': '#428bca',
+    'sham_15_rostral': '#5cb85c',
+    'sham_15_caudal': '#addbad',
+    'injured_15_rostral': '#ff9922',
+    'injured_15_caudal': '#f7bf81',
+    'injured_60_rostral': '#d9534f',
+    'injured_60_caudal': '#eca9a7',
+    'caudal': '#b3bfa1',
+    'rostral': '#d2a295',
+    'central': '#428bca',
+    'injured_caudal': '#9b636b',
+    'injured_rostral': '#d2a295',
+    'sham_caudal': '#5cb85c',
+    'sham_rostral': '#addbad',
+    'uninjured_central': '#428bca',
+}
+
+injury_day = ['uninjured_0', 'sham_15', 'injured_15', 'injured_60']
+injury_condition = ['uninjured_0_central', 'sham_15_rostral', 'sham_15_caudal', 'injured_15_rostral', 'injured_15_caudal', 'injured_60_rostral', 'injured_60_caudal']
+injury_region = ['uninjured_central', 'sham_rostral', 'sham_caudal', 'injured_rostral', 'injured_caudal']
+collection_region = ['central', 'rostral', 'caudal']
+injury_region_no_central = ['sham_rostral', 'sham_caudal', 'injured_rostral', 'injured_caudal']
+collection_region_no_central = ['rostral', 'caudal']
 
 
 def sample_factions(adata: sc.AnnData,
@@ -30,8 +63,7 @@ def sample_factions(adata: sc.AnnData,
     condition: `str`
         String to choose from injury_day or injury_condition list of samples
     """
-    from src.globals import injury_condition, injury_day, injury_region, collection_region, \
-        injury_region_no_central, collection_region_no_central
+
 
     samples = []
     prog = re.compile(r'^injured', flags=re.IGNORECASE)
@@ -109,8 +141,7 @@ def plot_stacked_plots(data: pd.DataFrame,
                        dataset_name: str,
                        alternate_sample_names=None
                        ) -> None:
-    from src.globals import fractions_dir
-    from src.globals import proportion_colors
+    
     
     clusters = [i for i in range(len(data.index))]
     colors = [proportion_colors[c] for c in data.columns]
@@ -139,61 +170,59 @@ def plot_stacked_plots(data: pd.DataFrame,
 
 
 def start(n_proc=None) -> None:
-    import src.globals   # noqa:F401
-    from src.globals import checkpoint_dir, fractions_dir
-    from src.globals import data, datasets_divided, lineage_resolution_final, n_neighbors_final
+
     # Load ranked data
     #for d in list(datasets_divided.keys()):
     #    datasets_divided[f'{d}_uinj'] = datasets_divided[d]
-    for d in datasets_divided:
-        dest = f"{checkpoint_dir}/adata_final_{d}_raw_norm_ranked.h5ad"
-        if os.path.exists(dest):
-            print("Load gene rank data...")
-            print(dest)
-            data[d] = sc.read_h5ad(dest)
-        else:
-            continue
-        
-        # Calculate fractions and totals
-        for res in lineage_resolution_final[d]:
-            clusters = f'leiden_n{n_neighbors_final[0]}_r{res}'
-            for condition in ['injury_condition', 'injury_day', 'injury_region', 'collection_region',
-                              'injury_region_no_central', 'collection_region_no_central']:
-                print(f"Calculate statistics for {condition}...")
-                # Save fraction
-                table_frac = sample_factions(data[d], dataset_type=d, key=clusters, condition=condition)
-                dest = f"{fractions_dir}/{d}_final_sample_frac_{clusters}_{condition}.txt"
-                print(f"Output: {dest}")
-                table_frac.to_csv(dest, sep='\t')
-                # Update AnnData
-                data[d].uns[f'sample_frac_{clusters}_{condition}'] = table_frac
-                
-                expected_freq = table_frac.iloc[-2, :-1].values  # Expected freqeuncies observed in data set
+   
+    d = 'Immune'
+    dest = f"{checkpoint_dir}/adata_final_{d}_raw_norm_ranked_copy_copy.h5ad"
+    if os.path.exists(dest):
+        print("Load gene rank data...")
+        print(dest)
+        data[d] = sc.read_h5ad(dest)
 
-                
-                # Plot stacked barplots
-                print("\nPlot stacked barplots...")
-                plot_data = data[d].uns[f'sample_frac_{clusters}_{condition}'].iloc[:-2, :-1].copy()
-                plot_data.loc['Expected', :] = expected_freq
-                alternate_names = data[d].uns[f'sample_frac_{clusters}_{condition}'].index[:-2].to_list()
-                alternate_names.append('Expected')
-                plot_stacked_plots(plot_data,
-                                   dataset_name=f'{d}_final_{clusters}_{condition}',
-                                   alternate_sample_names=alternate_names)
-                # With dendrogram order
-                plot_data = data[d].uns[f'sample_frac_{clusters}_{condition}'].iloc[:-2, :-1].copy()
-                plot_data = plot_data.loc[data[d].uns[f'dendrogram_{clusters}']['dendrogram_info']['ivl'].tolist(), :]
-                plot_data.loc['Expected', :] = expected_freq
-                alternate_names = data[d].uns[f'dendrogram_{clusters}']['dendrogram_info']['ivl'].tolist()
-                alternate_names.append('Expected')
-                plot_stacked_plots(plot_data,
-                                   dataset_name=f'{d}_final_{clusters}_{condition}_dendrogram',
-                                   alternate_sample_names=alternate_names)
+    
+    # Calculate fractions and totals
+    
+    clusters = f'leiden_fusion'
+    for condition in ['injury_condition', 'injury_day', 'injury_region', 'collection_region',
+                        'injury_region_no_central', 'collection_region_no_central']:
+        print(f"Calculate statistics for {condition}...")
+        # Save fraction
+        table_frac = sample_factions(data[d], dataset_type=d, key=clusters, condition=condition)
+        dest = f"{fractions_dir}/{d}_final_sample_frac_{clusters}_{condition}.txt"
+        print(f"Output: {dest}")
+        table_frac.to_csv(dest, sep='\t')
+        # Update AnnData
+        data[d].uns[f'sample_frac_{clusters}_{condition}'] = table_frac
         
-        # Save AnnData
-        print("Save AnnData...")
-        dest = f"{checkpoint_dir}/adata_final_{d}_raw_norm_ranked.h5ad"
-        data[d].write_h5ad(dest, compression='gzip')
+        expected_freq = table_frac.iloc[-2, :-1].values  # Expected freqeuncies observed in data set
+
+        
+        # Plot stacked barplots
+        print("\nPlot stacked barplots...")
+        plot_data = data[d].uns[f'sample_frac_{clusters}_{condition}'].iloc[:-2, :-1].copy()
+        plot_data.loc['Expected', :] = expected_freq
+        alternate_names = data[d].uns[f'sample_frac_{clusters}_{condition}'].index[:-2].to_list()
+        alternate_names.append('Expected')
+        plot_stacked_plots(plot_data,
+                            dataset_name=f'{d}_final_{clusters}_{condition}',
+                            alternate_sample_names=alternate_names)
+        # With dendrogram order
+        plot_data = data[d].uns[f'sample_frac_{clusters}_{condition}'].iloc[:-2, :-1].copy()
+        plot_data = plot_data.loc[data[d].uns[f'dendrogram_{clusters}']['dendrogram_info']['ivl'].tolist(), :]
+        plot_data.loc['Expected', :] = expected_freq
+        alternate_names = data[d].uns[f'dendrogram_{clusters}']['dendrogram_info']['ivl'].tolist()
+        alternate_names.append('Expected')
+        plot_stacked_plots(plot_data,
+                            dataset_name=f'{d}_final_{clusters}_{condition}_dendrogram',
+                            alternate_sample_names=alternate_names)
+    
+    # Save AnnData
+    print("Save AnnData...")
+    dest = f"{checkpoint_dir}/adata_final_{d}_raw_norm_ranked_copy_copy.h5ad"
+    data[d].write_h5ad(dest, compression='gzip')
 
 
 # main guard required because processes are spawn (compatible with Windows)
