@@ -1,11 +1,11 @@
 import pandas as pd
 
 # File paths for source files
-file_0_3 = '/home/makowlg/Documents/Immune-CCI/src/excels/immune/updates/top_genes_cluster_0.3.xlsx'
-file_0_4 = '/home/makowlg/Documents/Immune-CCI/src/excels/immune/updates/top_genes_cluster_0.4.xlsx'
-file_0_5 = '/home/makowlg/Documents/Immune-CCI/src/excels/immune/updates/top_genes_cluster_0.5.xlsx'
-output_file = '/home/makowlg/Documents/Immune-CCI/src/excels/immune/updates/output_excel.xlsx'  
-merged_output_file = '/home/makowlg/Documents/Immune-CCI/src/excels/immune/updates/merged_top_genes.xlsx'
+file_0_3 = '/home/makowlg/Documents/Immune-CCI/src/excels/meningeal/updates/top_genes_cluster_0.3.xlsx'
+file_0_4 = '/home/makowlg/Documents/Immune-CCI/src/excels/meningeal/updates/top_genes_cluster_0.4.xlsx'
+file_0_5 = '/home/makowlg/Documents/Immune-CCI/src/excels/meningeal/updates/top_genes_cluster_0.5.xlsx'
+output_file = '/home/makowlg/Documents/Immune-CCI/src/excels/meningeal/updates/output_excel.xlsx'  
+merged_output_file = '/home/makowlg/Documents/Immune-CCI/src/excels/meningeal/updates/merged_top_genes.xlsx'
 
 # Load the top genes Excel files
 df_0_3 = pd.read_excel(file_0_3, sheet_name=None)

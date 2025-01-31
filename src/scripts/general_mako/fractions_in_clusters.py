@@ -67,8 +67,6 @@ def group_injury_conditions(adata, original_column='injury', new_column='injury_
 
     print(f"New column '{new_column}' created in adata.obs.")
 
-    print(f"{new_column} data: {adata.obs[new_column]}")
-
     return adata
 
 
@@ -170,10 +168,10 @@ def start_analysis(input_file, output_dir):
     for condition in ['injury_day', 'injury', 'injury_grouped']:  
         print(f"Processing condition: {condition}...")
 
-        table_frac = calculate_cell_fractions(adata, 'Immune', clusters_key, condition)
+        table_frac = calculate_cell_fractions(adata, 'Meningeal_Vascular', clusters_key, condition)
         
         # Save fraction table
-        output_file = os.path.join(output_dir, f"Immune_sample_frac_{clusters_key}_{condition}.txt")
+        output_file = os.path.join(output_dir, f"Meningeal_Vascular_sample_frac_{clusters_key}_{condition}.txt")
         print(f"Saving table: {output_file}")
         table_frac.to_csv(output_file, sep='\t')
 
@@ -189,18 +187,18 @@ def start_analysis(input_file, output_dir):
         alternate_names = list(table_frac.index[:-2]) + ['Expected']
 
         plot_stacked_bar(plot_data, 
-                         dataset_name=f'Immune_final_{clusters_key}_{condition}', 
+                         dataset_name=f'Meningeal_Vascular_final_{clusters_key}_{condition}', 
                          output_dir=output_dir, 
                          alternate_names=alternate_names)    
             
-    # adata.write_h5ad(input_file, compression='gzip')
-    # print("Analysis completed.")
+    adata.write_h5ad(input_file, compression='gzip')
+    print("Analysis completed.")
 
 if __name__ == "__main__":
     try:
         mp.set_start_method('spawn', force=True)
-        input_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
-        output_dir = "/home/makowlg/Documents/Immune-CCI/src/fractions_related/Immune"
+        input_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
+        output_dir = "/home/makowlg/Documents/Immune-CCI/src/fractions_related/Meningeal"
         start_analysis(input_file, output_dir)
         print("\n********\n* DONE *\n********")
     except RuntimeError:

@@ -424,7 +424,7 @@ def addasterix(top_genes_cluster):
 
 
 # export to excel
-def export_to_excel(top_genes_cluster, threshold, output_dir="excels/immune/updates"):
+def export_to_excel(top_genes_cluster, threshold, output_dir="excels/meningeal/updates"):
     """
     Export the top_genes_cluster dictionary to an Excel file, using the threshold in the filename.
 
@@ -454,7 +454,7 @@ def export_to_excel(top_genes_cluster, threshold, output_dir="excels/immune/upda
 
     print(f"Excel file saved: {output_file}")
 
-def plot_dendrogram(adata, output_dir="excels/meningeal/updates"):
+def plot_dendrogram(adata, output_dir="dendrogram/dendrogram_meningeal"):
     """
     
     """
