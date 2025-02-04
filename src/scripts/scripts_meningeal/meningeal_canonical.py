@@ -116,8 +116,11 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         # Aggregate filtered genes by gene group
         top_genes_names = top_gene_names(filtered_genes, genes)
 
-        # Sort the gene groups alphabetically
-        top_genes_names = {key: top_genes_names[key] for key in sorted(top_genes_names.keys())}
+        # Example user-defined gene group order
+        user_gene_group_order = []
+
+        # Reorder the dictionary based on user order
+        top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
 
         # Generate four different dotplots per threshold
         print(f"Generating dotplots for pts threshold: {threshold}")
@@ -309,8 +312,7 @@ if __name__ == "__main__":
     # Define thresholds
     pts_thresholds = [0.2, 0.3]
 
-    custom_cluster_order = [
-    "Imm.M0_like.0", "Imm.M0_like.1", "Imm.M0_like.2", "Imm.MHCII.0" ,"Imm.Interferon.0", "Imm.DAM.0", "Imm.DAM.1", "Imm.Proliferative.0"]
+    custom_cluster_order = []
 
     # Generate dotplots for each threshold
     create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order)
