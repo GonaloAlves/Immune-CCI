@@ -11,7 +11,4 @@ Ly86
 Mertk
 Ptprc
 Siglech
-Sall1
-Itgam
-Spi1
-Irf8
+Cd86

@@ -77,7 +77,7 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir="canonical/canonical_meningeal/updated_pts2"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_meningeal/updated_pts2"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -92,6 +92,11 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir="canoni
     """
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+
+    # Ensure leiden_fusion is categorical and reorder it
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
+    adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True, inplace=True)
+
 
     for threshold in thresholds:
         print(f"\nProcessing pts threshold: {threshold}")
@@ -304,7 +309,10 @@ if __name__ == "__main__":
     # Define thresholds
     pts_thresholds = [0.2, 0.3]
 
+    custom_cluster_order = [
+    "Imm.M0_like.0", "Imm.M0_like.1", "Imm.M0_like.2", "Imm.MHCII.0" ,"Imm.Interferon.0", "Imm.DAM.0", "Imm.DAM.1", "Imm.Proliferative.0"]
+
     # Generate dotplots for each threshold
-    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds)
+    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order)
 
     

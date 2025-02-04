@@ -183,8 +183,8 @@ def start_analysis(input_file, output_dir):
 
         # Plot stacked barplots
         plot_data = table_frac.iloc[:-2, :-1].copy()
-        plot_data.loc['Expected', :] = expected_freq
-        alternate_names = list(table_frac.index[:-2]) + ['Expected']
+        plot_data.loc['Nonclustered_expected', :] = expected_freq
+        alternate_names = list(table_frac.index[:-2]) + ['Nonclustered_expected']
 
         plot_stacked_bar(plot_data, 
                          dataset_name=f'Meningeal_Vascular_final_{clusters_key}_{condition}', 

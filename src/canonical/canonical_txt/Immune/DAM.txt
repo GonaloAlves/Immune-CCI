@@ -11,10 +11,6 @@ Lyz2
 Spp1
 Lpl
 Csf1
-Axl
-Gnas
-Cybb
-Itgax
 Tfec
 Lyz2
 Mir155
@@ -22,3 +18,5 @@ Msr1
 Lilrb4
 Bhlhe40
 Clec7a
+Trem2
+Myo1f
