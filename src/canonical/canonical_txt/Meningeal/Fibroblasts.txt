@@ -1,9 +1,9 @@
+Bicc1
+Fgfr2
 Dcn
-Lum
-Col1a1
 Col1a2
+Col1a1
 Col5a1
 Pdgfra
-Loxl1
-Fbln2
 Cd34
+Thy1

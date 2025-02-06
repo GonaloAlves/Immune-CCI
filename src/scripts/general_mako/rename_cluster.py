@@ -66,13 +66,24 @@ if __name__ == "__main__":
         ('Imm.1.2.5', 'Imm.DAM.1')
     ]
     
-    rename_pairs = [
+    old_meningeal = [
         ('MeV.1.4.1', 'MeV.Vascular.0'),
         ('MeV.4.21', 'MeV.Vascular.1'),
         ('MeV.1.4.5', 'MeV.Vascular.2'),
         ('MeV.4.31', 'MeV.SMC.0'),
         ('MeV.4.1', 'MeV.Pericytes.0'),
-        ('MeV.3.30', 'MeV.Proliferative_Fibr.0')
+        ('MeV.3.30', 'MeV.Proliferative_Fibr.0'),
+        ('MeV.4.30', 'MeV.Fib_CD34+')
+    ]
+
+    rename_pairs= [
+        ('MeV.Fib_CD34+', 'MeV.Fib_CD34.0'),
+        ('MeV.Vascular.0', 'MeV.Endothelial.0'),
+        ('MeV.Vascular.1', 'MeV.Endothelial.1'),
+        ('MeV.Vascular.2', 'MeV.Endothelial.2'),
+        ('MeV.1.4.15', 'MeV.Endothelial.3'),
+        ('MeV.1.4.20', 'MeV.Endothelial.4'),
+        ('MeV.1.4.8', 'MeV.Low_Quality.0')
     ]
 
     # Rename the clusters

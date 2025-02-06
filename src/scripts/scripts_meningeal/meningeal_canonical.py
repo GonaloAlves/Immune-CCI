@@ -95,8 +95,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
 
     # Ensure leiden_fusion is categorical and reorder it
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
-    adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True, inplace=True)
-
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
 
     for threshold in thresholds:
         print(f"\nProcessing pts threshold: {threshold}")
@@ -118,6 +117,9 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
 
         # Example user-defined gene group order
         user_gene_group_order = []
+
+        # Example user-defined gene group order
+        user_gene_group_order = ["Vascular", "Pericytes", "SMC", "Proliferative", "Fibroblasts", "MeV_canonical_genes"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -297,6 +299,45 @@ def top_gene_names(filtered_genes, original_gene_dict):
 
     return top_genes_names
 
+
+def check_cluster_order(adata, cluster_order):
+    """
+    Check for mismatches between existing clusters and the user-defined cluster order.
+
+    Parameters:
+    adata (AnnData): The AnnData object.
+    cluster_order (list): The user-defined list of clusters to reorder.
+
+    Returns:
+    None
+    """
+    # Extract existing categories in 'leiden_fusion'
+    existing_categories = list(adata.obs['leiden_fusion'].cat.categories)
+
+    print("\n--- Existing Categories in 'leiden_fusion' ---")
+    print(existing_categories)
+
+    print("\n--- User-Defined Cluster Order ---")
+    print(cluster_order)
+
+    # Check for clusters in custom order that don't exist in the data
+    missing_in_data = [cluster for cluster in cluster_order if cluster not in existing_categories]
+    
+    # Check for clusters in the data that aren't in the custom order
+    missing_in_order = [cluster for cluster in existing_categories if cluster not in cluster_order]
+
+    if missing_in_data:
+        print("\n Clusters in custom order but NOT in 'leiden_fusion':")
+        print(missing_in_data)
+    
+    if missing_in_order:
+        print("\n Clusters in 'leiden_fusion' but NOT in custom order:")
+        print(missing_in_order)
+
+    if not missing_in_data and not missing_in_order:
+        print("\n All categories match! Reordering should work.")
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -312,8 +353,13 @@ if __name__ == "__main__":
     # Define thresholds
     pts_thresholds = [0.2, 0.3]
 
-    custom_cluster_order = []
+    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Endothelial.4", "MeV.Pericytes.0", "MeV.SMC.0", 
+    "MeV.1.4.11", "MeV.1.4.2", "MeV.1.4.21", "MeV.Low_Quality.0" ,"MeV.Fib_CD34.0" ,"MeV.Proliferative_Fibr.0", "MeV.1.4.6", "MeV.4.4", "MeV.1.4.13", "MeV.3.17", "MeV.4.34", "MeV.2.1", "MeV.4.26",
+    "MeV.1.4.7", "MeV.2.8", "MeV.1.4.4", "MeV.4.12"]
 
+    # Check for mismatches before reordering
+    check_cluster_order(adata, custom_cluster_order)
+    
     # Generate dotplots for each threshold
     create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order)
 
