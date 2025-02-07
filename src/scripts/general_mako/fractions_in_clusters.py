@@ -118,32 +118,49 @@ def save_fractions_table(table, output_dir, dataset, clusters, condition):
     table.to_csv(output_file, sep='\t')
     print(f"Saved fractions table to: {output_file}")
 
-def plot_stacked_bar(data, dataset_name, output_dir, alternate_names=None):
+def plot_stacked_bar(data, dataset_name, output_dir, alternate_names=None, cluster_order=None):
     """
-    Generate and save a stacked bar plot for cell fractions.
+    Generate and save a stacked bar plot for cell fractions, reordered by cluster_order if provided.
     """
     os.makedirs(output_dir, exist_ok=True)
     output_file = os.path.join(output_dir, f"{dataset_name}_stacked_plot.pdf")
-    
+
+    # Reorder data based on the predefined cluster order if provided
+    if cluster_order:
+        missing_clusters = [cluster for cluster in cluster_order if cluster not in data.index]
+        if missing_clusters:
+            print(f"Warning: The following clusters are in your order list but not in the data: {missing_clusters}")
+        
+        # Filter and reorder the data according to the provided cluster order
+        data = data.loc[[cluster for cluster in cluster_order if cluster in data.index]]
+
+        # Reorder the alternate_names if provided
+        if alternate_names:
+            alternate_names = [name for name in cluster_order if name in data.index]
+        else:
+            alternate_names = data.index.tolist()
+
     clusters = range(len(data.index))
     bottom = np.zeros(len(clusters))
-    colors = [proportion_colors[c] for c in data.columns]
-    
+    colors = [proportion_colors.get(c, '#333333') for c in data.columns]  # Default color if not in proportion_colors
+
     with PdfPages(output_file, keep_empty=True) as pdf:
         fig, ax = plt.subplots(figsize=(len(data.index) * 0.5, 7))
         ax.grid(False)
-        
+
         for i, col in enumerate(data.columns):
-            ax.bar(clusters, height=data.iloc[:, i].values, bottom=bottom, color= colors[i], width=0.6, label=col)
+            ax.bar(clusters, height=data.iloc[:, i].values, bottom=bottom, color=colors[i], width=0.6, label=col)
             bottom += data.iloc[:, i].values
-        
+
         ax.set_xticks(clusters)
-        ax.set_xticklabels(alternate_names or data.index, rotation=45, ha='right', rotation_mode='anchor')
+        ax.set_xticklabels(alternate_names, rotation=45, ha='right', rotation_mode='anchor')
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         pdf.savefig(dpi=300, bbox_inches='tight')
         plt.close(fig)
+
     print(f"Saved plot: {output_file}")
 
+    
 def start_analysis(input_file, output_dir):
     """
     Load data, compute cell fractions, and generate stacked bar plots.
@@ -164,14 +181,17 @@ def start_analysis(input_file, output_dir):
 
     clusters_key = 'leiden_fusion'
 
+
+    
+
     # Process each condition type
     for condition in ['injury_day', 'injury', 'injury_grouped']:  
         print(f"Processing condition: {condition}...")
 
-        table_frac = calculate_cell_fractions(adata, 'Meningeal_Vascular', clusters_key, condition)
+        table_frac = calculate_cell_fractions(adata, 'Immune', clusters_key, condition)
         
         # Save fraction table
-        output_file = os.path.join(output_dir, f"Meningeal_Vascular_sample_frac_{clusters_key}_{condition}.txt")
+        output_file = os.path.join(output_dir, f"Immune_sample_frac_{clusters_key}_{condition}.txt")
         print(f"Saving table: {output_file}")
         table_frac.to_csv(output_file, sep='\t')
 
@@ -186,10 +206,17 @@ def start_analysis(input_file, output_dir):
         plot_data.loc['Nonclustered_expected', :] = expected_freq
         alternate_names = list(table_frac.index[:-2]) + ['Nonclustered_expected']
 
+        cluster_order = [
+    "Imm.M0_like.0", "Imm.M0_like.1", 
+    "Imm.M0_like.2", "Imm.MHCII.0" ,
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0", "Nonclustered_expected"]
+
         plot_stacked_bar(plot_data, 
-                         dataset_name=f'Meningeal_Vascular_final_{clusters_key}_{condition}', 
+                         dataset_name=f'Immune_final_{clusters_key}_{condition}', 
                          output_dir=output_dir, 
-                         alternate_names=alternate_names)    
+                         alternate_names=alternate_names,
+                         cluster_order=cluster_order)    
             
     adata.write_h5ad(input_file, compression='gzip')
     print("Analysis completed.")
@@ -197,8 +224,8 @@ def start_analysis(input_file, output_dir):
 if __name__ == "__main__":
     try:
         mp.set_start_method('spawn', force=True)
-        input_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
-        output_dir = "/home/makowlg/Documents/Immune-CCI/src/fractions_related/Meningeal"
+        input_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
+        output_dir = "/home/makowlg/Documents/Immune-CCI/src/fractions_related/Immune"
         start_analysis(input_file, output_dir)
         print("\n********\n* DONE *\n********")
     except RuntimeError:

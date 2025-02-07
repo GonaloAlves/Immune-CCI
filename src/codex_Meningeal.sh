@@ -6,11 +6,11 @@ conda activate mkpy
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/rename_cluster.py
 
-#python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/meningeal_dge.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/meningeal_dge.py
 
-#python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/a_meningeal.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/a_meningeal.py
 
-python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/meningeal_canonical.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/meningeal_canonical.py
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/excel_merge.py
 
@@ -20,4 +20,4 @@ python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/meningea
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/gsea/gsea_summary.py
 
-# python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/fractions_in_clusters.py
+python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/fractions_in_clusters.py
