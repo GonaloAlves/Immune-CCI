@@ -2,6 +2,7 @@ Epcam
 Cldn6
 Cldn7
 Cdh1
+Cdh2
 Foxm1
 Mybl2
 Ube2c
