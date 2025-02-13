@@ -8,7 +8,7 @@ conda activate mkpy
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_immune/new_immune.py
 
-python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_immune/immune_canonical.py
+python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/immune_canonical_copy.py
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/excel_merge.py
 

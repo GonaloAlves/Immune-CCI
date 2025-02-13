@@ -5,7 +5,7 @@ import scanpy as sc
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# This script will display the gene expression values of the canonical genes from Meningeal dataset
+# This script will display the gene expression values of the canonical genes from Immune dataset
 
 
 # Load the dataset
@@ -27,10 +27,9 @@ def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
     
-    mask_NA = adata.obs['leiden_fusion'] != 'MeV.NA' #creates mask for remove NA cells 
+    mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells 
     adata2 = adata[mask_NA] #apply mask
     return adata2
-
 
 # Step 4: Remove any cluster
 def remove_clusters_by_suffix(cluster_dfs, suffix):
@@ -77,7 +76,7 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_meningeal/updated_pts2"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_immune/updated_pts3"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -92,9 +91,9 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
     """
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-
+        
     # Ensure leiden_fusion is categorical and reorder it
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
+    #adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
 
     for threshold in thresholds:
@@ -116,10 +115,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Example user-defined gene group order
-        user_gene_group_order = []
-
-        # Example user-defined gene group order
-        user_gene_group_order = ["Endothelial", "Pericytes", "SMC", "Proliferative", "VLMC", "Fibroblasts", "Chondrocyte", "Epithelial", "Epithelial2"]
+        user_gene_group_order = ["M0", "MHCII", "Interferon", "DAM", "PVM", "Proliferative"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -214,7 +210,7 @@ def extract_dge_data(adata):
 
 
 # Step 3: Create cluster dataframes with filtered data
-def create_cluster_dfs(gene_names, pts, pts_threshold=0):
+def create_cluster_dfs(gene_names, pts, pts_threshold):
     """
     Create a dictionary of dataframes per cluster, with the respective gene expression data.
     By default this function will not order the genes by fold change and the default minimun pts is 0
@@ -255,6 +251,7 @@ def create_cluster_dfs(gene_names, pts, pts_threshold=0):
         cluster_names = gene_names.columns[i]
         cluster_dfs[cluster_names] = filtered_df  # Store the respective clusters in the dictionary
 
+
     return cluster_dfs
 
 
@@ -271,6 +268,22 @@ def compare_canonical(genes, cluster_dfs):
         new_dic[group_name] = group_results
     return new_dic
 
+
+def dendogram_sc(adata):
+    
+    """
+    
+    """
+    # Compute the dendrogram
+    print(f"Computing dendrogram for leiden_fusion...")
+    sc.tl.dendrogram(
+        adata,
+        groupby='leiden_fusion',
+        use_rep= 'X_pca',
+        cor_method= 'spearman',
+        linkage_method='ward',
+        use_raw=False
+    )
 
 
 def top_gene_names(filtered_genes, original_gene_dict):
@@ -298,7 +311,6 @@ def top_gene_names(filtered_genes, original_gene_dict):
         top_genes_names[group_name] = ordered_genes  # Maintain original order
 
     return top_genes_names
-
 
 def check_cluster_order(adata, cluster_order):
     """
@@ -346,12 +358,14 @@ if __name__ == "__main__":
     filtered_adata = remove_NA_cat(adata)
 
     # Load canonical gene lists from a directory
-    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal"
+    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune"
     genes = load_canonical_from_dir(canonical_genes_dir)
 
+    # Create dendogram ot the top genes
+    dendogram_sc(filtered_adata)
 
     # Define thresholds
-    pts_thresholds = [0,0.2, 0.3]
+    pts_thresholds = [0, 0.2, 0.3]
 
     custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Endothelial.4", "MeV.Pericytes.0", "MeV.SMC.0", 
     "MeV.1.4.11", "MeV.1.4.2", "MeV.1.4.21", "MeV.Low_Quality.0" ,"MeV.VLMC.0", "MeV.VLMC.1", "MeV.Fib_CD34.0" ,"MeV.Proliferative_Fibr.0", "MeV.1.4.6", "MeV.1.4.13", "MeV.3.17", "MeV.4.34", "MeV.2.1", "MeV.4.26",
@@ -359,7 +373,7 @@ if __name__ == "__main__":
 
     # Check for mismatches before reordering
     check_cluster_order(adata, custom_cluster_order)
-    
+
     # Generate dotplots for each threshold
     create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order)
 
