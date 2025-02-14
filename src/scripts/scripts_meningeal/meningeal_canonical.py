@@ -119,7 +119,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         user_gene_group_order = []
 
         # Example user-defined gene group order
-        user_gene_group_order = ["Endothelial", "Pericytes", "SMC", "Proliferative", "VLMC", "Fibroblasts", "Chondrocyte", "Epithelial", "Epithelial2"]
+        user_gene_group_order = ["Endothelial", "Pericytes", "SMC", "Proliferative", "VLMC", "Fibroblasts", "Chondrocyte", "Epithelial", "Stromal", "M1_Pial", "M2_Mix", "M3_Arachnoid", "M4_Dura", "Testing"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}

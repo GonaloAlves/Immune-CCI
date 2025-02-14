@@ -1,8 +1,8 @@
-Ccl2
-Cxcl1
-Thbs1
-Icam1
-Mmp1
-Mmp13
 Itga6
-
+Col2a1
+Acan
+Sox9
+Comp
+Col10a1
+Col11a1
+Matn1

@@ -1,14 +1,9 @@
-Epcam
-Cldn6
-Cldn7
 Cdh1
-Cdh2
 Foxm1
 Mybl2
 Ube2c
 Nrp1
 Zhx2
-Tslp
 Krt8
 Krt18
 Krt19
@@ -16,4 +11,3 @@ Cldn3
 Cldn4
 Muc1
 Tjp1
-Ocln
