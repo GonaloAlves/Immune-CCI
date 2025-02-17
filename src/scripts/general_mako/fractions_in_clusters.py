@@ -188,10 +188,10 @@ def start_analysis(input_file, output_dir):
     for condition in ['injury_day', 'injury', 'injury_grouped']:  
         print(f"Processing condition: {condition}...")
 
-        table_frac = calculate_cell_fractions(adata, 'Immune', clusters_key, condition)
+        table_frac = calculate_cell_fractions(adata, 'Meningeal', clusters_key, condition)
         
         # Save fraction table
-        output_file = os.path.join(output_dir, f"Immune_sample_frac_{clusters_key}_{condition}.txt")
+        output_file = os.path.join(output_dir, f"Meningeal_sample_frac_{clusters_key}_{condition}.txt")
         print(f"Saving table: {output_file}")
         table_frac.to_csv(output_file, sep='\t')
 
@@ -206,17 +206,21 @@ def start_analysis(input_file, output_dir):
         plot_data.loc['Nonclustered_expected', :] = expected_freq
         alternate_names = list(table_frac.index[:-2]) + ['Nonclustered_expected']
 
-        cluster_order = [
+        cluster_order_immune = [
     "Imm.M0_like.0", "Imm.M0_like.1", 
     "Imm.M0_like.2", "Imm.MHCII.0" ,
     "Imm.Interferon.0", "Imm.DAM.0", 
     "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0", "Nonclustered_expected"]
+        
+        cluster_order_meningeal = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Endothelial_Injury.4", "MeV.Pericytes.0", "MeV.SMC.0", 
+      "MeV.1.4.2" , "MeV.1.4.13", "MeV.3.17", "MeV.Epithelial_ECad.0",
+     "MeV.2.8","MeV.4.34", "MeV.2.1", "MeV.VLMC.0", "MeV.VLMC.1" ,"MeV.Fib_CD34.0", "MeV.1.4.11", "MeV.1.4.4", "MeV.1.4.7", "MeV.1.4.6","MeV.Proliferative_Fibr.0", "MeV.Immune_doublets.0", "MeV.Low_Quality.0", "Nonclustered_expected"]
 
         plot_stacked_bar(plot_data, 
-                         dataset_name=f'Immune_final_{clusters_key}_{condition}', 
+                         dataset_name=f'Meningeal_final_{clusters_key}_{condition}', 
                          output_dir=output_dir, 
                          alternate_names=alternate_names,
-                         cluster_order=cluster_order)    
+                         cluster_order=cluster_order_meningeal)    
             
     adata.write_h5ad(input_file, compression='gzip')
     print("Analysis completed.")
@@ -224,8 +228,8 @@ def start_analysis(input_file, output_dir):
 if __name__ == "__main__":
     try:
         mp.set_start_method('spawn', force=True)
-        input_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
-        output_dir = "/home/makowlg/Documents/Immune-CCI/src/fractions_related/Immune"
+        input_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
+        output_dir = "/home/makowlg/Documents/Immune-CCI/src/fractions_related/Meningeal"
         start_analysis(input_file, output_dir)
         print("\n********\n* DONE *\n********")
     except RuntimeError:

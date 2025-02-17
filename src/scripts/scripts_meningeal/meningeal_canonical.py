@@ -77,7 +77,7 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_meningeal/updated_pts2"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_meningeal/updated_pts3"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -119,7 +119,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         user_gene_group_order = []
 
         # Example user-defined gene group order
-        user_gene_group_order = ["Endothelial", "Pericytes", "SMC", "Proliferative", "VLMC", "Fibroblasts", "Chondrocyte", "Epithelial", "Stromal", "M1_Pial", "M2_Mix", "M3_Arachnoid", "M4_Dura", "Testing"]
+        user_gene_group_order = ["Endothelial", "Pericytes", "SMC", "Proliferative", "VLMC", "Tissue_Fib","Fibroblasts", "Order"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -351,11 +351,12 @@ if __name__ == "__main__":
 
 
     # Define thresholds
-    pts_thresholds = [0,0.2, 0.3]
+    pts_thresholds = [0, 0.2, 0.3]
 
-    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Endothelial.4", "MeV.Pericytes.0", "MeV.SMC.0", 
-    "MeV.1.4.11", "MeV.1.4.2", "MeV.1.4.21", "MeV.Low_Quality.0" ,"MeV.VLMC.0", "MeV.VLMC.1", "MeV.Fib_CD34.0" ,"MeV.Proliferative_Fibr.0", "MeV.1.4.6", "MeV.1.4.13", "MeV.3.17", "MeV.4.34", "MeV.2.1", "MeV.4.26",
-    "MeV.1.4.7", "MeV.2.8", "MeV.1.4.4"]
+    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Endothelial_Injury.4", "MeV.Pericytes.0", "MeV.SMC.0", 
+     "MeV.1.4.2" , "MeV.1.4.13", "MeV.3.17", "MeV.Epithelial_ECad.0", "MeV.2.8","MeV.4.34", "MeV.2.1", 
+     "MeV.VLMC.0", "MeV.VLMC.1" ,"MeV.Fib_CD34.0", "MeV.1.4.11", "MeV.1.4.4", "MeV.1.4.7", "MeV.1.4.6","MeV.Proliferative_Fibr.0", 
+     "MeV.Immune_doublets.0", "MeV.Low_Quality.0"]
 
     # Check for mismatches before reordering
     check_cluster_order(adata, custom_cluster_order)

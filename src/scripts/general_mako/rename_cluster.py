@@ -81,12 +81,12 @@ if __name__ == "__main__":
         ('MeV.1.4.15', 'MeV.Endothelial.3'),
         ('MeV.1.4.20', 'MeV.Endothelial_Injury.4'),
         ('MeV.1.4.8', 'MeV.Low_Quality.0'),
-        ('MeV.1.4.21', 'MeV.Immune_doublets')
+        ('MeV.1.4.21', 'MeV.Immune_doublets'),
+        ('MeV.4.26', 'MeV.Epithelial_ECad.0')
     ]
 
     rename_pairs= [
-        ('MeV.Endothelial.4', 'MeV.Endothelial_Injury.0'),
-        ('MeV.1.4.21', 'MeV.Immune_doublets')
+        ('MeV.4.26', 'MeV.Epithelial_ECad.0')
 
     ]
 
