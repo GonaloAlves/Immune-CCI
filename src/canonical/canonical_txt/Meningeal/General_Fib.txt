@@ -4,7 +4,4 @@ Dcn
 Col1a2
 Col1a1
 Col5a1
-Pdgfra
 Cd34
-Thy1
-Gsn
