@@ -556,7 +556,7 @@ if __name__ == "__main__":
     filtered_adata = remove_NA_cat(adata)
 
     #Create cluster resolutions UMAP
-    umap_reso_cluster(filtered_adata, 'leiden_fusion')
+    umap_reso_cluster(adata, 'leiden_fusion')
 
     pts_thresholds = [0.3, 0.4, 0.5]
 

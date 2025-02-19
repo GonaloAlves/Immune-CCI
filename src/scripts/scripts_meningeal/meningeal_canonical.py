@@ -356,7 +356,7 @@ if __name__ == "__main__":
     custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Endothelial_Injury.4", "MeV.Pericytes.0", "MeV.SMC.0", 
      "MeV.Epithelial_ECad.0", "MeV.VLMC.0", "MeV.VLMC.1", "MeV.1.4.2" , "MeV.3.17", "MeV.2.1", "MeV.2.8",
       "MeV.1.4.11", "MeV.1.4.4", "MeV.1.4.7", "MeV.1.4.6","MeV.Fib_CD34.0","MeV.4.34", "MeV.1.4.13", "MeV.Proliferative_Fibr.0", 
-     "MeV.Immune_doublets.0", "MeV.Low_Quality.0"]
+     "MeV.Immune_doublets.0", "MeV.Low_Quality.0", "MeV.1.4.12"]
 
     # Check for mismatches before reordering
     check_cluster_order(adata, custom_cluster_order)

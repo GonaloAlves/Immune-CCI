@@ -213,8 +213,9 @@ def start_analysis(input_file, output_dir):
     "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0", "Nonclustered_expected"]
         
         cluster_order_meningeal = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Endothelial_Injury.4", "MeV.Pericytes.0", "MeV.SMC.0", 
-      "MeV.1.4.2" , "MeV.1.4.13", "MeV.3.17", "MeV.Epithelial_ECad.0",
-     "MeV.2.8","MeV.4.34", "MeV.2.1", "MeV.VLMC.0", "MeV.VLMC.1" ,"MeV.Fib_CD34.0", "MeV.1.4.11", "MeV.1.4.4", "MeV.1.4.7", "MeV.1.4.6","MeV.Proliferative_Fibr.0", "MeV.Immune_doublets.0", "MeV.Low_Quality.0", "Nonclustered_expected"]
+     "MeV.Epithelial_ECad.0", "MeV.VLMC.0", "MeV.VLMC.1", "MeV.1.4.2" , "MeV.3.17", "MeV.2.1", "MeV.2.8",
+      "MeV.1.4.11", "MeV.1.4.4", "MeV.1.4.7", "MeV.1.4.6","MeV.Fib_CD34.0","MeV.4.34", "MeV.1.4.13", "MeV.Proliferative_Fibr.0", 
+     "MeV.Immune_doublets.0", "MeV.Low_Quality.0", "MeV.1.4.12", "Nonclustered_expected"]
 
         plot_stacked_bar(plot_data, 
                          dataset_name=f'Meningeal_final_{clusters_key}_{condition}', 
