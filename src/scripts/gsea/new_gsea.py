@@ -144,7 +144,7 @@ def start(n_proc=None) -> None:
     # Load scores from an h5ad file
     t1 = time.time()  # Start time tracking
     
-    dest = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
+    dest = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad"
     if os.path.exists(dest):  # Check if the file exists
         print("Load gene rank data...")
         data = sc.read_h5ad(dest)  # Load the AnnData object containing the data

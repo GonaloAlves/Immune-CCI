@@ -146,7 +146,7 @@ def remove_NA_cat(adata: sc.AnnData):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
+    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad"
     adata = load_data(file_path)
 
     # # Backup the existing DGE data
@@ -157,17 +157,15 @@ if __name__ == "__main__":
     # Perform new DGE analysis
     adata = dge_data(adata, 'leiden_fusion', 'rank_genes_groups_leiden_fusion')
 
-
-    filtered_adata = remove_NA_cat(adata)
+    #filtered_adata = remove_NA_cat(adata)
 
     # Preform Dendrogram
-    dendogram_sc(filtered_adata)
-
+    dendogram_sc(adata)
 
     #adata = drop_mako(adata)
 
-
-    print(filtered_adata)
+    print(adata)
+    print(adata.obs['leiden_fusion'].cat.categories.to_list())
     # Save the updated AnnData object
-    output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
-    save_adata(filtered_adata, output_file)
+    output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad"
+    save_adata(adata, output_file)

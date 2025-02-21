@@ -43,7 +43,7 @@ print("Export moderated t-statistic values...")
 # Load data
 print("Load expression data...")
 start_time = Sys.time()     # time execution
-dest = sprintf("%s/adata_final_%s_raw_norm_ranked_copy_copy.h5ad", checkpoint_dir, d)
+dest = sprintf("%s/adata_final_%s_raw_norm_ranked_copy_copy_copy.h5ad", checkpoint_dir, d)
 print(dest)
 
 ann = read_h5ad(dest)

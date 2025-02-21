@@ -77,7 +77,31 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_meningeal/updated_pts3"):
+def dendogram_sc(adata):
+    """
+    Compute and save the dendrogram for a specific group and store it in a specified key.
+
+    Parameters:
+    adata (AnnData): The AnnData object containing the data.
+    dendrogram_key (str): The key to save the dendrogram in `adata.uns`.
+
+    Returns:
+    None
+    """
+
+    # Compute the dendrogram
+    print(f"Computing dendrogram for leiden_fusion...")
+    sc.tl.dendrogram(
+        adata,
+        groupby='leiden_fusion',
+        use_rep='X_pca',
+        cor_method='spearman',
+        linkage_method='ward',
+        use_raw=False
+    )
+
+
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_meningeal/updated_pts4"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -93,9 +117,13 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+    #print(adata['leiden_fusion'].cat.categories.to_list())
+    print(adata)
     # Ensure leiden_fusion is categorical and reorder it
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
+
+
 
     for threshold in thresholds:
         print(f"\nProcessing pts threshold: {threshold}")
@@ -341,9 +369,12 @@ def check_cluster_order(adata, cluster_order):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad")
 
     filtered_adata = remove_NA_cat(adata)
+
+    #preform dendrogram
+    dendogram_sc(filtered_adata)
 
     # Load canonical gene lists from a directory
     canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal"
@@ -354,12 +385,12 @@ if __name__ == "__main__":
     pts_thresholds = [0, 0.2, 0.3]
 
     custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Endothelial_Injury.4", "MeV.Pericytes.0", "MeV.SMC.0", 
-     "MeV.Epithelial_ECad.0", "MeV.VLMC.0", "MeV.VLMC.1", "MeV.1.4.2" , "MeV.3.17", "MeV.2.1", "MeV.2.8",
-      "MeV.1.4.11", "MeV.1.4.4", "MeV.1.4.7", "MeV.1.4.6","MeV.Fib_CD34.0","MeV.4.34", "MeV.1.4.13", "MeV.Proliferative_Fibr.0", 
-     "MeV.Immune_doublets.0", "MeV.Low_Quality.0", "MeV.1.4.12"]
+     "MeV.Epithelial_ECad.0", "MeV.VLMC.0", "MeV.VLMC.1", "MeV.1.4.2" , "MeV.3.17", "MeV.2.1", "MeV.2.8",  "MeV.1.4.12",
+     "MeV.1.4.11", "MeV.1.4.4", "MeV.1.4.7", "MeV.1.4.6","MeV.Fib_CD34.0","MeV.4.34", "MeV.1.4.13", "MeV.Proliferative_Fibr.0", 
+     "MeV.Immune_doublets.0", "MeV.Low_Quality.0"]
 
     # Check for mismatches before reordering
-    check_cluster_order(adata, custom_cluster_order)
+    check_cluster_order(filtered_adata, custom_cluster_order)
     
     # Generate dotplots for each threshold
     create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order)

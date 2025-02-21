@@ -64,7 +64,7 @@ def collection_summary(dataset: str,
 def start() -> None:
     # Load scores
     
-    dest = f"{h5ad_dir}/adata_final_{dataset}_raw_norm_ranked_copy_copy.h5ad"    
+    dest = f"{h5ad_dir}/adata_final_{dataset}_raw_norm_ranked_copy_copy_copy.h5ad"    
     if os.path.exists(dest):
         print("Load gene rank data...")
         print(dest)

@@ -308,6 +308,8 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/meni
 
         # Create dendrogram (if not already present)
         print("   - Checking and creating dendrogram if necessary...")
+        # Preform Dendrogram
+        dendogram_sc(adata)
         plot_dendrogram(adata)
 
         # Select the top genes for each cluster
@@ -454,6 +456,30 @@ def export_to_excel(top_genes_cluster, threshold, output_dir="excels/meningeal/u
 
     print(f"Excel file saved: {output_file}")
 
+def dendogram_sc(adata):
+    """
+    Compute and save the dendrogram for a specific group and store it in a specified key.
+
+    Parameters:
+    adata (AnnData): The AnnData object containing the data.
+    dendrogram_key (str): The key to save the dendrogram in `adata.uns`.
+
+    Returns:
+    None
+    """
+
+    # Compute the dendrogram
+    print(f"Computing dendrogram for leiden_fusion...")
+    sc.tl.dendrogram(
+        adata,
+        groupby='leiden_fusion',
+        use_rep='X_pca',
+        cor_method='spearman',
+        linkage_method='ward',
+        use_raw=False
+    )
+
+
 def plot_dendrogram(adata, output_dir="dendrogram/dendrogram_meningeal"):
     """
     
@@ -515,7 +541,7 @@ def reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram, dendrogra
 
     return reordered_dict
 
-def export_top_genes_to_txt(top_genes_cluster, threshold, output_dir="txt_exports/meningeal"):
+def export_top_genes_to_txt(top_genes_cluster, threshold, output_dir="excels/meningeal/updates"):
     """
     Export the top genes from each cluster to a single text file.
 
@@ -549,19 +575,23 @@ def export_top_genes_to_txt(top_genes_cluster, threshold, output_dir="txt_export
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad")
 
-    #print(adata)
+    print(adata)
 
     filtered_adata = remove_NA_cat(adata)
 
     #Create cluster resolutions UMAP
-    umap_reso_cluster(adata, 'leiden_fusion')
+    umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
     pts_thresholds = [0.3, 0.4, 0.5]
 
     # Create dotplot of the top genes
     create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
+
+    print("----")
+    print(adata.obs['leiden_fusion'].cat.categories.to_list())
+    print("----")
 
     
 

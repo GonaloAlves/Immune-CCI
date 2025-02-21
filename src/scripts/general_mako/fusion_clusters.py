@@ -152,16 +152,14 @@ def save_adata(adata, file_path):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad")
 
     merge_groups = [
-    (['MeV.4.4', 'MeV.1.4.0'], 'MeV.4.4'),
-    (['MeV.1.4.12', 'MeV.NA'], 'MeV.NA')  
+    (['MeV.4.4', 'MeV.1.4.0'], 'MeV.4.4')
 ]
 
-    # adata = merge_clusters(adata, 'leiden_fusion_old2', merge_groups, 'leiden_fusion')
+    adata = merge_clusters(adata, 'leiden_fusion_old1', merge_groups, 'leiden_fusion')
 
-    # # Example usage
     # adata = recover_clusters(
     #     adata,
     #     my_resolution='leiden_fusion',
@@ -170,9 +168,10 @@ if __name__ == "__main__":
     #     old_resolution='leiden_fusion_old1'
     # )
     print("----------")
+    print_cell_counts(adata, 'leiden_fusion')
     print_cell_counts(adata, 'leiden_fusion_old1')
 
     
 
-    output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
-    #save_adata(adata, output_file)
+    output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad"
+    save_adata(adata, output_file)
