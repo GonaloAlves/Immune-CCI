@@ -77,14 +77,27 @@ if __name__ == "__main__":
         ('MeV.3.30', 'MeV.Proliferative_Fibr.0'),
         ('MeV.4.30', 'MeV.Fib_CD34.0'),
         ('MeV.1.4.8', 'MeV.Low_Quality.0'),
-        ('MeV.1.4.21', 'MeV.Immune_doublets'),
-        ('MeV.4.26', 'MeV.Epithelial_ECad.0')
+        ('MeV.1.4.21', 'MeV.Immune_doublets.0'),
+        ('MeV.4.26', 'MeV.Epithelial_ECad.0'),
+        ('MeV.4.4', 'MeV.VLMC.0'),
+        ('MeV.4.12', 'MeV.VLMC.1'),
+        ('MeV.3.17', 'MeV.ECM.0'),
+        ('MeV.2.1', 'MeV.ECM.1'),
+        ('MeV.2.8', 'MeV.ECM.2'),
+        ('MeV.1.4.2', 'MeV.Endo_Unknown.5'),
+        ('MeV.1.4.11', 'MeV.Fib.0'),
+        ('MeV.1.4.4', 'MeV.Fib.1'),
+        ('MeV.1.4.7', 'MeV.Fib.2'),
+        ('MeV.1.4.6', 'MeV.Fib.3'),
+        ('MeV.1.4.12', 'MeV.Fib.4'),
+        ('MeV.4.34', 'MeV.Fib.5'),
+        ('MeV.1.4.13', 'MeV.Fib.6'),
+        ('MeV.Fib_CD34.0', 'MeV.Fib_CD34.7')
     ]
 
     rename_pairs= [
-        ('MeV.4.4', 'MeV.VLMC.0'),
-        ('MeV.4.12', 'MeV.VLMC.1'),
-        ('MeV.Immune_doublets', 'MeV.Immune_doublets.0')
+        ('MeV.EMC.2', 'MeV.ECM.2'),
+        ('MeV.EMC.1', 'MeV.ECM.1')
 
     ]
 
