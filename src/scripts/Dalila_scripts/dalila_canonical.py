@@ -5,7 +5,7 @@ import scanpy as sc
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# This script will display the gene expression values of the canonical genes from Meningeal dataset
+# This script will display the gene expression values of Dalila's canonical genes from Meningeal dataset
 
 
 # Load the dataset
@@ -123,7 +123,7 @@ def dendogram_sc(adata):
     )
 
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_meningeal/updated_pts4"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_dalila"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -156,8 +156,8 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         # Create cluster DataFrames with the current threshold
         cluster_dfs = create_cluster_dfs(gene_names, pts, pts_threshold=threshold)
 
-        # Remove NA clusters
-        cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
+        # # Remove NA clusters
+        # cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
 
         # Compare canonical genes with cluster-specific genes
         filtered_genes = compare_canonical(genes, cluster_dfs)
@@ -169,8 +169,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         user_gene_group_order = []
 
         # Example user-defined gene group order
-        user_gene_group_order = ["Endothelial","Epithelial" ,"SMC","Pericytes" ,"VLMC","ECM", 
-                                  "General_Fib", "Proliferative", "Order", "Paper"]
+        user_gene_group_order = ["Epithelial_state", "Mesenchymal_state"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -227,9 +226,9 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"dotplot_scaled_no_dendro_{threshold}.png")
+        output_scaled_no_dendro = os.path.join(output_dir, f"dotplot_scaled_{threshold}.png")
         output_scaled_dendro = os.path.join(output_dir, f"dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"dotplot_normal_no_dendro_{threshold}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"dotplot_normal_{threshold}.png")
         output_normal_dendro = os.path.join(output_dir, f"dotplot_normal_dendro_{threshold}.png")
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
@@ -397,13 +396,13 @@ if __name__ == "__main__":
     filtered_adata = remove_NA_cat(adata)
 
     clusters_to_remove = ['MeV.Immune_doublets.0', 'MeV.Low_Quality.0']
-    adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
+    adata_filtered = remove_clusters(filtered_adata, clusters_to_remove)
 
     #preform dendrogram
-    dendogram_sc(adatas_filtered)
+    dendogram_sc(adata_filtered)
 
     # Load canonical gene lists from a directory
-    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal"
+    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Dalila"
     genes = load_canonical_from_dir(canonical_genes_dir)
 
 
@@ -417,9 +416,9 @@ if __name__ == "__main__":
 
 
     # Check for mismatches before reordering
-    check_cluster_order(adatas_filtered, custom_cluster_order)
+    check_cluster_order(adata_filtered, custom_cluster_order)
     
     # Generate dotplots for each threshold
-    create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order)
+    create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order)
 
     

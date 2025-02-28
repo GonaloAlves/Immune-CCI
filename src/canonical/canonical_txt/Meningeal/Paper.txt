@@ -3,10 +3,10 @@ Fbxl7
 Kank1
 Actn2
 Pde1c
-Rbms3
-Fhod3
 Ghr
 Gsn
+Rbms3
+Fhod3
 Cdh19
 Lama2
 Magi1

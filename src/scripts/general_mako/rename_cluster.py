@@ -84,7 +84,7 @@ if __name__ == "__main__":
         ('MeV.3.17', 'MeV.ECM.0'),
         ('MeV.2.1', 'MeV.ECM.1'),
         ('MeV.2.8', 'MeV.ECM.2'),
-        ('MeV.1.4.2', 'MeV.Endo_Unknown.5'),
+        ('MeV.1.4.2', 'MeV.Fib_Unknown'),
         ('MeV.1.4.11', 'MeV.Fib.0'),
         ('MeV.1.4.4', 'MeV.Fib.1'),
         ('MeV.1.4.7', 'MeV.Fib.2'),
@@ -96,8 +96,7 @@ if __name__ == "__main__":
     ]
 
     rename_pairs= [
-        ('MeV.EMC.2', 'MeV.ECM.2'),
-        ('MeV.EMC.1', 'MeV.ECM.1')
+        ('MeV.Endo_Unknown.5', 'MeV.Fib_Unknown.0')
 
     ]
 

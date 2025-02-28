@@ -11,3 +11,7 @@ Col1a2
 Col1a1
 Col5a1
 Cd34
+Mmp2
+Cxcl12
+Islr
+Gja1
