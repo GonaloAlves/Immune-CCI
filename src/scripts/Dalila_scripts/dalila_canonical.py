@@ -151,16 +151,19 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         print(f"\nProcessing pts threshold: {threshold}")
 
         # Extract DGE data
-        gene_names, pts = extract_dge_data(adata)
+        gene_names, logfoldchanges, pvals_adj, pts = extract_dge_data(adata)
 
         # Create cluster DataFrames with the current threshold
-        cluster_dfs = create_cluster_dfs(gene_names, pts, pts_threshold=threshold)
+        cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, pts, pts_threshold=threshold)
 
         # # Remove NA clusters
         # cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
 
         # Compare canonical genes with cluster-specific genes
         filtered_genes = compare_canonical(genes, cluster_dfs)
+
+        # Export filtered genes to Excel
+        export_to_excel(filtered_genes)
 
         # Aggregate filtered genes by gene group
         top_genes_names = top_gene_names(filtered_genes, genes)
@@ -173,6 +176,9 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
+        
+        # Exporting to excel
+        export_to_excel(filtered_genes, cluster_dfs)
 
         # Generate four different dotplots per threshold
         print(f"Generating dotplots for pts threshold: {threshold}")
@@ -242,29 +248,24 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         print(f"  - {output_scaled_dendro}")
         print(f"  - {output_normal_no_dendro}")
         print(f"  - {output_normal_dendro}")
+        
+
 
 
 def extract_dge_data(adata):
-    """
-    Extract the different type of data from the AnnData object like the differential gene expression values from each cell.
-
-    Parameters:
-    adata (AnnData): The AnnData object containing the DGE data.
-
-    Returns:
-    tuple: DataFrames for gene names and pts.
-    """
-    dge_fusion = adata.uns['rank_genes_groups_leiden_fusion']
+    dge_fusion = adata.uns.get('rank_genes_groups_leiden_fusion', None)
     
-    # Convert the extracted data into DataFrames
-    gene_names = pd.DataFrame(dge_fusion['names'])
-    pts = pd.DataFrame(dge_fusion['pts'])
-    
-    return gene_names, pts
+    gene_names = pd.DataFrame(dge_fusion.get('names', []))
+    logfoldchanges = pd.DataFrame(dge_fusion.get('logfoldchanges', []))
+    pvals_adj = pd.DataFrame(dge_fusion.get('pvals_adj', []))
+    pts = pd.DataFrame(dge_fusion.get('pts', []))
+
+    return gene_names, logfoldchanges, pvals_adj, pts
+
 
 
 # Step 3: Create cluster dataframes with filtered data
-def create_cluster_dfs(gene_names, pts, pts_threshold=0):
+def create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, pts, pts_threshold=0):
     """
     Create a dictionary of dataframes per cluster, with the respective gene expression data.
     By default this function will not order the genes by fold change and the default minimun pts is 0
@@ -287,6 +288,8 @@ def create_cluster_dfs(gene_names, pts, pts_threshold=0):
 
         # Create dataframe for each cluster
         cluster_df = pd.DataFrame({
+            'logfoldchange': logfoldchanges.iloc[:, i].values,
+            'pval_adj': pvals_adj.iloc[:, i].values,
             'pts': pts_reindexed.values},
             index=gene_reindex.values
         )
@@ -300,11 +303,12 @@ def create_cluster_dfs(gene_names, pts, pts_threshold=0):
         mask_pts = (cluster_df['pts'] >= pts_threshold)
         filtered_df = cluster_df[mask_pts]
 
-
         # Assigns the cluster name as the name of the resolution atributed
         cluster_names = gene_names.columns[i]
         cluster_dfs[cluster_names] = filtered_df  # Store the respective clusters in the dictionary
-
+        print("----------")
+        print(cluster_dfs)
+        print("----------")
     return cluster_dfs
 
 
@@ -319,6 +323,7 @@ def compare_canonical(genes, cluster_dfs):
             if not filtered_cluster.empty:
                 group_results[cluster_name] = filtered_cluster
         new_dic[group_name] = group_results
+
     return new_dic
 
 
@@ -387,36 +392,34 @@ def check_cluster_order(adata, cluster_order):
     if not missing_in_data and not missing_in_order:
         print("\n All categories match! Reordering should work.")
 
-def export_top_genes_to_txt(top_genes_cluster, threshold, output_dir="excels/meningeal/updates"):
+def export_to_excel(filtered_genes, output_dir="excels/dalila"):
     """
-    Export the top genes from each cluster to a single text file.
+    Export filtered genes into separate Excel files, one for each gene group.
+    Each sheet in the Excel file represents a cluster, containing gene expression data for that gene group.
 
     Parameters:
-    top_genes_cluster (dict): Dictionary containing top genes for each cluster.
-    threshold (float): The threshold value used for filtering, included in the filename.
-    output_dir (str): Directory to save the text file.
+    - filtered_genes (dict): Dictionary of filtered genes grouped by gene group and cluster.
+    - output_dir (str): Directory where the Excel files will be saved.
 
     Returns:
-    None
+    - None
     """
     # Ensure output directory exists
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
+    
+    for gene_group, clusters in filtered_genes.items():
+        output_file = os.path.join(output_dir, f"{gene_group}.xlsx")
+        print(f"\n📁 Exporting data for gene group '{gene_group}' to: {output_file}")
 
-    # Define the output file path
-    output_file = os.path.join(output_dir, f"top_genes_clusters_{threshold}.txt")
+        with pd.ExcelWriter(output_file) as writer:
+            for cluster_name, df in clusters.items():
+                if not df.empty:
+                    df.to_excel(writer, sheet_name=cluster_name)
+                else:
+                    print(f"⚠ WARNING: No data for {cluster_name}. Skipping sheet.")
 
-    print(f"\nExporting top genes to text file: {output_file}")
+        print(f"✔ Saved Excel file: {output_file}")
 
-    with open(output_file, 'w') as f:
-        for cluster, df in top_genes_cluster.items():
-            f.write(f"Cluster: {cluster}\n")  # Write cluster name
-            f.write(f"Top Genes:\n")
-            for gene in df.index.tolist():
-                f.write(f"  - {gene}\n")  # Write each gene name
-            f.write("\n" + "-"*40 + "\n")  # Separator between clusters
-
-    print(f"Text file saved: {output_file}")
 
 
 # Main execution block
@@ -452,4 +455,3 @@ if __name__ == "__main__":
     # Generate dotplots for each threshold
     create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order)
 
-    
