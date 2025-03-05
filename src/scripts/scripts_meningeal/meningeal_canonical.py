@@ -392,7 +392,7 @@ def check_cluster_order(adata, cluster_order):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
     filtered_adata = remove_NA_cat(adata)
 
@@ -410,9 +410,9 @@ if __name__ == "__main__":
     # Define thresholds
     pts_thresholds = [0, 0.2, 0.3]
 
-    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.3", "MeV.Endothelial.2", "MeV.Endothelial.1", "MeV.Endothelial_Injury.4", "MeV.Epithelial_ECad.0","MeV.SMC.0", 
-     "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.ECM.0", "MeV.ECM.1", "MeV.ECM.2"
-     ,"MeV.Fib_Unknown.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.3","MeV.Fib_CD34.7", "MeV.Fib.4", "MeV.Fib.5", "MeV.Fib.6", "MeV.Proliferative_Fibr.0"]
+    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Endothelial_Injury.4", "MeV.Epithelial_ECad.0",
+                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.ECM.0", "MeV.ECM.1", "MeV.ECM.2", "MeV.Fib.0", "MeV.Fib.1", 
+                            "MeV.Fib.2", "MeV.Fib.3", "MeV.Fib.4", "MeV.Fib_CD34.7", "MeV.Fib.5", "MeV.Fib.6", "MeV.Proliferative_Fibr.0", "MeV.Fib_Unknown.8"]
     
 
 

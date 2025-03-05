@@ -152,7 +152,7 @@ def save_adata(adata, file_path):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
     merge_groups = [
     (['MeV.4.4', 'MeV.1.4.0'], 'MeV.4.4')
@@ -173,5 +173,5 @@ if __name__ == "__main__":
 
     
 
-    output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad"
+    output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     save_adata(adata, output_file)

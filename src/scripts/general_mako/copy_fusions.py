@@ -83,7 +83,7 @@ def save_txt(txt, file_path="unique_clusters_comparison.xlsx"):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
     # Copy and organize leiden resolutions
     adata, txt = copy_leidens(
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     save_txt(txt, file_path="unique_clusters_comparison.xlsx")
 
     # Save the updated AnnData object (optional)
-    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad"
+    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     print(f"Saving updated AnnData to {output_path}...")
     adata.write_h5ad(output_path, compression='gzip')
     print("Save complete.")

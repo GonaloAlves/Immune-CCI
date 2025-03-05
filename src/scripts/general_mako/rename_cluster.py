@@ -51,7 +51,7 @@ def rename_clusters(adata, rename_pairs, resolution="leiden_fusion"):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad"
+    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     adata = load_data(file_path)
 
     # List of clusters to rename
@@ -68,14 +68,14 @@ if __name__ == "__main__":
     
     old_meningeal = [
         ('MeV.1.4.1', 'MeV.Endothelial.0'),
-        ('MeV.4.21', 'MeV.Endothelial.1'),
+        ('MeV.4.21', 'MeV.Endothelial.3'),
         ('MeV.1.4.5', 'MeV.Endothelial.2'),
-        ('MeV.1.4.15', 'MeV.Endothelial.3'),
+        ('MeV.1.4.15', 'MeV.Endothelial.1'),
         ('MeV.1.4.20', 'MeV.Endothelial_Injury.4'),
         ('MeV.4.31', 'MeV.SMC.0'),
         ('MeV.4.1', 'MeV.Pericytes.0'),
         ('MeV.3.30', 'MeV.Proliferative_Fibr.0'),
-        ('MeV.4.30', 'MeV.Fib_CD34.0'),
+        ('MeV.4.30', 'MeV.Fib_CD34.7'),
         ('MeV.1.4.8', 'MeV.Low_Quality.0'),
         ('MeV.1.4.21', 'MeV.Immune_doublets.0'),
         ('MeV.4.26', 'MeV.Epithelial_ECad.0'),
@@ -84,19 +84,42 @@ if __name__ == "__main__":
         ('MeV.3.17', 'MeV.ECM.0'),
         ('MeV.2.1', 'MeV.ECM.1'),
         ('MeV.2.8', 'MeV.ECM.2'),
-        ('MeV.1.4.2', 'MeV.Fib_Unknown'),
+        ('MeV.1.4.2', 'MeV.Fib_Unknown.8'),
         ('MeV.1.4.11', 'MeV.Fib.0'),
         ('MeV.1.4.4', 'MeV.Fib.1'),
         ('MeV.1.4.7', 'MeV.Fib.2'),
         ('MeV.1.4.6', 'MeV.Fib.3'),
         ('MeV.1.4.12', 'MeV.Fib.4'),
         ('MeV.4.34', 'MeV.Fib.5'),
-        ('MeV.1.4.13', 'MeV.Fib.6'),
-        ('MeV.Fib_CD34.0', 'MeV.Fib_CD34.7')
+        ('MeV.1.4.13', 'MeV.Fib.6')
     ]
 
     rename_pairs= [
-        ('MeV.Endo_Unknown.5', 'MeV.Fib_Unknown.0')
+        ('MeV.1.4.1', 'MeV.Endothelial.0'),
+        ('MeV.4.21', 'MeV.Endothelial.3'),
+        ('MeV.1.4.5', 'MeV.Endothelial.2'),
+        ('MeV.1.4.15', 'MeV.Endothelial.1'),
+        ('MeV.1.4.20', 'MeV.Endothelial_Injury.4'),
+        ('MeV.4.31', 'MeV.SMC.0'),
+        ('MeV.4.1', 'MeV.Pericytes.0'),
+        ('MeV.3.30', 'MeV.Proliferative_Fibr.0'),
+        ('MeV.4.30', 'MeV.Fib_CD34.7'),
+        ('MeV.1.4.8', 'MeV.Low_Quality.0'),
+        ('MeV.1.4.21', 'MeV.Immune_doublets.0'),
+        ('MeV.4.26', 'MeV.Epithelial_ECad.0'),
+        ('MeV.4.4', 'MeV.VLMC.0'),
+        ('MeV.4.12', 'MeV.VLMC.1'),
+        ('MeV.3.17', 'MeV.ECM.0'),
+        ('MeV.2.1', 'MeV.ECM.1'),
+        ('MeV.2.8', 'MeV.ECM.2'),
+        ('MeV.1.4.2', 'MeV.Fib_Unknown.8'),
+        ('MeV.1.4.11', 'MeV.Fib.0'),
+        ('MeV.1.4.4', 'MeV.Fib.1'),
+        ('MeV.1.4.7', 'MeV.Fib.2'),
+        ('MeV.1.4.6', 'MeV.Fib.3'),
+        ('MeV.1.4.12', 'MeV.Fib.4'),
+        ('MeV.4.34', 'MeV.Fib.5'),
+        ('MeV.1.4.13', 'MeV.Fib.6')
 
     ]
 
@@ -108,7 +131,7 @@ if __name__ == "__main__":
     print("----")
 
     # Save the modified AnnData object
-    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad"
+    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     print(f"Saving modified AnnData to '{output_path}'...")
     adata.write_h5ad(output_path, compression="gzip")
     print("Save complete.")
