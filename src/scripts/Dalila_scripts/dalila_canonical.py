@@ -140,7 +140,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         os.makedirs(output_dir)
 
     #print(adata['leiden_fusion'].cat.categories.to_list())
-    print(adata)
+    
     # Ensure leiden_fusion is categorical and reorder it
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
@@ -163,7 +163,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         filtered_genes = compare_canonical(genes, cluster_dfs)
 
         # Export filtered genes to Excel
-        export_to_excel(filtered_genes)
+        export_to_excel(filtered_genes, pts_threshold=threshold)
 
         # Aggregate filtered genes by gene group
         top_genes_names = top_gene_names(filtered_genes, genes)
@@ -177,8 +177,6 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
         
-        # Exporting to excel
-        export_to_excel(filtered_genes, cluster_dfs)
 
         # Generate four different dotplots per threshold
         print(f"Generating dotplots for pts threshold: {threshold}")
@@ -306,9 +304,7 @@ def create_cluster_dfs(gene_names, logfoldchanges, pvals_adj, pts, pts_threshold
         # Assigns the cluster name as the name of the resolution atributed
         cluster_names = gene_names.columns[i]
         cluster_dfs[cluster_names] = filtered_df  # Store the respective clusters in the dictionary
-        print("----------")
-        print(cluster_dfs)
-        print("----------")
+        
     return cluster_dfs
 
 
@@ -392,7 +388,7 @@ def check_cluster_order(adata, cluster_order):
     if not missing_in_data and not missing_in_order:
         print("\n All categories match! Reordering should work.")
 
-def export_to_excel(filtered_genes, output_dir="excels/dalila"):
+def export_to_excel(filtered_genes, pts_threshold, output_dir="excels/dalila"):
     """
     Export filtered genes into separate Excel files, one for each gene group.
     Each sheet in the Excel file represents a cluster, containing gene expression data for that gene group.
@@ -408,17 +404,27 @@ def export_to_excel(filtered_genes, output_dir="excels/dalila"):
     os.makedirs(output_dir, exist_ok=True)
     
     for gene_group, clusters in filtered_genes.items():
-        output_file = os.path.join(output_dir, f"{gene_group}.xlsx")
-        print(f"\n📁 Exporting data for gene group '{gene_group}' to: {output_file}")
+        output_file = os.path.join(output_dir, f"{gene_group}_{pts_threshold}.xlsx")
+        print(f"\n Exporting data for gene group '{gene_group}' to: {output_file}")
 
         with pd.ExcelWriter(output_file) as writer:
+            empty_sheets = True  # Flag to track if we have at least one sheet
+            
             for cluster_name, df in clusters.items():
                 if not df.empty:
+                    df = df.sort_index()  # Sort genes alphabetically
                     df.to_excel(writer, sheet_name=cluster_name)
+                    empty_sheets = False  # At least one sheet is valid
                 else:
-                    print(f"⚠ WARNING: No data for {cluster_name}. Skipping sheet.")
+                    print(f" WARNING: No data for {cluster_name}. Skipping sheet.")
+            
+            # If no sheets were added, create a placeholder sheet
+            if empty_sheets:
+                placeholder_df = pd.DataFrame({"Message": ["No data available"]})
+                placeholder_df.to_excel(writer, sheet_name="Placeholder")
 
-        print(f"✔ Saved Excel file: {output_file}")
+        print(f" Saved Excel file: {output_file}")
+
 
 
 
