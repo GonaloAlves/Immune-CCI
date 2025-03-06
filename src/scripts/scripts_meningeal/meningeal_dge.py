@@ -146,7 +146,7 @@ def remove_NA_cat(adata: sc.AnnData):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad"
+    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     adata = load_data(file_path)
 
     # # Backup the existing DGE data
@@ -167,5 +167,5 @@ if __name__ == "__main__":
     print(adata)
     print(adata.obs['leiden_fusion'].cat.categories.to_list())
     # Save the updated AnnData object
-    output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_copy.h5ad"
+    output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     save_adata(adata, output_file)
