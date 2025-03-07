@@ -1,10 +1,5 @@
-Notch3
 Myh11
 Acta2
-Tagln
-Lpp
-Synpo2
 Myom1
-Palld
-Ppp1r12b
-Pde3a
+Notch3
+Tagln
