@@ -14,10 +14,11 @@ conda activate mkpy
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/a_meningeal.py
 
-
-python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/meningeal_canonical.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/meningeal_canonical.py
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/excel_merge.py
+
+python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/meningeal_allgenes.py
 
 # Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/generate_tstat.r
 
