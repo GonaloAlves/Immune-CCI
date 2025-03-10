@@ -397,7 +397,7 @@ if __name__ == "__main__":
 
     filtered_adata = remove_NA_cat(adata)
 
-    clusters_to_remove = ['MeV.Immune_doublets.0', 'MeV.Low_Quality.0']
+    clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0']
     adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
 
     #preform dendrogram
@@ -411,9 +411,9 @@ if __name__ == "__main__":
     # Define thresholds
     pts_thresholds = [0, 0.2, 0.3]
 
-    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Endothelial_Injury.4", "MeV.Epithelial_ECad.0",
-                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.ECM.0", "MeV.ECM.1", "MeV.ECM.2", "MeV.Fib.0", "MeV.Fib.1", 
-                            "MeV.Fib.2", "MeV.Fib.3", "MeV.Fib.4", "MeV.Fib_CD34.7", "MeV.Fib.5", "MeV.Fib.6", "MeV.Proliferative_Fibr.0", "MeV.Fib_Unknown.8"]
+    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.EndothelialInjury.4", "MeV.EpithelialECad.0",
+                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" ,"MeV.ECM.1", "MeV.ECM.2", "MeV.Fib.4", "MeV.ECM.0", "MeV.Fib.0", "MeV.Fib.1", 
+                            "MeV.Fib.2", "MeV.Fib.3",  "MeV.FibCD34.7", "MeV.Fib.5", "MeV.Fib.6", "MeV.FibProlif.0", "MeV.FibUnknown.8"]
     
 
 

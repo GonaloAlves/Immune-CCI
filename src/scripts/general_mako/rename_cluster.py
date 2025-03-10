@@ -95,31 +95,14 @@ if __name__ == "__main__":
     ]
 
     rename_pairs= [
-        ('MeV.1.4.1', 'MeV.Endothelial.0'),
-        ('MeV.4.21', 'MeV.Endothelial.3'),
-        ('MeV.1.4.5', 'MeV.Endothelial.2'),
-        ('MeV.1.4.15', 'MeV.Endothelial.1'),
-        ('MeV.1.4.20', 'MeV.Endothelial_Injury.4'),
-        ('MeV.4.31', 'MeV.SMC.0'),
-        ('MeV.4.1', 'MeV.Pericytes.0'),
-        ('MeV.3.30', 'MeV.Proliferative_Fibr.0'),
-        ('MeV.4.30', 'MeV.Fib_CD34.7'),
-        ('MeV.1.4.8', 'MeV.Low_Quality.0'),
-        ('MeV.1.4.21', 'MeV.Immune_doublets.0'),
-        ('MeV.4.26', 'MeV.Epithelial_ECad.0'),
-        ('MeV.4.4', 'MeV.VLMC.0'),
-        ('MeV.4.12', 'MeV.VLMC.1'),
-        ('MeV.3.17', 'MeV.ECM.0'),
-        ('MeV.2.1', 'MeV.ECM.1'),
-        ('MeV.2.8', 'MeV.ECM.2'),
-        ('MeV.1.4.2', 'MeV.Fib_Unknown.8'),
-        ('MeV.1.4.11', 'MeV.Fib.0'),
-        ('MeV.1.4.4', 'MeV.Fib.1'),
-        ('MeV.1.4.7', 'MeV.Fib.2'),
-        ('MeV.1.4.6', 'MeV.Fib.3'),
-        ('MeV.1.4.12', 'MeV.Fib.4'),
-        ('MeV.4.34', 'MeV.Fib.5'),
-        ('MeV.1.4.13', 'MeV.Fib.6')
+        ('MeV.Endothelial_Injury.4', 'MeV.EndothelialInjury.4'),
+        ('MeV.Proliferative_Fibr.0', 'MeV.FibProlif.0'),
+        ('MeV.Fib_CD34.7', 'MeV.FibCD34.7'),
+        ('MeV.Low_Quality.0', 'MeV.LowQuality.0'),
+        ('MeV.Immune_doublets.0', 'MeV.ImmuneDoublets.0'),
+        ('MeV.Epithelial_ECad.0', 'MeV.EpithelialECad.0'),
+        ('MeV.Fib_Unknown.8', 'MeV.FibUnknown.8')
+
 
     ]
 
