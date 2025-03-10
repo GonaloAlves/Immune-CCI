@@ -14,6 +14,7 @@ def load_data(file_path):
     Returns:
     AnnData: The loaded AnnData object.
     """
+    print("dge_immune.py")
     print("Loading h5ad file...")
     return sc.read_h5ad(file_path)
 
@@ -131,14 +132,14 @@ if __name__ == "__main__":
     # Perform DGE analysis
     adata = dge_data(adata, 'leiden_fusion', 'rank_genes_groups_leiden_fusion')
 
-    filtered_adata = remove_NA_cat(adata)
+    #filtered_adata = remove_NA_cat(adata)
 
     # Preform Dendrogram
-    dendogram_sc(filtered_adata)
+    dendogram_sc(adata)
         
     # adata = drop_mako(adata)
     # print(adata)
 
     # Save the updated AnnData object
     output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
-    save_adata(filtered_adata, output_file)
+    save_adata(adata, output_file)

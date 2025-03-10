@@ -209,6 +209,7 @@ def extract_dge_data(adata):
     return gene_names, pts
 
 
+
 # Step 3: Create cluster dataframes with filtered data
 def create_cluster_dfs(gene_names, pts, pts_threshold):
     """
@@ -312,6 +313,44 @@ def top_gene_names(filtered_genes, original_gene_dict):
 
     return top_genes_names
 
+def check_cluster_order(adata, cluster_order):
+    """
+    Check for mismatches between existing clusters and the user-defined cluster order.
+
+    Parameters:
+    adata (AnnData): The AnnData object.
+    cluster_order (list): The user-defined list of clusters to reorder.
+
+    Returns:
+    None
+    """
+    # Extract existing categories in 'leiden_fusion'
+    existing_categories = list(adata.obs['leiden_fusion'].cat.categories)
+
+    print("\n--- Existing Categories in 'leiden_fusion' ---")
+    print(existing_categories)
+
+    print("\n--- User-Defined Cluster Order ---")
+    print(cluster_order)
+
+    # Check for clusters in custom order that don't exist in the data
+    missing_in_data = [cluster for cluster in cluster_order if cluster not in existing_categories]
+    
+    # Check for clusters in the data that aren't in the custom order
+    missing_in_order = [cluster for cluster in existing_categories if cluster not in cluster_order]
+
+    if missing_in_data:
+        print("\n Clusters in custom order but NOT in 'leiden_fusion':")
+        print(missing_in_data)
+    
+    if missing_in_order:
+        print("\n Clusters in 'leiden_fusion' but NOT in custom order:")
+        print(missing_in_order)
+
+    if not missing_in_data and not missing_in_order:
+        print("\n All categories match! Reordering should work.")
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -327,13 +366,17 @@ if __name__ == "__main__":
     dendogram_sc(filtered_adata)
 
     # Define thresholds
-    pts_thresholds = [0.2, 0.3]
+    pts_thresholds = [0, 0.2, 0.3]
 
     custom_cluster_order = [
-    "Imm.M0_like.0", "Imm.M0_like.1", 
-    "Imm.M0_like.2", "Imm.MHCII.0" ,
+    "Imm.M0Like.0", "Imm.M0Like.1", 
+    "Imm.M0Like.2", "Imm.MHCII.0" ,
     "Imm.Interferon.0", "Imm.DAM.0", 
     "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0"]
+
+    # Check for mismatches before reordering
+    check_cluster_order(filtered_adata, custom_cluster_order)
+    
 
     # Generate dotplots for each threshold
     create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order)

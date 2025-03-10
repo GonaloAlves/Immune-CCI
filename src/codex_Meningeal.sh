@@ -8,9 +8,9 @@ conda activate mkpy
 
 #python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/fusion_clusters.py
 
-#python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/rename_cluster.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/rename_cluster.py
 
-#python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/meningeal_dge.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/meningeal_dge.py
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_meningeal/a_meningeal.py
 
