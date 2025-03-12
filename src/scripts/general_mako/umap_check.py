@@ -35,6 +35,8 @@ def load_obsm_from_excel(adata, excel_path):
         df = df.reindex(adata.obs.index)
         adata.obsm[key] = df.values
     
+    adata.obsm["X_umap"] = adata.obsm["X_umap_leiden_fusion"]
+    
     print("obsm data successfully loaded.")
 
 def load_obsp_from_excel(adata, excel_path):
@@ -54,7 +56,43 @@ def load_obsp_from_excel(adata, excel_path):
     
     print("obsp data successfully loaded.")
 
-def compare_umap(adata_immune, adata_meningeal, keyname ,output_dir='/home/makowlg/Documents/Immune-CCI/src/reso/resos'):
+    import scanpy as sc
+
+def set_umap_key(adata):
+    """
+    Set the correct UMAP key and update the neighbors for Leiden fusion clustering.
+    
+    Parameters:
+    - adata (AnnData): Annotated data matrix.
+    
+    Returns:
+    - None
+    """
+    print("Updating UMAP and neighbors for Leiden Fusion...")
+    
+    # Set the correct UMAP embedding
+    if "X_umap_leiden_fusion" in adata.obsm:
+        adata.obsm["X_umap"] = adata.obsm["X_umap_leiden_fusion"]
+        print("✔ UMAP key updated to 'X_umap_leiden_fusion'")
+    else:
+        print("⚠ WARNING: 'X_umap_leiden_fusion' not found in adata.obsm")
+
+    # Set the correct PCA embedding
+    if "X_pca_leiden_fusion" in adata.obsm:
+        adata.obsm["X_pca"] = adata.obsm["X_pca_leiden_fusion"]
+        print("✔ PCA key updated to 'X_pca_leiden_fusion'")
+    else:
+        print("⚠ WARNING: 'X_pca_leiden_fusion' not found in adata.obsm")
+    
+    # Update the neighbors key if needed
+    if "neighbors_15_connectivities_leiden_fusion" in adata.obsp:
+        adata.obsp["neighbors_15_connectivities"] = adata.obsp["neighbors_15_connectivities_leiden_fusion"]
+        adata.obsp["neighbors_15_distance"] = adata.obsp["neighbors_15_distances_leiden_fusion"]
+        print("✔ Neighbors updated for Leiden Fusion")
+    else:
+        print("⚠ WARNING: Leiden fusion neighbors not found in adata.obsp")
+
+def compare_umap(adata_immune, adata_meningeal ,output_dir='/home/makowlg/Documents/Immune-CCI/src/reso/resos'):
     """
     Compare and plot UMAP embeddings from two datasets.
     
@@ -71,7 +109,7 @@ def compare_umap(adata_immune, adata_meningeal, keyname ,output_dir='/home/makow
     plt.savefig(output_path, bbox_inches='tight')
     print(f"UMAP comparison saved to {output_path}")
 
-def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_immune/updates"):
+def umap_reso_cluster(adata, resolution_name, keyname, d, output_dir="reso/resos"):
     """
     Plot UMAP for a specific resolution with cluster numbers displayed at the centroid of each cluster.
 
@@ -84,13 +122,12 @@ def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_immune/updat
     """
 
     # Plot UMAP for the specified resolution
-    ax = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}", return_fig=True)
+    ax = sc.pl.umap(adata, color=resolution_name ,title=f"UMAP - {resolution_name}", return_fig=True)
     ax_ondata = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}",legend_loc = 'on data',legend_fontweight = 'bold', legend_fontsize = 12, legend_fontoutline = 1,return_fig=True)
 
-    
     # Save the UMAP plot as an image (optional)
-    output_path= os.path.join(output_dir, f"umap_Immune_{resolution_name}_n.png") 
-    output_dir_leg = os.path.join(output_dir, f"umap_Immune_{resolution_name}_l.png")
+    output_path= os.path.join(output_dir, f"umap_{d}_{keyname}_{resolution_name}_n.png") 
+    output_dir_leg = os.path.join(output_dir, f"umap_{d}_{keyname}_{resolution_name}_l.png")
     ax.figure.savefig(output_path, bbox_inches="tight")
     ax_ondata.figure.savefig(output_dir_leg, bbox_inches="tight")
     # print(f"UMAP plot saved as {output_path}")
@@ -106,13 +143,15 @@ if __name__ == "__main__":
         excel_path_obsp = f"/home/makowlg/Documents/Immune-CCI/src/reso/umap_cords/{d}_obsp_data.xlsx"
         
         adata = load_data(file_path)
-        umap_reso_cluster(adata, "leiden_fusion", "X_umap")
-        
+        umap_reso_cluster(adata,  "leiden_fusion", "old", d)
+
         print(adata)
         load_obsm_from_excel(adata, excel_path_obsm)
         load_obsp_from_excel(adata, excel_path_obsp)
+        set_umap_key(adata)
         adatas[d] = adata
+        print(adata)
     
-        umap_reso_cluster(adata, "leiden_fusion", "X_umap")
+        umap_reso_cluster(adata, "leiden_fusion", "new", d)
 
 
