@@ -425,6 +425,32 @@ def export_to_excel(filtered_genes, pts_threshold, output_dir="excels/dalila"):
 
         print(f" Saved Excel file: {output_file}")
 
+def filter_cells_by_gene_expression(adata: sc.AnnData, gene_name: str):
+    """
+    Filter the AnnData object to retain only cells that express a specific gene (expression > 0).
+
+    Parameters:
+    adata (AnnData): The AnnData object containing gene expression data.
+    gene_name (str): The gene to filter on.
+
+    Returns:
+    AnnData: A new AnnData object containing only cells where the specified gene is expressed.
+    """
+    if gene_name not in adata.var_names:
+        print(f" WARNING: Gene '{gene_name}' not found in the dataset. Returning original dataset.")
+        return adata
+
+    print(f"Filtering cells that express the gene '{gene_name}'...")
+
+    # Create mask: Select cells where expression of the gene is greater than 0
+    mask = adata[:, gene_name].X > 0
+
+    # Apply mask to create new filtered dataset
+    filtered_adata = adata[mask].copy()
+
+    print(f"Filtered dataset contains {filtered_adata.n_obs} cells (out of {adata.n_obs}) that express '{gene_name}'.")
+
+    return filtered_adata
 
 
 
@@ -435,8 +461,10 @@ if __name__ == "__main__":
 
     filtered_adata = remove_NA_cat(adata)
 
-    clusters_to_remove = ['MeV.Immune_doublets.0', 'MeV.Low_Quality.0']
-    adata_filtered = remove_clusters(filtered_adata, clusters_to_remove)
+    gene_filtered_adata = filter_cells_by_gene_expression(filtered_adata, "Mylip")
+
+    clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0']
+    adata_filtered = remove_clusters(gene_filtered_adata, clusters_to_remove)
 
     #preform dendrogram
     dendogram_sc(adata_filtered)
@@ -449,9 +477,9 @@ if __name__ == "__main__":
     # Define thresholds
     pts_thresholds = [0, 0.2, 0.3]
 
-    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.3", "MeV.Endothelial.2", "MeV.Endothelial.1", "MeV.Endothelial_Injury.4", "MeV.Epithelial_ECad.0","MeV.SMC.0", 
+    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.3", "MeV.Endothelial.2", "MeV.Endothelial.1", "MeV.EndothelialInjury.4", "MeV.EpithelialECad.0","MeV.SMC.0", 
      "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.ECM.0", "MeV.ECM.1", "MeV.ECM.2"
-     , "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.3","MeV.Fib_CD34.7", "MeV.Fib.4", "MeV.Fib.5", "MeV.Fib.6", "MeV.Proliferative_Fibr.0","MeV.Fib_Unknown.8" ]
+     , "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.3","MeV.FibCD34.7", "MeV.Fib.4", "MeV.Fib.5", "MeV.Fib.6", "MeV.FibProlif.0","MeV.FibUnknown.8" ]
     
 
 
