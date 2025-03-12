@@ -123,7 +123,7 @@ def dendogram_sc(adata):
     )
 
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_dalila"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gene, output_dir="canonical/canonical_dalila"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -230,10 +230,10 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"dotplot_scaled_{threshold}.png")
-        output_scaled_dendro = os.path.join(output_dir, f"dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"dotplot_normal_{threshold}.png")
-        output_normal_dendro = os.path.join(output_dir, f"dotplot_normal_dendro_{threshold}.png")
+        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_{threshold}.png")
+        output_scaled_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_dendro_{threshold}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_{threshold}.png")
+        output_normal_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_dendro_{threshold}.png")
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
         dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
@@ -464,7 +464,7 @@ if __name__ == "__main__":
     gene_filtered_adata = filter_cells_by_gene_expression(filtered_adata, "Mylip")
 
     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0']
-    adata_filtered = remove_clusters(gene_filtered_adata, clusters_to_remove)
+    adata_filtered = remove_clusters(filtered_adata, clusters_to_remove)
 
     #preform dendrogram
     dendogram_sc(adata_filtered)
@@ -487,5 +487,5 @@ if __name__ == "__main__":
     check_cluster_order(adata_filtered, custom_cluster_order)
     
     # Generate dotplots for each threshold
-    create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order)
+    create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order, "")
 

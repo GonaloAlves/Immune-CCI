@@ -123,7 +123,7 @@ def dendogram_sc(adata):
     )
 
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_meningeal/updated_pts4"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gene, output_dir="canonical/canonical_meningeal/updated_pts4"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -228,10 +228,10 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"dotplot_scaled_no_dendro_{threshold}.png")
-        output_scaled_dendro = os.path.join(output_dir, f"dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"dotplot_normal_no_dendro_{threshold}.png")
-        output_normal_dendro = os.path.join(output_dir, f"dotplot_normal_dendro_{threshold}.png")
+        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_no_dendro_{threshold}.png")
+        output_scaled_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_dendro_{threshold}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_no_dendro_{threshold}.png")
+        output_normal_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_dendro_{threshold}.png")
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
         dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
@@ -389,6 +389,34 @@ def check_cluster_order(adata, cluster_order):
     if not missing_in_data and not missing_in_order:
         print("\n All categories match! Reordering should work.")
 
+def filter_cells_by_gene_expression(adata: sc.AnnData, gene_name: str):
+    """
+    Filter the AnnData object to retain only cells that express a specific gene (expression > 0).
+
+    Parameters:
+    adata (AnnData): The AnnData object containing gene expression data.
+    gene_name (str): The gene to filter on.
+
+    Returns:
+    AnnData: A new AnnData object containing only cells where the specified gene is expressed.
+    """
+    if gene_name not in adata.var_names:
+        print(f" WARNING: Gene '{gene_name}' not found in the dataset. Returning original dataset.")
+        return adata
+
+    print(f"Filtering cells that express the gene '{gene_name}'...")
+
+    # Create mask: Select cells where expression of the gene is greater than 0
+    mask = adata[:, gene_name].X > 0
+
+    # Apply mask to create new filtered dataset
+    filtered_adata = adata[mask].copy()
+
+    print(f"Filtered dataset contains {filtered_adata.n_obs} cells (out of {adata.n_obs}) that express '{gene_name}'.")
+
+    return filtered_adata
+
+
 
 # Main execution block
 if __name__ == "__main__":
@@ -397,8 +425,10 @@ if __name__ == "__main__":
 
     filtered_adata = remove_NA_cat(adata)
 
+    gene_filtered_adata = filter_cells_by_gene_expression(filtered_adata, "Mylip")
+
     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0']
-    adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
+    adatas_filtered = remove_clusters(gene_filtered_adata, clusters_to_remove)
 
     #preform dendrogram
     dendogram_sc(adatas_filtered)
@@ -421,6 +451,6 @@ if __name__ == "__main__":
     check_cluster_order(adatas_filtered, custom_cluster_order)
     
     # Generate dotplots for each threshold
-    create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order)
+    create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "Mylip_")
 
     
