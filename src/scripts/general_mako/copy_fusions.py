@@ -42,7 +42,7 @@ def copy_leidens(adata, old_reso1, new_reso1, fusion):
     # Create the new resolution columns by copying existing ones
     adata.obs[new_reso1] = adata.obs[old_reso1]  # Copy old_reso1 to new_reso1
     #adata.obs[new_reso2] = adata.obs[old_reso2]  # Copy old_reso2 to new_reso2
-    adata.obs[fusion] = adata.obs[old_reso1]     # Copy old_reso2 to fusion
+    adata.obs[old_reso1] = adata.obs[fusion]     # Copy fusion to old_reso1
     
     # # Remove the 'leiden_mako' column (or `old_reso2`) from adata.obs
     # adata.obs.drop(columns=[old_reso2], inplace=True)
@@ -84,7 +84,7 @@ def save_txt(txt, file_path="unique_clusters_comparison.xlsx"):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad")
 
     # Copy and organize leiden resolutions
     adata, txt = copy_leidens(
@@ -93,15 +93,16 @@ if __name__ == "__main__":
         new_reso1='leiden_fusion_old1', 
         # old_reso2='leiden_mako', 
         # new_reso2='leiden_fusion_old2', 
-        fusion='leiden_fusion'
+        fusion='annotation'
     )
     print(adata)
     print(adata.obs['leiden_fusion'].cat.categories.to_list())
+    print(adata.obs['leiden_fusion_old1'].cat.categories.to_list())
     # Save the unique clusters to an Excel file
     save_txt(txt, file_path="unique_clusters_comparison.xlsx")
 
     # Save the updated AnnData object (optional)
-    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
+    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad"
     print(f"Saving updated AnnData to {output_path}...")
     adata.write_h5ad(output_path, compression='gzip')
     print("Save complete.")
