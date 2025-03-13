@@ -17,7 +17,7 @@ def load_data(file_path):
     file_path (str): Path to the .h5ad file.
 
     Returns:
-    AnnData: The loaded AnnData object.
+    AnnData: The loaded AnnData object.ss
     """
     print("Loading h5ad file")
     return sc.read_h5ad(file_path)
