@@ -11,7 +11,7 @@ adata = sc.read_h5ad("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_
 ## DGEs ##
 
 dge_fusion = adata.uns['rank_genes_groups_leiden_fusion']
-# print(dge_fusion)
+# print(dge_fusion)s
 
 
 # Extracting values to DataFrames
