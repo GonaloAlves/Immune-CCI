@@ -193,13 +193,13 @@ def select_top_genes(cluster_dfs):
     for cluster, df in cluster_dfs.items():
         top_genes = filter_pval(df) # First remove the not significant genes 
 
-        if has_neg_lfc(top_genes): # If there is any neg lfc genes
-            num_nega_lfc = count_neg_lfc(top_genes)
-            top_genes_cluster[cluster] = replace_neg_lfc(df, top_genes, num_nega_lfc) # replace the neg genes
-        elif top_genes.empty:
-            top_genes_cluster[cluster] = replace_all(df) # replace all if it is empty
-        else:
-            top_genes_cluster[cluster] = top_genes # if the cluster doesnt have neg genes just continues
+        # if has_neg_lfc(top_genes): # If there is any neg lfc genes
+        #     num_nega_lfc = count_neg_lfc(top_genes)
+        #     top_genes_cluster[cluster] = replace_neg_lfc(df, top_genes, num_nega_lfc) # replace the neg genes
+        # elif top_genes.empty:
+        #     top_genes_cluster[cluster] = replace_all(df) # replace all if it is empty
+        # else:
+        top_genes_cluster[cluster] = top_genes # if the cluster doesnt have neg genes just continues
 
     return top_genes_cluster
 
@@ -279,7 +279,7 @@ if __name__ == "__main__":
 
     print(adata)
 
-    pts_thresholds = [0.3, 0.4, 0.5]
+    pts_thresholds = [0, 0.2, 0.3, 0.4, 0.5]
 
     # Create dotplot of the top genes
     start(adata, pts_thresholds)

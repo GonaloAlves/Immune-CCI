@@ -428,7 +428,7 @@ if __name__ == "__main__":
     gene_filtered_adata = filter_cells_by_gene_expression(filtered_adata, "Mylip")
 
     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0']
-    adatas_filtered = remove_clusters(gene_filtered_adata, clusters_to_remove)
+    adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
 
     #preform dendrogram
     dendogram_sc(adatas_filtered)
@@ -445,12 +445,12 @@ if __name__ == "__main__":
                             "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" ,"MeV.ECM.1", "MeV.ECM.2", "MeV.Fib.4", "MeV.ECM.0", "MeV.Fib.0", "MeV.Fib.1", 
                             "MeV.Fib.2", "MeV.Fib.3",  "MeV.FibCD34.7", "MeV.Fib.5", "MeV.Fib.6", "MeV.FibProlif.0", "MeV.FibUnknown.8"]
     
-
+#EndoUnknowed.4
 
     # Check for mismatches before reordering
     check_cluster_order(adatas_filtered, custom_cluster_order)
     
     # Generate dotplots for each threshold
-    create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "Mylip_")
+    create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "")
 
     
