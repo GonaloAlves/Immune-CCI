@@ -416,6 +416,33 @@ def filter_cells_by_gene_expression(adata: sc.AnnData, gene_name: str):
 
     return filtered_adata
 
+def export_cluster_cell_counts(adata, output_dir="excels/meningeal/updates"):
+    """
+    Export the number of cells per cluster to an Excel file.
+    
+    Parameters:
+    - adata (AnnData): Annotated data matrix.
+    - output_dir (str): Directory where the Excel file will be saved.
+    
+    Returns:
+    - None
+    """
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Count the number of cells per cluster
+    cell_counts = adata.obs['leiden_fusion'].value_counts().reset_index()
+    cell_counts.columns = ['Cluster', 'Cell Count']
+    
+    # Define output file path
+    output_file = os.path.join(output_dir, "cluster_cell_counts.xlsx")
+    
+    # Save to Excel
+    print(f"\n📁 Exporting cell counts to: {output_file}")
+    cell_counts.to_excel(output_file, index=False)
+    print(f"✔ Saved Excel file: {output_file}")
+
+
 
 
 # Main execution block
@@ -428,7 +455,7 @@ if __name__ == "__main__":
     gene_filtered_adata = filter_cells_by_gene_expression(filtered_adata, "Mylip")
 
     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0']
-    adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
+    adatas_filtered = remove_clusters(gene_filtered_adata, clusters_to_remove)
 
     #preform dendrogram
     dendogram_sc(adatas_filtered)
@@ -451,6 +478,9 @@ if __name__ == "__main__":
     check_cluster_order(adatas_filtered, custom_cluster_order)
     
     # Generate dotplots for each threshold
-    create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "")
+    #create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "")
+
+    export_cluster_cell_counts(adatas_filtered)
+
 
     
