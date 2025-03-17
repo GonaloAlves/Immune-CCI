@@ -435,12 +435,12 @@ def export_cluster_cell_counts(adata, output_dir="excels/meningeal/updates"):
     cell_counts.columns = ['Cluster', 'Cell Count']
     
     # Define output file path
-    output_file = os.path.join(output_dir, "cluster_cell_counts.xlsx")
+    output_file = os.path.join(output_dir, "cluster_cell_counts_all.xlsx")
     
     # Save to Excel
-    print(f"\n📁 Exporting cell counts to: {output_file}")
+    print(f"\n Exporting cell counts to: {output_file}")
     cell_counts.to_excel(output_file, index=False)
-    print(f"✔ Saved Excel file: {output_file}")
+    print(f"Saved Excel file: {output_file}")
 
 
 
@@ -478,7 +478,7 @@ if __name__ == "__main__":
     check_cluster_order(adatas_filtered, custom_cluster_order)
     
     # Generate dotplots for each threshold
-    #create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "")
+    create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "Mylip_")
 
     export_cluster_cell_counts(adatas_filtered)
 
