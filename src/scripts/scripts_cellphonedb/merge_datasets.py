@@ -65,7 +65,7 @@ def start() -> None:
 
     data: dict[str, sc.AnnData] = {}
     datasets_divided = [
-    'Neuron',
+    'Neu_CentralCanal',
     'Meningeal_Vascular',
     'Immune'
     ]
@@ -77,7 +77,7 @@ def start() -> None:
                  'sample_S15BC', 'sample_S15BR', 'sample_S15CC', 'sample_S15CR', 'sample_U00AX', 'sample_U00BX',
                  'sample_U00CX', 'n_counts', 'filt_counts', 'n_genes', 'filt_genes', 'percent_mito', 'filt_mito',
                  'doublet_score', 'predicted_doublet', 'doublet', 'annot_lineage_cell']
-    datset_names = {'Neuron': 'Neu',
+    datset_names = {'Neu_CentralCanal': 'Neu',
                     'Meningeal_Vascular': 'MeV',
                     'Immune': 'Imm'
                     }
@@ -221,7 +221,7 @@ def start() -> None:
     print("Save merged AnnData...")
     dest = f"{checkpoint_dir}/adata_final_merged_raw_norm_annot.h5ad"
     print(dest)
-    adata_concat.write_h5ad(dest, compression='gzip')
+    #adata_concat.write_h5ad(dest, compression='gzip')
         
 
 start()
