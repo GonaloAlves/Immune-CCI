@@ -85,6 +85,8 @@ def save_txt(txt, file_path="unique_clusters_comparison.xlsx"):
 if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad")
+    print("leiden_fusion")
+    print(adata.obs['leiden_fusion'].cat.categories.to_list())
 
     # Copy and organize leiden resolutions
     adata, txt = copy_leidens(
@@ -97,6 +99,7 @@ if __name__ == "__main__":
     )
     print(adata)
     print(adata.obs['leiden_fusion'].cat.categories.to_list())
+    print(adata.obs['annotation'].cat.categories.to_list())
     print(adata.obs['leiden_fusion_old1'].cat.categories.to_list())
     # Save the unique clusters to an Excel file
     save_txt(txt, file_path="unique_clusters_comparison.xlsx")

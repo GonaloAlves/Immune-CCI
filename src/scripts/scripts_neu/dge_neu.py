@@ -106,7 +106,7 @@ def dendogram_sc(adata):
     sc.tl.dendrogram(
         adata,
         groupby='leiden_fusion',
-        use_rep='X_pca',
+        use_rep='X_pca_leiden_fusion',
         cor_method='spearman',
         linkage_method='ward',
         use_raw=False
@@ -115,7 +115,7 @@ def dendogram_sc(adata):
 def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
-    mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells
+    mask_NA = adata.obs['leiden_fusion'] != 'Neu.NA' #creates mask for remove NA cells
     #print(mask_NA)    
     adata2 = adata[mask_NA] #apply mask
 
@@ -152,28 +152,52 @@ def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_neu"):
     # print(f"UMAP plot saved as {output_path}")
     plt.close()  # Close the plot to avoid overlap
 
+def plot_dendrogram(adata, output_dir="dendrogram/dendogram_neu"):
+    """
+    
+    """
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Plot the dendrogram
+    print(f"Plotting dendrogram for leiden_fusion...")
+    sc.pl.dendrogram(
+        adata,
+        groupby='leiden_fusion',
+        dendrogram_key=None,
+        orientation='top',
+        show=False
+    )
+
+    # Save the plot
+    output_path = os.path.join(output_dir, f"leiden_fusion_dendrogram.png")
+    plt.savefig(output_path, bbox_inches="tight")
+    plt.close()  # Close the current figure to avoid overlap
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
     file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad"
     adata = load_data(file_path)
+    print(adata)
 
     #Create cluster resolutions UMAP
     umap_reso_cluster(adata, 'leiden_fusion')
 
+    # Perform DGE analysis
+    adata = dge_data(adata, 'leiden_fusion', 'rank_genes_groups_leiden_fusion')
+
+    #filtered_adata = remove_NA_cat(adata)
+
+    # Preform Dendrogram
+    dendogram_sc(adata)
+    plot_dendrogram(adata)
+        
+    # adata = drop_mako(adata)
     print(adata)
 
-    # # Perform DGE analysis
-    # adata = dge_data(adata, 'leiden_fusion', 'rank_genes_groups_leiden_fusion')
-
-    # #filtered_adata = remove_NA_cat(adata)
-
-    # # Preform Dendrogram
-    # dendogram_sc(adata)
-        
-    # # adata = drop_mako(adata)
-    # # print(adata)
-
-    # # Save the updated AnnData object
-    # output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad"
-    # save_adata(adata, output_file)
+    # Save the updated AnnData object
+    output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad"
+    save_adata(adata, output_file)
