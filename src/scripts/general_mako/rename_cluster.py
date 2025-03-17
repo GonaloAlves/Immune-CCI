@@ -52,7 +52,7 @@ def rename_clusters(adata, rename_pairs, resolution="leiden_fusion"):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
+    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     adata = load_data(file_path)
 
     # List of clusters to rename
@@ -97,9 +97,7 @@ if __name__ == "__main__":
     ]
 
     rename_pairs= [
-        ('Imm.Interferon' ,"Imm.Interferon.0"),
-        ('Imm.Proliferation' ,'Imm.Proliferative.0'),
-        ('Imm.1.2.13', "Imm.MHCII.0")
+        ('MeV.EndothelialInjury.4', 'MeV.EndoUnknowed.4')
     ]
 
     # Rename the clusters
@@ -110,7 +108,7 @@ if __name__ == "__main__":
     print("----")
 
     # Save the modified AnnData object
-    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
+    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     print(f"Saving modified AnnData to '{output_path}'...")
     adata.write_h5ad(output_path, compression="gzip")
     print("Save complete.")
