@@ -3,6 +3,7 @@ import os
 import shutil
 import scanpy as sc
 import pandas as pd
+import time
 import matplotlib.pyplot as plt
 from scipy.sparse import csr_matrix
 
@@ -133,6 +134,25 @@ def umap_reso_cluster(adata, resolution_name, keyname, d, output_dir="reso/resos
     # print(f"UMAP plot saved as {output_path}")
     plt.close()  # Close the plot to avoid overlap
 
+# Step 3: Save the AnnData object
+def save_adata(adata, file_path):
+    """
+    Save the AnnData object to an .h5ad file with gzip compression.
+
+    Parameters:
+    adata (AnnData): The AnnData object to save.
+    file_path (str): The file path to save the .h5ad file.
+
+    Returns:
+    None
+    """
+    t0 = time.time()  # Start timing
+    print(f"Saving AnnData object to '{file_path}'...")
+    
+    # Save the file
+    adata.write_h5ad(file_path, compression='gzip')
+    
+
 if __name__ == "__main__":
     datasets = ["Immune", "Meningeal_Vascular"]
     adatas = {}
@@ -153,5 +173,10 @@ if __name__ == "__main__":
         print(adata)
     
         umap_reso_cluster(adata, "leiden_fusion", "new", d)
+
+        # Save the updated AnnData object
+        output_file = f"/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_{d}_raw_norm_ranked_copy_copy.h5ad"
+        save_adata(adata, output_file)
+
 
 
