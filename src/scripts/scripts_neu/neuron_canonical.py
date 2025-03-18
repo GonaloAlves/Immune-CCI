@@ -447,29 +447,76 @@ if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad")
 
-    gene_filtered_adata = filter_cells_by_gene_expression(adata, "")
-
-    #preform dendrogram
-    dendogram_sc(adata)
-
-    # Load canonical gene lists from a directory
-    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron"
-    genes = load_canonical_from_dir(canonical_genes_dir)
+    print("----")
+    print(adata.obs['leiden_fusion'].cat.categories.to_list())
+    print("----")
+    print(adata.obs)
+    print("----")
 
 
-    # Define thresholds
-    pts_thresholds = [0, 0.2, 0.3]
 
-    custom_cluster_order = ["Neu.CSFcN.0", "Neu.Epend.0"]
+    # Load the exported Excel file
+    df = pd.read_excel("adata_obs.xlsx", index_col=0)
+
+    # List of expected columns
+    obs_merge = ['injury', 'day', 'collection_region', 'injury_day', 'injury_region', 'injury_condition',
+                'nuclei_uL', 'total_nuclei', 'target_10x', 'mouse_id', 'date_nuclei_extraction', 'sample_id',
+                'sample_I15AC', 'sample_I15AR', 'sample_I15BC', 'sample_I15CC', 'sample_I15CR', 'sample_I60AC',
+                'sample_I60AR', 'sample_I60BC', 'sample_I60BR', 'sample_I60CC', 'sample_I60CR', 'sample_S15AC',
+                'sample_S15BC', 'sample_S15BR', 'sample_S15CC', 'sample_S15CR', 'sample_U00AX', 'sample_U00BX',
+                'sample_U00CX', 'n_counts', 'filt_counts', 'n_genes', 'filt_genes', 'percent_mito', 'filt_mito',
+                'doublet_score', 'predicted_doublet', 'doublet', 'annot_lineage_cell']
+
+    # Strip spaces and ensure consistent casing
+    df.columns = df.columns.str.strip()  
+
+    # Print all available columns
+    print("\n📌 Columns in adata.obs:")
+    print(df.columns.tolist())
+
+    # Print expected columns
+    print("\n📌 Expected columns:")
+    print(obs_merge)
+
+    # Find missing columns
+    missing_columns = [col for col in obs_merge if col not in df.columns]
+
+    # Print missing columns
+    print("\n🚨 Columns missing from adata.obs:")
+    print(missing_columns if missing_columns else "✅ All expected columns are present!")
+
+    # Extract columns containing "sample_" from adata.obs
+    sample_columns_obs = [col for col in adata.obs.columns if "sample_" in col]
+
+    # Find columns in adata.obs but not in obs_merge
+    extra_columns = set(sample_columns_obs) - set(obs_merge)
+
+    # Print the extra columns
+    print(extra_columns)
+
+    # gene_filtered_adata = filter_cells_by_gene_expression(adata, "")
+
+    # #preform dendrogram
+    # dendogram_sc(adata)
+
+    # # Load canonical gene lists from a directory
+    # canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron"
+    # genes = load_canonical_from_dir(canonical_genes_dir)
+
+
+    # # Define thresholds
+    # pts_thresholds = [0, 0.2, 0.3]
+
+    # custom_cluster_order = ["Neu.CSFcN.0", "Neu.Epend.0"]
     
 
-    # Check for mismatches before reordering
-    check_cluster_order(adata, custom_cluster_order)
+    # # Check for mismatches before reordering
+    # check_cluster_order(adata, custom_cluster_order)
     
-    # Generate dotplots for each threshold
-    create_dotplots_with_thresholds(adata, genes, pts_thresholds, custom_cluster_order, "")
+    # # Generate dotplots for each threshold
+    # create_dotplots_with_thresholds(adata, genes, pts_thresholds, custom_cluster_order, "")
 
-    export_cluster_cell_counts(adata)
+    # export_cluster_cell_counts(adata)
 
 
     

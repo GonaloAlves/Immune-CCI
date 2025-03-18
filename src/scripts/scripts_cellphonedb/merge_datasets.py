@@ -96,12 +96,12 @@ def start() -> None:
             obs_list.append(f"leiden_fusion")
             
             # Rename categories
-            data[d].obs['leiden_merge'] = data[d].obs[obs_list[-1]]
-            data[d].obs['leiden_merge'] = data[d].obs['leiden_merge'].cat.rename_categories(lambda x: f'{datset_names[d]}.{x}')
+            # data[d].obs['leiden_merge'] = data[d].obs[obs_list[-1]]
+            # data[d].obs['leiden_merge'] = data[d].obs['leiden_merge'].cat.rename_categories(lambda x: f'{datset_names[d]}.{x}')
             # scDiffComm cannot does not suppor '_' in category names --> substitute them
-            data[d].obs['injury_day'] = data[d].obs['injury_day'].cat.rename_categories(lambda x: x.replace('_', '.'))
-            data[d].obs['injury_region'] = data[d].obs['injury_region'].cat.rename_categories(lambda x: x.replace('_', '.'))
-            data[d].obs['injury_condition'] = data[d].obs['injury_condition'].cat.rename_categories(lambda x: x.replace('_', '.'))
+            # data[d].obs['injury_day'] = data[d].obs['injury_day'].cat.rename_categories(lambda x: x.replace('_', '.'))
+            # data[d].obs['injury_region'] = data[d].obs['injury_region'].cat.rename_categories(lambda x: x.replace('_', '.'))
+            # data[d].obs['injury_condition'] = data[d].obs['injury_condition'].cat.rename_categories(lambda x: x.replace('_', '.'))
         else:
             continue
         
