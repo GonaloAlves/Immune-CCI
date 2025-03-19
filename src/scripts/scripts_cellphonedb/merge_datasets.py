@@ -2,7 +2,7 @@
 #
 # Also, rank genes
 #
-# Daniel Ribeiro, 2023
+# Daniel Ribeiro, Gonçalo Alves 2025
 import gc
 import os
 
@@ -98,7 +98,6 @@ def start() -> None:
             
             # Rename categories
             data[d].obs['leiden_merge'] = data[d].obs[obs_list[-1]]
-            # data[d].obs['leiden_merge'] = data[d].obs['leiden_merge'].cat.rename_categories(lambda x: f'{datset_names[d]}.{x}')
             # scDiffComm cannot does not suppor '_' in category names --> substitute them
             data[d].obs['injury_day'] = data[d].obs['injury_day'].cat.rename_categories(lambda x: x.replace('_', '.'))
             data[d].obs['injury_region'] = data[d].obs['injury_region'].cat.rename_categories(lambda x: x.replace('_', '.'))
@@ -137,76 +136,6 @@ def start() -> None:
     print("END All cells--------------------------")
     print(adata_concat.obs['leiden_merge'].value_counts())
 
-    # for subset in ["uninjured.0", "sham.15", "injured.15", "injured.60"]:
-    #     subset_data = adata_concat[adata_concat.obs['injury_day'] == subset]
-    #     print(f"\nSubset: {subset}, Total Cells: {subset_data.shape[0]}")
-    #     print(subset_data.obs['leiden_merge'].value_counts())
-
-    # print("END All cells--------------------------")
-    # # Uninjured cells
-    # subset = "uninjured.0"
-    # args = {'adata': adata_concat[adata_concat.obs['injury_day'] == subset].copy(),
-    #        'n_genes': None,
-    #        'groupby': 'leiden_merge',
-    #        'method': 'wilcoxon',
-    #        'use_raw': False,
-    #        'key_added': f'rank_genes_groups_leiden_merge_{subset}',
-    #        'pts': True}
-    # result = rank_genes(args)
-    # print("Uninjured --------------------------")
-    # print(result)
-    # print("Uninjured --------------------------")
-    # adata_concat.uns[f'rank_genes_groups_leiden_merge_{subset}'] = result
-    # write_marker_genes(adata_concat, rank_genes_groups=f'rank_genes_groups_leiden_merge_{subset}', prefix="adata_final_merged_marker_genes")
-
-    # # Sham cells
-    # subset = "sham.15"
-    # args = {'adata': adata_concat[adata_concat.obs['injury_day'] == subset].copy(),
-    #         'n_genes': None,
-    #         'groupby': 'leiden_merge',
-    #         'method': 'wilcoxon',
-    #         'use_raw': False,
-    #         'key_added': f'rank_genes_groups_leiden_merge_{subset}',
-    #         'pts': True}
-    # result = rank_genes(args)
-    # print("sham 15--------------------------")
-    # print(result)
-    # print("sham 15--------------------------")
-    # adata_concat.uns[f'rank_genes_groups_leiden_merge_{subset}'] = result
-    # write_marker_genes(adata_concat, rank_genes_groups=f'rank_genes_groups_leiden_merge_{subset}', prefix="adata_final_merged_marker_genes")
-
-    # # Injury_15 cells
-    # subset = "injured.15"
-    # args = {'adata': adata_concat[adata_concat.obs['injury_day'] == subset].copy(),
-    #         'n_genes': None,
-    #         'groupby': 'leiden_merge',
-    #         'method': 'wilcoxon',
-    #         'use_raw': False,
-    #         'key_added': f'rank_genes_groups_leiden_merge_{subset}',
-    #         'pts': True}
-    # result = rank_genes(args)
-    # print("Injured 15--------------------------")
-    # print(result)
-    # print("Injured 15--------------------------")
-    # adata_concat.uns[f'rank_genes_groups_leiden_merge_{subset}'] = result
-    # write_marker_genes(adata_concat, rank_genes_groups=f'rank_genes_groups_leiden_merge_{subset}', prefix="adata_final_merged_marker_genes")
-
-    # # Injury_60 cells
-    # subset = "injured.60"
-    # args = {'adata': adata_concat[adata_concat.obs['injury_day'] == subset].copy(),
-    #         'n_genes': None,
-    #         'groupby': 'leiden_merge',
-    #         'method': 'wilcoxon',
-    #         'use_raw': False,
-    #         'key_added': f'rank_genes_groups_leiden_merge_{subset}',
-    #         'pts': True}
-    # result = rank_genes(args)
-    # print("Injured 60--------------------------")
-    # print(result)
-    # print("Injured 60--------------------------")
-    # adata_concat.uns[f'rank_genes_groups_leiden_merge_{subset}'] = result
-    # write_marker_genes(adata_concat, rank_genes_groups=f'rank_genes_groups_leiden_merge_{subset}', prefix="adata_final_merged_marker_genes")
-    
     
     # Save AnnData
     print("Save merged AnnData...")
