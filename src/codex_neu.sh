@@ -12,4 +12,6 @@ conda activate mkpy
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_neu/neuron_canonical.py
 
-python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/merge_datasets.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/merge_datasets.py
+
+python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/a_cellphonedb.py
