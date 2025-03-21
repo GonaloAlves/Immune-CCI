@@ -213,38 +213,79 @@ def plot_lineage_vs_other_interactions(adata: sc.AnnData, lineage_prefix: str) -
 
     print(f"Saved plot: {dest_plot}")
 
-def chord_diagram(adata: sc.AnnData) -> None:
+
+def chord_diagram(adata: sc.AnnData, lineage_prefix: str) -> None:
+
+    # help(kpy.plot_cpdb_chord)
+    
+    cell_types = adata.obs["leiden_merge"].cat.categories.str.startswith(lineage_prefix)
+    if not cell_types.any():
+        raise ValueError(f"Lineage prefix '{lineage_prefix}' not found!")
 
     # Load interaction data (ignoring injury conditions)
     dest_pvalues = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged.txt"
     dest_means = f"{cellphonedb_dir}/statistical_analysis_means_final_merged.txt"
 
     pvalues = pd.read_csv(dest_pvalues, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
+    print(pvalues)
     means = pd.read_csv(dest_means, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
+    print(means)
 
     all_cell_types = adata.obs["leiden_merge"].cat.categories.to_list()
-
     # Use all cell types for both groups to compare everything against everything
-    cell_types1 = "|".join(all_cell_types)
-    cell_types2 = "|".join(all_cell_types)
+    cell_types1 = [cell for cell in all_cell_types if cell.startswith(lineage_prefix)]
+    cell_types2 = [cell for cell in all_cell_types if not cell.startswith(lineage_prefix)]
+
+    cell_types1 = "|".join(cell_types1)
+    cell_types2 = "|".join(cell_types2)
 
     deconvoluted_file = f"{cellphonedb_dir}/statistical_analysis_deconvoluted_final_merged.txt"
     deconvoluted_data = pd.read_csv(deconvoluted_file, sep="\t")
 
+##################
     #Debugging
 
+    # Get the cell type columns
+    # deconvoluted_cell_types = set(deconvoluted_data.columns[6:])  # Skip the first 6 metadata columns
+
+    # METHOD1 
     # Check cell types in adata
     adata_cell_types = set(adata.obs["leiden_merge"].unique())
 
-    # Check cell types in the deconvoluted data
-    deconvoluted_cell_types = set(deconvoluted_data["interacting_pair"].unique())
+    valid_cell_types = adata_cell_types.intersection(deconvoluted_data)
 
-    # Find mismatches
-    only_in_adata = adata_cell_types - deconvoluted_cell_types
-    only_in_deconvoluted = deconvoluted_cell_types - adata_cell_types
+    adata = adata[adata.obs["leiden_merge"].isin(valid_cell_types)]
+    deconvoluted_data = deconvoluted_data[list(valid_cell_types)]
+    
+    #####
+    
+    # # Find mismatches
+    # only_in_adata = adata_cell_types - deconvoluted_cell_types
+    # only_in_deconvoluted = deconvoluted_cell_types - adata_cell_types
 
-    print(f"Cell types only in adata: {only_in_adata}")
-    print(f"Cell types only in deconvoluted data: {only_in_deconvoluted}")
+    # print(f"Cell types only in adata: {only_in_adata}")
+    # print(f"Cell types only in adata: {adata_cell_types}")
+    # print(f"Cell types only in deconvoluted data: {only_in_deconvoluted}")
+    # print(f"Cell types only in adata: {deconvoluted_cell_types}")
+
+
+    # # METHOD2 Ensure all cell type names are lowercase and without spaces/dots
+    # adata.obs["leiden_merge"] = adata.obs["leiden_merge"].str.replace(" ", "_").str.lower()
+    # deconvoluted_data["interacting_pair"] = deconvoluted_data["interacting_pair"].str.replace(" ", "_").str.lower()
+
+    # # METHOD3 Keep only matching cell types
+    # valid_cell_types = adata_cell_types.intersection(deconvoluted_cell_types)
+    # print(valid_cell_types)
+
+    # print(len(complex_id), tmpdf.shape[0])
+
+    # print("Means shape:", means.shape)
+    # print("P-values shape:", pvalues.shape)
+    # print("Deconvoluted data shape:", deconvoluted_data.shape)
+
+    # adata = adata[adata.obs["leiden_merge"].isin(valid_cell_types)]
+    # deconvoluted_data = deconvoluted_data[deconvoluted_data["interacting_pair"].isin(valid_cell_types)]
+# ##################
 
 
 
@@ -258,6 +299,9 @@ def chord_diagram(adata: sc.AnnData) -> None:
         celltype_key="leiden_merge",
         figsize=(40, 30),
         title="Interactions between all cells",
+        # link_kwargs={"direction": 1, "allow_twist": True, "r1": 95, "r2": 90},
+        # sector_text_kwargs={"color": "black", "size": 12, "r": 105, "adjust_rotation": True},
+        # legend_kwargs={"loc": "center", "bbox_to_anchor": (1, 1), "fontsize": 8},
         max_size=3,
         highlight_size=1,
         standard_scale=True
@@ -278,8 +322,75 @@ def chord_diagram(adata: sc.AnnData) -> None:
 
     print(f"Saved plot: {dest_plot}")
 
+def schord_diagram(adata: sc.AnnData) -> None:
+
+    # help(kpy.plot_cpdb_chord)
+    
+    
+    # Load interaction data (ignoring injury conditions)
+    dest_pvalues = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged.txt"
+    dest_means = f"{cellphonedb_dir}/statistical_analysis_means_final_merged.txt"
+
+    pvalues = pd.read_csv(dest_pvalues, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
+    print(pvalues)
+    means = pd.read_csv(dest_means, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
+    print(means)
+
+    all_cell_types = adata.obs["leiden_merge"].cat.categories.to_list()
+    
+    # Use all cell types for both groups to compare everything against everything
+    
+    cell_types1 = "|".join(all_cell_types)
+    cell_types2 = "|".join(all_cell_types)
+
+
+    deconvoluted_file = f"{cellphonedb_dir}/statistical_analysis_deconvoluted_final_merged.txt"
+    deconvoluted_data = pd.read_csv(deconvoluted_file, sep="\t")
+
+
+    # METHOD1 
+    # Check cell types in adata
+    adata_cell_types = set(adata.obs["leiden_merge"].unique())
+
+    valid_cell_types = adata_cell_types.intersection(deconvoluted_data)
+
+    adata = adata[adata.obs["leiden_merge"].isin(valid_cell_types)]
+    deconvoluted_data = deconvoluted_data[list(valid_cell_types)]
+    
+
+
+    chord = kpy.plot_cpdb_chord(
+        adata=adata,
+        cell_type1=cell_types1,
+        cell_type2=cell_types2,
+        means=means,
+        pvals=pvalues,
+        deconvoluted= deconvoluted_data,
+        celltype_key="leiden_merge",
+        figsize=(40, 30),
+        title="Interactions between all cells",
+        # link_kwargs={"direction": 1, "allow_twist": True, "r1": 95, "r2": 90},
+        # sector_text_kwargs={"color": "black", "size": 12, "r": 105, "adjust_rotation": True},
+        # legend_kwargs={"loc": "center", "bbox_to_anchor": (1, 1), "fontsize": 8},
+        max_size=3,
+        highlight_size=1,
+        standard_scale=True
+    )
 
     
+    # Save plot
+    dest_plot = f"{cellphonedb_dir}/chord_all_interactions_final_merged.pdf"
+
+    # If `chord` is a Matplotlib figure, save it directly
+    if isinstance(chord, plt.Figure):  
+        chord.savefig(dest_plot, dpi=300, bbox_inches="tight")
+    else:  
+        # If `chord` is not a figure, get the current figure and save it
+        plt.gcf().savefig(dest_plot, dpi=300, bbox_inches="tight")
+
+    plt.close()
+
+    print(f"Saved plot: {dest_plot}")
 
 
 def start() -> None:
@@ -308,7 +419,8 @@ def start() -> None:
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="MeV")
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Imm")
         
-        chord_diagram(adata=adata)
+        #chord_diagram(adata=adata, lineage_prefix="Imm")
+        schord_diagram(adata=adata)
             
         
 start()
