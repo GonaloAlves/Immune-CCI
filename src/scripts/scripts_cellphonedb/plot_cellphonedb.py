@@ -337,6 +337,7 @@ def schord_diagram(adata: sc.AnnData) -> None:
     print(means)
 
     all_cell_types = adata.obs["leiden_merge"].cat.categories.to_list()
+    print(adata.obs["leiden_merge"].cat.categories.to_list())
     
     # Use all cell types for both groups to compare everything against everything
     
@@ -361,8 +362,8 @@ def schord_diagram(adata: sc.AnnData) -> None:
 
     chord = kpy.plot_cpdb_chord(
         adata=adata,
-        cell_type1=cell_types1,
-        cell_type2=cell_types2,
+        cell_type1=".",
+        cell_type2=".",
         means=means,
         pvals=pvalues,
         deconvoluted= deconvoluted_data,
