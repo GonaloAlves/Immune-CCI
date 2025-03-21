@@ -7,10 +7,14 @@ import gc
 from typing import Optional  # Import Optional
 import pandas as pd
 import scanpy as sc
+import numpy as np
 import matplotlib
 matplotlib.use('AGG')   # Use non-interactive backend for plotting
 import matplotlib.pyplot as plt
 import ktplotspy as kpy
+import seaborn as sns
+
+
 
 statistical_analysis = True
 deg_analysis = True
@@ -86,9 +90,6 @@ def plot_heatmaps_major_cells(obs_key: Optional[str] = None,
     `log1p` : bool
         Wether to log the number of significant categories. May improve heatmap vizualization.
     """
-    import numpy as np
-    import seaborn as sns
-    import matplotlib.pyplot as plt
     
     if obs_key is not None and category is None:
         raise ValueError("If obs_key is not None then category cannot be None!")
@@ -160,10 +161,6 @@ def plot_heatmaps_major_cells(obs_key: Optional[str] = None,
 
 
 def plot_lineage_vs_other_interactions(adata: sc.AnnData, lineage_prefix: str) -> None:
-    import matplotlib
-    matplotlib.use('AGG')  # Prevents GUI issues
-    import matplotlib.pyplot as plt
-    import ktplotspy as kpy
 
     # Check if lineage exists
     cell_types = adata.obs["leiden_merge"].cat.categories.str.startswith(lineage_prefix)
@@ -187,6 +184,8 @@ def plot_lineage_vs_other_interactions(adata: sc.AnnData, lineage_prefix: str) -
         raise ValueError(f"No cell types found with prefix '{lineage_prefix}'!")
     if not cell_types2:
         raise ValueError("No other cell types found!")
+
+    
 
     # Join cell type names into strings
     cell_types1 = "|".join(cell_types1)
@@ -214,6 +213,75 @@ def plot_lineage_vs_other_interactions(adata: sc.AnnData, lineage_prefix: str) -
 
     print(f"Saved plot: {dest_plot}")
 
+def chord_diagram(adata: sc.AnnData) -> None:
+
+    # Load interaction data (ignoring injury conditions)
+    dest_pvalues = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged.txt"
+    dest_means = f"{cellphonedb_dir}/statistical_analysis_means_final_merged.txt"
+
+    pvalues = pd.read_csv(dest_pvalues, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
+    means = pd.read_csv(dest_means, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
+
+    all_cell_types = adata.obs["leiden_merge"].cat.categories.to_list()
+
+    # Use all cell types for both groups to compare everything against everything
+    cell_types1 = "|".join(all_cell_types)
+    cell_types2 = "|".join(all_cell_types)
+
+    deconvoluted_file = f"{cellphonedb_dir}/statistical_analysis_deconvoluted_final_merged.txt"
+    deconvoluted_data = pd.read_csv(deconvoluted_file, sep="\t")
+
+    #Debugging
+
+    # Check cell types in adata
+    adata_cell_types = set(adata.obs["leiden_merge"].unique())
+
+    # Check cell types in the deconvoluted data
+    deconvoluted_cell_types = set(deconvoluted_data["interacting_pair"].unique())
+
+    # Find mismatches
+    only_in_adata = adata_cell_types - deconvoluted_cell_types
+    only_in_deconvoluted = deconvoluted_cell_types - adata_cell_types
+
+    print(f"Cell types only in adata: {only_in_adata}")
+    print(f"Cell types only in deconvoluted data: {only_in_deconvoluted}")
+
+
+
+    chord = kpy.plot_cpdb_chord(
+        adata=adata,
+        cell_type1=cell_types1,
+        cell_type2=cell_types2,
+        means=means,
+        pvals=pvalues,
+        deconvoluted= deconvoluted_data,
+        celltype_key="leiden_merge",
+        figsize=(40, 30),
+        title="Interactions between all cells",
+        max_size=3,
+        highlight_size=1,
+        standard_scale=True
+    )
+
+    
+    # Save plot
+    dest_plot = f"{cellphonedb_dir}/chord_all_interactions_final_merged.pdf"
+
+    # If `chord` is a Matplotlib figure, save it directly
+    if isinstance(chord, plt.Figure):  
+        chord.savefig(dest_plot, dpi=300, bbox_inches="tight")
+    else:  
+        # If `chord` is not a figure, get the current figure and save it
+        plt.gcf().savefig(dest_plot, dpi=300, bbox_inches="tight")
+
+    plt.close()
+
+    print(f"Saved plot: {dest_plot}")
+
+
+    
+
+
 def start() -> None:
     import os
 
@@ -233,12 +301,14 @@ def start() -> None:
     print(adata)
     if statistical_analysis:
         # Heatmaps
-        plot_heatmaps(adata)
+        # plot_heatmaps(adata)
 
-        # Lineages vs Other lineages interactions
-        plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Neu")
-        plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="MeV")
-        plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Imm")
+        # # Lineages vs Other lineages interactions
+        # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Neu")
+        # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="MeV")
+        # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Imm")
+        
+        chord_diagram(adata=adata)
             
         
 start()
