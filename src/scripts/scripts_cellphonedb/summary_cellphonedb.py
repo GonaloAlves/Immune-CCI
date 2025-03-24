@@ -11,33 +11,19 @@ import pandas as pd
 
 lineage_colors = {
     'Neuron': 'darkorchid',
-    'Oligodendrocyte': 'orange',
-    'Astrocyte': 'skyblue',
-    'Meningeal': 'slategrey',
     'Meningeal_Vascular': 'slategrey',
-    'Immune': 'lime',
-    'Endothelial': 'crimson',
-    'Fibroblast': 'aqua',
-    'Pericyte': 'forestgreen',
-    'Stroma': 'black',
-    'Neuroepithelial': 'mediumblue',
-    'Muscle': 'chocolate',
-    'Erythroid': 'lightsalmon',     # few cells
-    'Bone': 'steelblue',            # few cells
-    'Epithelial': 'yellowgreen',    # few cells
-    'Glia': 'cornflowerblue'        # few cells, classified as Müller Glia
+    'Immune': 'lime'
 }
 
 statistical_analysis = True
 datset_names = {'Neu': 'Neuron',
-                'Oli': 'Oligodendrocyte',
-                'Ast': 'Astrocyte',
                 'MeV': 'Meningeal_Vascular',
-                'Imm': 'Immune',
+                'Imm': 'Immune'
                 }
 
 cpdb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database"
-cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary"
+cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
+cellphonedb_dir_out = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary"
 
 def get_cell_types(cci: str,
                    major: bool      # Only major cell types, no clusters
@@ -229,6 +215,8 @@ def get_source_targets(summary_df: pd.DataFrame,
     nodes = list(set(nodes))
     nodes.sort()
     nodes = {n: i for i, n in enumerate(nodes)}
+    print("nodes.....")
+    print(nodes)
     for src_tgt in interactions:
         src = src_tgt[0]
         tgt = src_tgt[1]
@@ -241,10 +229,12 @@ def get_source_targets(summary_df: pd.DataFrame,
              "names": nodes.keys(),
              "group": [0] * len(nodes.values())}
     nodes = pd.DataFrame(nodes)
+
     
     # Also return index names
     return df_source_target, nodes
     
+
 
 def chord_diagram(chord_input: pd.DataFrame,
                   node_info: pd.DataFrame,
@@ -271,11 +261,20 @@ def chord_diagram(chord_input: pd.DataFrame,
         else:
             cmap[i] = datset_names[cmap[i]]
     cmap = ListedColormap([lineage_colors[c] for c in cmap], len(cmap))
+
+    print(cmap)
+
     # Build chord diagram
     node_info = hv.Dataset(node_info, "index")
+    
+    print("Raw node_info data:\n", node_info.data.head())  
+
     chord = hv.Chord(data=(chord_input, node_info))
     plot = chord.opts(opts.Chord(cmap=cmap, edge_cmap=cmap, edge_color=dim('source').str(),
                       labels='names', node_color=dim('index').str(), label_text_font_size='24pt'))
+    
+    print(chord_input.shape, node_info.shape)  # Check if they have data
+    print(chord_input.head())
     
     p = hv.render(plot, backend='bokeh')
     #p.output_backend = "svg"
@@ -318,7 +317,7 @@ def start(n_proc: int = None) -> None:
             cluster_cci[col].sort()
 
         # Save
-        dest = f"{cellphonedb_dir}/summary_significant_cci_means_final_merged.txt"
+        dest = f"{cellphonedb_dir_out}/summary_significant_cci_means_final_merged.txt"
         cluster_cci = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in cluster_cci.items()]))
         cluster_cci.T.to_csv(dest, index=True, header=False, sep='\t')
     
@@ -334,50 +333,50 @@ def start(n_proc: int = None) -> None:
         df_stat = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
         cci_genes = collect_partners(df_stat=df_stat, df_complex=complex_input, df_simple=gene_input)
         # Save
-        dest = f"{cellphonedb_dir}/summary_significant_cci_genes_final_merged.txt"
+        dest = f"{cellphonedb_dir_out}/summary_significant_cci_genes_final_merged.txt"
         cci_genes = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in cci_genes.items()]))
         cci_genes.T.to_csv(dest, index=True, header=False, sep='\t')
 
     ## Build chord diagram for cci and cci genes
     if statistical_analysis:
         # Chord for major cell types
-        dest = f"{cellphonedb_dir}/summary_significant_means_final_merged.txt"
+        dest = f"{cellphonedb_dir_out}/summary_significant_cci_means_final_merged.txt" # alterei para cci
         print(f"\nBuild chord diagram for {dest}")
         df = pd.read_csv(dest, index_col=0, header=None, sep='\t', low_memory=False)
         
         # Unique interactions
         chord_input, node_info = get_source_targets(df, major_cell_types=True, unique_cci=True)
-        dest = f"{cellphonedb_dir}/chord_significant_final_merged_unique_cci.png"
+        dest = f"{cellphonedb_dir_out}/chord_significant_final_merged_unique_cci.png"
         chord_diagram(chord_input, node_info, dest)
         print(dest)
         # Save matrices
-        dest = f"{cellphonedb_dir}/chord_input_major_cell_types_unique_cci.txt"
+        dest = f"{cellphonedb_dir_out}/chord_input_major_cell_types_unique_cci.txt"
         chord_input.to_csv(dest, sep='\t')
         print(dest)
-        dest = f"{cellphonedb_dir}/node_info_major_cell_types_unique_cci.txt"
+        dest = f"{cellphonedb_dir_out}/node_info_major_cell_types_unique_cci.txt"
         node_info.to_csv(dest, sep='\t')
         print(dest)
                     
         # All interactions
         chord_input, node_info = get_source_targets(df, major_cell_types=True, unique_cci=False)
-        dest = f"{cellphonedb_dir}/chord_significant_final_merged_all_cci.png"
+        dest = f"{cellphonedb_dir_out}/chord_significant_final_merged_all_cci.png"
         chord_diagram(chord_input, node_info, dest)
         print(dest)
         # Save matrices
-        dest = f"{cellphonedb_dir}/chord_input_major_cell_types_all_cci.txt"
+        dest = f"{cellphonedb_dir_out}/chord_input_major_cell_types_all_cci.txt"
         chord_input.to_csv(dest, sep='\t')
         print(dest)
-        dest = f"{cellphonedb_dir}/node_info_major_cell_types_all_cci.txt"
+        dest = f"{cellphonedb_dir_out}/node_info_major_cell_types_all_cci.txt"
         node_info.to_csv(dest, sep='\t')
         print(dest)
     
         # Chord for clusters
 
-        dest = f"{cellphonedb_dir}/summary_significant_means_final_merged.txt"
+        dest = f"{cellphonedb_dir_out}/summary_significant_means_final_merged.txt"
         print(f"\nBuild chord diagram for {dest}")
         df = pd.read_csv(dest, index_col=0, header=None, sep='\t', low_memory=False)
         chord_input, node_info = get_source_targets(df, major_cell_types=False, unique_cci=True)
-        dest = f"{cellphonedb_dir}/chord_significant_final_merged_unique_cci_clusters.png"
+        dest = f"{cellphonedb_dir_out}/chord_significant_final_merged_unique_cci_clusters.png"
         chord_diagram(chord_input, node_info, out_file=dest)
 
 
