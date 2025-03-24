@@ -8,6 +8,12 @@ import os
 
 import pandas as pd
 
+statistical_analysis = True
+
+cpdb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database"
+cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
+cellphonedb_dir_out = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary"
+
 
 lineage_colors = {
     'Neuron': 'darkorchid',
@@ -15,15 +21,10 @@ lineage_colors = {
     'Immune': 'lime'
 }
 
-statistical_analysis = True
 datset_names = {'Neu': 'Neuron',
                 'MeV': 'Meningeal_Vascular',
                 'Imm': 'Immune'
                 }
-
-cpdb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database"
-cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
-cellphonedb_dir_out = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary"
 
 def get_cell_types(cci: str,
                    major: bool      # Only major cell types, no clusters
@@ -33,6 +34,7 @@ def get_cell_types(cci: str,
     if major:
         cell_types[0] = cell_types[0].split('.')[0]
         cell_types[1] = cell_types[1].split('.')[0]
+
     
     return tuple(cell_types)
 
@@ -59,7 +61,7 @@ def complex_uniprot_to_gene_name(df_complex: pd.DataFrame,      # complex_input.
     uniprot.extend(row[pd.notna(row)].values.tolist())
     for uni in uniprot:
         result.append(simple_uniprot_to_gene_name(df_simple, uni))
-    
+
     return result
 
 
@@ -71,6 +73,7 @@ def genes_from_partner(df_complex: pd.DataFrame,      # complex_input.csv datafr
         result.append(simple_uniprot_to_gene_name(df_simple, partner.split(':')[1]))
     elif partner.find("complex:") != -1:
         result.extend(complex_uniprot_to_gene_name(df_complex, df_simple, partner.split(':')[1]))
+    
     
     return result
 
@@ -160,6 +163,8 @@ def collect_partners(df_stat: pd.DataFrame,      # statistical_analysis_signific
     #    counter += 1
     #
     #print()
+    
+
     return cluster_cci
 
 
@@ -215,8 +220,8 @@ def get_source_targets(summary_df: pd.DataFrame,
     nodes = list(set(nodes))
     nodes.sort()
     nodes = {n: i for i, n in enumerate(nodes)}
-    print("nodes.....")
-    print(nodes)
+    # print("nodes.....")
+    # print(nodes)
     for src_tgt in interactions:
         src = src_tgt[0]
         tgt = src_tgt[1]
@@ -225,13 +230,29 @@ def get_source_targets(summary_df: pd.DataFrame,
         df_source_target["value"].append(mtx_source_target.loc[src, tgt])
     
     df_source_target = pd.DataFrame(df_source_target)
-    nodes = {"index": nodes.values(),
-             "names": nodes.keys(),
-             "group": [0] * len(nodes.values())}
-    nodes = pd.DataFrame(nodes)
+    # nodes = {"index": nodes.values(),
+    #          "names": nodes.keys(),
+    #          "group": [0] * len(nodes.values())}
+    # nodes = pd.DataFrame(nodes)
+
+    # Construct nodes correctly
+    node_list = list(nodes.keys())  # Extract node names
+    node_indices = list(nodes.values())  # Extract corresponding indices
+    
+    nodes = pd.DataFrame({
+        "index": node_indices,
+        "names": node_list,
+        "group": [0] * len(node_list)   
+    })
 
     
     # Also return index names
+
+    print("hey")
+    print(df_source_target)
+    print("2ndhey")
+    print(nodes)    
+
     return df_source_target, nodes
     
 
@@ -247,7 +268,11 @@ def chord_diagram(chord_input: pd.DataFrame,
     # Initialize
     hv.extension('bokeh', 'matplotlib')       # Bokeh backend to draw chords
     hv.output(size=500, dpi=300)
-    
+
+    print("node_info DataFrame:")
+    print(node_info)
+    print("end")
+
     # Get colors
     cmap = list(set(node_info["names"].values.tolist()))
     cmap.sort()
@@ -264,10 +289,19 @@ def chord_diagram(chord_input: pd.DataFrame,
 
     print(cmap)
 
-    # Build chord diagram
-    node_info = hv.Dataset(node_info, "index")
-    
-    print("Raw node_info data:\n", node_info.data.head())  
+    # Build chord diagram    
+
+    # Até aqui ta tudo bem, o df dos nodes está a parecer bem, so que dps se entrar o df normal:
+    # AttributeError: 'DataFrame' object has no attribute 'ndims'
+    # Se eu fizer esta linha a baixo como fizeste antes dá outro erro, o que parece que faz sentido pois a linha so mostra os index do df: :Dataset   [index]   (names,group)
+    # ValueError: OutputDocumentFor expects a non-empty sequence of Models
+    node_info = hv.Dataset(node_info, "index")  
+
+    print("chord_input DataFrame:")
+    print(chord_input)
+    print("node_info DataFrame:")
+    print(node_info)
+    print("end")
 
     chord = hv.Chord(data=(chord_input, node_info))
     plot = chord.opts(opts.Chord(cmap=cmap, edge_cmap=cmap, edge_color=dim('source').str(),
@@ -391,3 +425,4 @@ if __name__ == '__main__':
         print("\n********\n* DONE *\n********")
     except RuntimeError:
         raise
+    
