@@ -245,17 +245,14 @@ def chord_diagram(adata: sc.AnnData, lineage_prefix: str) -> None:
 ##################
     #Debugging
 
-    # Get the cell type columns
-    # deconvoluted_cell_types = set(deconvoluted_data.columns[6:])  # Skip the first 6 metadata columns
+    # # METHOD1 
+    # # Check cell types in adata
+    # adata_cell_types = set(adata.obs["leiden_merge"].unique())
 
-    # METHOD1 
-    # Check cell types in adata
-    adata_cell_types = set(adata.obs["leiden_merge"].unique())
+    # valid_cell_types = adata_cell_types.intersection(deconvoluted_data)
 
-    valid_cell_types = adata_cell_types.intersection(deconvoluted_data)
-
-    adata = adata[adata.obs["leiden_merge"].isin(valid_cell_types)]
-    deconvoluted_data = deconvoluted_data[list(valid_cell_types)]
+    # adata = adata[adata.obs["leiden_merge"].isin(valid_cell_types)]
+    # deconvoluted_data = deconvoluted_data[list(valid_cell_types)]
     
     #####
     
@@ -350,13 +347,13 @@ def schord_diagram(adata: sc.AnnData) -> None:
 
 
     # METHOD1 
-    # Check cell types in adata
-    adata_cell_types = set(adata.obs["leiden_merge"].unique())
+    # # Check cell types in adata
+    # adata_cell_types = set(adata.obs["leiden_merge"].unique())
 
-    valid_cell_types = adata_cell_types.intersection(deconvoluted_data)
+    # valid_cell_types = adata_cell_types.intersection(deconvoluted_data)
 
-    adata = adata[adata.obs["leiden_merge"].isin(valid_cell_types)]
-    deconvoluted_data = deconvoluted_data[list(valid_cell_types)]
+    # adata = adata[adata.obs["leiden_merge"].isin(valid_cell_types)]
+    # deconvoluted_data = deconvoluted_data[list(valid_cell_types)]
     
 
 
