@@ -541,7 +541,7 @@ if __name__ == "__main__":
     #Create cluster resolutions UMAP
     umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
-    pts_thresholds = [0.3, 0.4, 0.5]
+    pts_thresholds = [0, 0.4, 0.8]
 
     # Create dotplot of the top genes
     create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
