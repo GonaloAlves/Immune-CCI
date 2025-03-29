@@ -49,7 +49,7 @@ def extract_dge_data(adata):
     """
     print("\n🔹 Extracting DGE data...")
     
-    dge_fusion = adata.uns['rank_genes_groups_leiden_fusion']
+    dge_fusion = adata.uns['rank_genes_groups_leiden_fusion_old1']
     
     gene_names = pd.DataFrame(dge_fusion['names'])
     logfoldchanges = pd.DataFrame(dge_fusion['logfoldchanges'])
@@ -321,7 +321,7 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immu
 
         # Create dendrogram (if not already present)
         print("   - Checking and creating dendrogram if necessary...")
-        plot_dendogram(adata)
+        # plot_dendogram(adata)
 
         # Select the top genes for each cluster
         print("   - Selecting top genes for each cluster...")
@@ -335,33 +335,33 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immu
 
         # Reorder clusters (ON and OFF for dendrogram)
         print("   - Reordering clusters based on dendrogram...")
-        ordered_genes_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=True)
+        # ordered_genes_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=True)
         ordered_genes_no_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=False)
 
         print("   - Generating dotplots...")
 
-        # (1) With Dendrogram
-        dotplot_dendro = sc.pl.rank_genes_groups_dotplot(
-            adata,
-            var_names=ordered_genes_dendro,
-            groupby='leiden_fusion',
-            key='rank_genes_groups_leiden_fusion',
-            cmap='bwr',
-            vmin=-4,
-            vmax=4,
-            values_to_plot='logfoldchanges',
-            colorbar_title='log fold change',
-            use_raw=False,
-            dendrogram='dendrogram_leiden_fusion',
-            return_fig=True
-        )
+        # # (1) With Dendrogram
+        # dotplot_dendro = sc.pl.rank_genes_groups_dotplot(
+        #     adata,
+        #     var_names=ordered_genes_dendro,
+        #     groupby='leiden_fusion_old1',
+        #     key='rank_genes_groups_leiden_fusion_old1',
+        #     cmap='bwr',
+        #     vmin=-4,
+        #     vmax=4,
+        #     values_to_plot='logfoldchanges',
+        #     colorbar_title='log fold change',
+        #     use_raw=False,
+        #     dendrogram='dendrogram_leiden_fusion_old1',
+        #     return_fig=True
+        # )
 
         # (2) Without Dendrogram
         dotplot_no_dendro = sc.pl.rank_genes_groups_dotplot(
             adata,
             var_names=ordered_genes_no_dendro,
-            groupby='leiden_fusion',
-            key='rank_genes_groups_leiden_fusion',
+            groupby='leiden_fusion_old1',
+            key='rank_genes_groups_leiden_fusion_old1',
             cmap='bwr',
             vmin=-4,
             vmax=4,
@@ -373,18 +373,18 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immu
         )
 
         # Save plots
-        output_dendro = os.path.join(output_dir, f"dotplot_dendro_{threshold}.png")
+        # output_dendro = os.path.join(output_dir, f"dotplot_dendro_{threshold}.png")
         output_no_dendro = os.path.join(output_dir, f"dotplot_no_dendro_{threshold}.png")
 
-        dotplot_dendro.savefig(output_dendro, bbox_inches="tight")
+        # dotplot_dendro.savefig(output_dendro, bbox_inches="tight")
         dotplot_no_dendro.savefig(output_no_dendro, bbox_inches="tight")
 
         plt.close()
-        print(f" Saved: {output_dendro}")
+        # print(f" Saved: {output_dendro}")
         print(f" Saved: {output_no_dendro}")
 
 
-        export_to_excel(top_genes_cluster, threshold)
+        # export_to_excel(top_genes_cluster, threshold)
 
 
 
@@ -405,7 +405,7 @@ def print_clusters(top_genes_cluster):
 def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
-    mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells
+    mask_NA = adata.obs['leiden_fusion_old1'] != 'Imm.NA' #creates mask for remove NA cells
     #print(mask_NA)    
     adata2 = adata[mask_NA] #apply mask
 
@@ -481,8 +481,8 @@ def plot_dendogram(adata, output_dir="dendogram_immune"):
     print(f"Plotting dendrogram for leiden_fusion...")
     sc.pl.dendrogram(
         adata,
-        groupby='leiden_fusion',
-        dendrogram_key='dendrogram_leiden_fusion',
+        groupby='leiden_fusion_old1',
+        dendrogram_key='dendrogram_leiden_fusion_old1',
         #dendrogram_key=None
         orientation='top',
         show=False
@@ -493,7 +493,7 @@ def plot_dendogram(adata, output_dir="dendogram_immune"):
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
     
-def reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram, dendrogram_key = 'dendrogram_leiden_fusion'):
+def reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram, dendrogram_key = 'dendrogram_leiden_fusion_old1'):
     """
     Reorder clusters based on dendrogram order if reorder is True.
 
@@ -538,8 +538,10 @@ if __name__ == "__main__":
 
     filtered_adata = remove_NA_cat(adata)
 
+    #print(adata)
+    print(adata.obs['leiden_fusion_old1'].cat.categories.to_list())
     #Create cluster resolutions UMAP
-    umap_reso_cluster(filtered_adata, 'leiden_fusion')
+    # umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
     pts_thresholds = [0, 0.4, 0.8]
 

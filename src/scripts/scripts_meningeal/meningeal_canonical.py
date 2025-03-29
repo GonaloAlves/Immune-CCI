@@ -170,7 +170,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
 
         # Example user-defined gene group order
         user_gene_group_order = ["Endothelial","Epithelial" ,"SMC","Pericytes" ,"VLMC", 
-                                  "Fibroblasts","ECM_Laminin","ECM_Secreted_Signaling","ECM_Collagen",
+                                  "Fibroblasts","ECM_Laminin","ECM_Collagen","ECM_Secreted_Signaling",
                                   "Proliferative"]
 
         # Reorder the dictionary based on user order
@@ -192,18 +192,18 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
             return_fig=True
         )
 
-        # (2) Scaled expression (Greys) with dendrogram
-        dotplot_scaled_dendro = sc.pl.dotplot(
-            adata,
-            var_names=top_genes_names,
-            groupby='leiden_fusion',
-            cmap='Greys',
-            colorbar_title='Scaled expression',
-            use_raw=False,
-            standard_scale='var',
-            dendrogram='dendrogram_leiden_fusion',
-            return_fig=True
-        )
+        # # (2) Scaled expression (Greys) with dendrogram
+        # dotplot_scaled_dendro = sc.pl.dotplot(
+        #     adata,
+        #     var_names=top_genes_names,
+        #     groupby='leiden_fusion',
+        #     cmap='Greys',
+        #     colorbar_title='Scaled expression',
+        #     use_raw=False,
+        #     standard_scale='var',
+        #     dendrogram='dendrogram_leiden_fusion',
+        #     return_fig=True
+        # )
 
         # (3) Raw expression (Reds) without dendrogram
         dotplot_normal_no_dendro = sc.pl.dotplot(
@@ -216,34 +216,34 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
             return_fig=True
         )
 
-        # (4) Raw expression (Reds) with dendrogram
-        dotplot_normal_dendro = sc.pl.dotplot(
-            adata,
-            var_names=top_genes_names,
-            groupby='leiden_fusion',
-            cmap='Reds',
-            use_raw=False,
-            dendrogram='dendrogram_leiden_fusion',
-            return_fig=True
-        )
+        # # (4) Raw expression (Reds) with dendrogram
+        # dotplot_normal_dendro = sc.pl.dotplot(
+        #     adata,
+        #     var_names=top_genes_names,
+        #     groupby='leiden_fusion',
+        #     cmap='Reds',
+        #     use_raw=False,
+        #     dendrogram='dendrogram_leiden_fusion',
+        #     return_fig=True
+        # )
 
         # Save dotplots with appropriate filenames
         output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_no_dendro_{threshold}.png")
-        output_scaled_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_dendro_{threshold}.png")
+        #output_scaled_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_dendro_{threshold}.png")
         output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_no_dendro_{threshold}.png")
-        output_normal_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_dendro_{threshold}.png")
+        #output_normal_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_dendro_{threshold}.png")
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
-        dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
+        #dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
         dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
-        dotplot_normal_dendro.savefig(output_normal_dendro, bbox_inches="tight")
+        #dotplot_normal_dendro.savefig(output_normal_dendro, bbox_inches="tight")
 
         plt.close()
         print(f"Saved dotplots for threshold {threshold}:")
         print(f"  - {output_scaled_no_dendro}")
-        print(f"  - {output_scaled_dendro}")
+        #print(f"  - {output_scaled_dendro}")
         print(f"  - {output_normal_no_dendro}")
-        print(f"  - {output_normal_dendro}")
+        #print(f"  - {output_normal_dendro}")
 
 
 def extract_dge_data(adata):
@@ -457,8 +457,8 @@ if __name__ == "__main__":
     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0']
     adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
 
-    #preform dendrogram
-    dendogram_sc(adatas_filtered)
+    # #preform dendrogram
+    # dendogram_sc(adatas_filtered)
 
     # Load canonical gene lists from a directory
     canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal"
@@ -468,11 +468,10 @@ if __name__ == "__main__":
     # Define thresholds
     pts_thresholds = [0, 0.2, 0.3]
 
-    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.EndoUnknowed.4", "MeV.EpithelialECad.0",
-                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" ,"MeV.ECM.1", "MeV.ECM.2", "MeV.Fib.4", "MeV.ECM.0", "MeV.Fib.0", "MeV.Fib.1", 
-                            "MeV.Fib.2", "MeV.Fib.3",  "MeV.FibCD34.7", "MeV.Fib.5", "MeV.Fib.6", "MeV.FibProlif.0", "MeV.FibUnknown.8"]
+    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.EndoUnknowed.4", "MeV.Epithelial.0",
+                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0", "MeV.FibUnknown.8"]
     
-#EndoUnknowed.4
 
     # Check for mismatches before reordering
     check_cluster_order(adatas_filtered, custom_cluster_order)

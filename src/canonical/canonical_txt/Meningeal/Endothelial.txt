@@ -7,5 +7,3 @@ Eln
 Cdh13
 Cldn5
 Bsg
-Gphn
-Cmss1

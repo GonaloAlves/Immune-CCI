@@ -37,7 +37,7 @@ def dge_data(adata, groupby, uns_key):
     # Save the results in `uns` under the specified key
     adata.uns[uns_key] = adata.uns['rank_genes_groups']
 
-    if 'rank_genes_groups_leiden_fusion' in adata.uns:
+    if 'rank_genes_groups_leiden_fusion_old1' in adata.uns:
         print(f"Ranked genes stored in `uns` with key '{uns_key}'.")
     
     return adata
@@ -102,7 +102,7 @@ def dendogram_sc(adata):
     print(f"Computing dendrogram for leiden_fusion...")
     sc.tl.dendrogram(
         adata,
-        groupby='leiden_fusion',
+        groupby='leiden_fusion_old1',
         use_rep='X_pca',
         cor_method='spearman',
         linkage_method='ward',
@@ -112,7 +112,7 @@ def dendogram_sc(adata):
 def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
-    mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells
+    mask_NA = adata.obs['leiden_fusion_old1'] != 'Imm.NA' #creates mask for remove NA cells
     #print(mask_NA)    
     adata2 = adata[mask_NA] #apply mask
 
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     adata = load_data(file_path)
 
     # Perform DGE analysis
-    adata = dge_data(adata, 'leiden_fusion', 'rank_genes_groups_leiden_fusion')
+    adata = dge_data(adata, 'leiden_fusion_old1', 'rank_genes_groups_leiden_fusion_old1')
 
     #filtered_adata = remove_NA_cat(adata)
 
@@ -139,7 +139,7 @@ if __name__ == "__main__":
         
     # adata = drop_mako(adata)
     # print(adata)
-    print(adata.obs['leiden_fusion'].cat.categories.to_list())
+    print(adata.obs['leiden_fusion_old1'].cat.categories.to_list())
 
     # Save the updated AnnData object
     output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad"
