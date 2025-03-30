@@ -25,7 +25,7 @@ def build_meta_file(adata: sc.AnnData,
         print("Build metafile for all cells")
         meta_df = pd.DataFrame({"barcode_sample": adata.obs_names.to_list(),
                                 "cell_type": adata.obs[cell_type].values.tolist()})
-        meta_file_path = f"{cellphonedb}/adata_final_merged_metadata.tsv"
+        meta_file_path = f"{cellphonedb}/adata_final_merged_metadata_nona.tsv"
         print(meta_file_path)
         meta_df.to_csv(meta_file_path, sep='\t', index=False)
         return meta_file_path
@@ -34,7 +34,7 @@ def build_meta_file(adata: sc.AnnData,
         subset_cells = adata[adata.obs[group_by] == subset].obs_names.to_list()
         meta_df = pd.DataFrame({"barcode_sample": adata[subset_cells, :].obs_names.to_list(),
                                 "cell_type": adata[subset_cells, :].obs[cell_type].values.tolist()})
-        meta_file_path = f"{cellphonedb}/adata_final_merged_{subset}_metadata.tsv"
+        meta_file_path = f"{cellphonedb}/adata_final_merged_{subset}_metadata_nona.tsv"
         print(meta_file_path)
         meta_df.to_csv(meta_file_path, sep='\t', index=False)
         return meta_file_path
@@ -126,7 +126,7 @@ def start() -> None:
         db_utils.download_database(dest, db_ver)
 
     # Load merged data
-    dest = f"{checkpoint_dir}/adata_final_merged_raw_norm_annot.h5ad"
+    dest = f"{checkpoint_dir}/adata_final_merged_raw_norm_annot_nona.h5ad"
     if os.path.exists(dest):
         print("Load merged data...")
         print(dest)
@@ -152,7 +152,7 @@ def start() -> None:
     
     # Save renamed adata
     print("Save renamed AnnData...")
-    dest = f"{checkpoint_dir}/adata_final_merged_raw_norm_hs_names.h5ad"
+    dest = f"{checkpoint_dir}/adata_final_merged_raw_norm_hs_names_nona.h5ad"
     print(dest)
     adata2.write_h5ad(dest, compression='gzip')
     
@@ -163,7 +163,7 @@ def start() -> None:
     #meta_file_path: (mandatory) path to the meta file linking cell barcodes to cluster labels metadata.tsv.
     #counts_file_path: (mandatory) paths to normalized counts file (not z-transformed), either in text format or h5ad (recommended) normalised_log_counts.h5ad.
     cpdb_file_path = f"{cpdb_dir}/{db_ver}/cellphonedb.zip"
-    counts_file_path = f"{checkpoint_dir}/adata_final_merged_raw_norm_hs_names.h5ad"
+    counts_file_path = f"{checkpoint_dir}/adata_final_merged_raw_norm_hs_names_nona.h5ad"
     out_path = cellphonedb
     
     # Build meta files
@@ -190,7 +190,7 @@ def start() -> None:
             threshold=0.2,                           # defines the min % of cells expressing a gene for this to be employed in the analysis.
             result_precision=4,                      # Sets the rounding for the mean values in significan_means.
             debug=False,                             # Saves all intermediate tables emplyed during the analysis in pkl format.
-            output_suffix="final_merged"             # Replaces the timestamp in the output files by a user defined string in the  (default: None)
+            output_suffix="final_merged_nona"             # Replaces the timestamp in the output files by a user defined string in the  (default: None)
         )
     
     ### Statistical analysis
@@ -217,7 +217,7 @@ def start() -> None:
             separator='|',                                 # Sets the string to employ to separate cells in the results dataframes "cellA|CellB".
             debug=False,                                   # Saves all intermediate tables employed during the analysis in pkl format.
             output_path=out_path,                          # Path to save results.
-            output_suffix="final_merged"                   # Replaces the timestamp in the output files by a user defined string in the  (default: None).
+            output_suffix="final_merged_nona"                   # Replaces the timestamp in the output files by a user defined string in the  (default: None).
         )
     
     ### Differential expression analysis
@@ -225,8 +225,8 @@ def start() -> None:
     # (genes involved in the interaction) is differentially expressed.
     if deg_analysis:
         # For All cells
-        degfile_all = build_deg_file(f"{marker_genes_dir}/adata_final_merged_marker_genes_leiden_merge.csv",
-                                     "adata_final_merged_deg.tsv")
+        degfile_all = build_deg_file(f"{marker_genes_dir}/adata_final_merged_marker_genes_leiden_merge_nona.csv",
+                                     "adata_final_merged_deg_nona.tsv")
         deconvoluted, means, relevant_interactions, significant_means = cpdb_degs_analysis_method.call(
             cpdb_file_path=cpdb_file_path,                            # mandatory: CellPhoneDB database zip file.
             meta_file_path=metafile_all,                              # mandatory: tsv file defining barcodes to cell label.
@@ -238,7 +238,7 @@ def start() -> None:
             separator='|',                                            # Sets the string to employ to separate cells in the results dataframes "cellA|CellB".
             debug=False,                                              # Saves all intermediate tables emplyed during the analysis in pkl format.
             output_path=cellphonedb,                                  # Path to save results
-            output_suffix="final_merged"                              # Replaces the timestamp in the output files by a user defined string in the  (default: None)
+            output_suffix="final_merged_nona"                              # Replaces the timestamp in the output files by a user defined string in the  (default: None)
         )
 
 

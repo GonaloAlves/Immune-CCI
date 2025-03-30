@@ -47,7 +47,7 @@ def plot_heatmaps(adata: sc.AnnData, log1p: bool = False) -> None:
     """
 
     # Load p-values file (assuming a fixed filename)
-    dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged.txt"
+    dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
     pvalues = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
 
     # Generate heatmap
@@ -61,15 +61,20 @@ def plot_heatmaps(adata: sc.AnnData, log1p: bool = False) -> None:
     # Title customization
     suptitle = "Number of significant interactions (log1p transformed)" if log1p \
         else "Number of significant interactions"
-    clusterg.figure.suptitle(suptitle, y=0.85, size=50)
-    clusterg.ax_cbar.set_position((1.02, 0.0, .02, .3))
+    clusterg.figure.suptitle(suptitle, y=0.85, size=60)
+    clusterg.ax_cbar.set_position((1.1, 0.0, .02, .3))  # Move color bar to the right
+    clusterg.ax_cbar.tick_params(labelsize=50)  # Increase scale label font size
     
     # Adjust heatmap
     ax = clusterg.ax_heatmap
     ax.grid(False)
+
+    # Increase font size of cluster labels
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=40)  # Adjust as needed
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)  # Rotate for readability
     
     # Save plot
-    output_path = f"{cellphonedb_dir}/significant_interactions_final_merged.pdf"
+    output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona.png"
     print(f"Saving heatmap to: {output_path}")
     clusterg.savefig(output_path, bbox_inches="tight")
     plt.close()
@@ -94,9 +99,9 @@ def plot_heatmaps_major_cells(obs_key: Optional[str] = None,
     if obs_key is not None and category is None:
         raise ValueError("If obs_key is not None then category cannot be None!")
     elif obs_key is not None:
-        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}.txt"
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}_nona.txt"
     else:
-        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged.txt"
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
         
     pvalues = pd.read_csv(dest, sep='\t', index_col=0, dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
     pvalues.drop(columns=["interacting_pair", "partner_a", "partner_b", "gene_a", "gene_b", "secreted",
@@ -143,9 +148,9 @@ def plot_heatmaps_major_cells(obs_key: Optional[str] = None,
         else "Number of significant interactions for major cell types"
     plt.title(suptitle)
     if obs_key is not None:
-        dest = cellphonedb_dir + f"/significant_interactions_final_merged_major_{category.replace('.', '_')}.pdf"
+        dest = cellphonedb_dir + f"/significant_interactions_final_merged_major_{category.replace('.', '_')}_nona.pdf"
     else:
-        dest = cellphonedb_dir + "/significant_interactions_final_merged_major.pdf"
+        dest = cellphonedb_dir + "/significant_interactions_final_merged_major_nona.pdf"
     print(dest)
     plt.savefig(dest, bbox_inches='tight')
     plt.close(fig)
@@ -168,8 +173,8 @@ def plot_lineage_vs_other_interactions(adata: sc.AnnData, lineage_prefix: str) -
         raise ValueError(f"Lineage prefix '{lineage_prefix}' not found!")
 
     # Load interaction data (ignoring injury conditions)
-    dest_pvalues = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged.txt"
-    dest_means = f"{cellphonedb_dir}/statistical_analysis_means_final_merged.txt"
+    dest_pvalues = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
+    dest_means = f"{cellphonedb_dir}/statistical_analysis_means_final_merged_nona.txt"
     
     pvalues = pd.read_csv(dest_pvalues, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
     means = pd.read_csv(dest_means, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
@@ -207,7 +212,7 @@ def plot_lineage_vs_other_interactions(adata: sc.AnnData, lineage_prefix: str) -
     )
 
     # Save plot
-    dest_plot = f"{cellphonedb_dir}/{lineage_prefix}_interactions_final_merged.pdf"
+    dest_plot = f"{cellphonedb_dir}/{lineage_prefix}_interactions_final_merged_nona.pdf"
     dotplot.save(dest_plot, dpi=300, limitsize=False, bbox_inches="tight")
     plt.close()
 
@@ -223,8 +228,8 @@ def chord_diagram(adata: sc.AnnData, lineage_prefix: str) -> None:
         raise ValueError(f"Lineage prefix '{lineage_prefix}' not found!")
 
     # Load interaction data (ignoring injury conditions)
-    dest_pvalues = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged.txt"
-    dest_means = f"{cellphonedb_dir}/statistical_analysis_means_final_merged.txt"
+    dest_pvalues = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
+    dest_means = f"{cellphonedb_dir}/statistical_analysis_means_final_merged_nona.txt"
 
     pvalues = pd.read_csv(dest_pvalues, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
     print(pvalues)
@@ -239,7 +244,7 @@ def chord_diagram(adata: sc.AnnData, lineage_prefix: str) -> None:
     cell_types1 = "|".join(cell_types1)
     cell_types2 = "|".join(cell_types2)
 
-    deconvoluted_file = f"{cellphonedb_dir}/statistical_analysis_deconvoluted_final_merged.txt"
+    deconvoluted_file = f"{cellphonedb_dir}/statistical_analysis_deconvoluted_final_merged_nona.txt"
     deconvoluted_data = pd.read_csv(deconvoluted_file, sep="\t")
 
 ##################
@@ -306,7 +311,7 @@ def chord_diagram(adata: sc.AnnData, lineage_prefix: str) -> None:
 
     
     # Save plot
-    dest_plot = f"{cellphonedb_dir}/chord_all_interactions_final_merged.pdf"
+    dest_plot = f"{cellphonedb_dir}/chord_all_interactions_final_merged_nona.pdf"
 
     # If `chord` is a Matplotlib figure, save it directly
     if isinstance(chord, plt.Figure):  
@@ -325,8 +330,8 @@ def schord_diagram(adata: sc.AnnData) -> None:
     
     
     # Load interaction data (ignoring injury conditions)
-    dest_pvalues = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged.txt"
-    dest_means = f"{cellphonedb_dir}/statistical_analysis_means_final_merged.txt"
+    dest_pvalues = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
+    dest_means = f"{cellphonedb_dir}/statistical_analysis_means_final_merged_nona.txt"
 
     pvalues = pd.read_csv(dest_pvalues, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
     print(pvalues)
@@ -342,7 +347,7 @@ def schord_diagram(adata: sc.AnnData) -> None:
     cell_types2 = "|".join(all_cell_types)
 
 
-    deconvoluted_file = f"{cellphonedb_dir}/statistical_analysis_deconvoluted_final_merged.txt"
+    deconvoluted_file = f"{cellphonedb_dir}/statistical_analysis_deconvoluted_final_merged_nona.txt"
     deconvoluted_data = pd.read_csv(deconvoluted_file, sep="\t")
 
 
@@ -377,7 +382,7 @@ def schord_diagram(adata: sc.AnnData) -> None:
 
     
     # Save plot
-    dest_plot = f"{cellphonedb_dir}/chord_all_interactions_final_merged.pdf"
+    dest_plot = f"{cellphonedb_dir}/chord_all_interactions_final_merged_nona.pdf"
 
     # If `chord` is a Matplotlib figure, save it directly
     if isinstance(chord, plt.Figure):  
@@ -395,7 +400,7 @@ def start() -> None:
     import os
 
     # Load merged hs_names data
-    dest = f"{checkpoint_dir}/adata_final_merged_raw_norm_hs_names.h5ad"
+    dest = f"{checkpoint_dir}/adata_final_merged_raw_norm_hs_names_nona.h5ad"
     if os.path.exists(dest):
         print("Load merged hs_names data...")
         print(dest)
@@ -410,7 +415,7 @@ def start() -> None:
     print(adata)
     if statistical_analysis:
         # Heatmaps
-        # plot_heatmaps(adata)
+        plot_heatmaps(adata)
 
         # # Lineages vs Other lineages interactions
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Neu")
@@ -418,7 +423,7 @@ def start() -> None:
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Imm")
         
         #chord_diagram(adata=adata, lineage_prefix="Imm")
-        schord_diagram(adata=adata)
+        # schord_diagram(adata=adata)
             
         
 start()
