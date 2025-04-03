@@ -65,10 +65,7 @@ def plot_heatmaps(adata: sc.AnnData,
     ax = clusterg.ax_heatmap
     ax.grid(False)
     plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), frameon=False)
-    if obs_key is not None:
-        dest = cellphonedb_dir + f"/significant_interactions_final_merged_{category.replace('.', '_')}.pdf"
-    else:
-        dest = cellphonedb_dir + "/significant_interactions_final_merged.pdf"
+    
     print(dest)
     clusterg.savefig(dest, bbox_inches="tight")
     plt.close()

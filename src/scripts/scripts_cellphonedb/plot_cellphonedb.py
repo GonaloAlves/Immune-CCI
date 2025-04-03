@@ -33,7 +33,7 @@ def get_cell_types(cci: str,
     
     return tuple(cell_types)
 
-def plot_heatmaps(adata: sc.AnnData, log1p: bool = False) -> None:
+def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, log1p: bool = False) -> None:
     """
     Plots a heatmap using ktplotspy for a given AnnData object.
 
@@ -46,8 +46,16 @@ def plot_heatmaps(adata: sc.AnnData, log1p: bool = False) -> None:
         Whether to log-transform the number of significant interactions for better visualization.
     """
 
+    if obs_key is not None and category is None:
+        raise ValueError("If obs_key is not None then category cannot be None!")
+    elif obs_key is not None:
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}.txt"
+    else:
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged.txt"
+    
+    
     # Load p-values file (assuming a fixed filename)
-    dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
+    # dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
     pvalues = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
 
     # Generate heatmap
@@ -74,7 +82,7 @@ def plot_heatmaps(adata: sc.AnnData, log1p: bool = False) -> None:
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)  # Rotate for readability
     
     # Save plot
-    output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona.png"
+    output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona_{category}.png"
     print(f"Saving heatmap to: {output_path}")
     clusterg.savefig(output_path, bbox_inches="tight")
     plt.close()
@@ -416,6 +424,10 @@ def start() -> None:
     if statistical_analysis:
         # Heatmaps
         plot_heatmaps(adata)
+        
+        plot_heatmaps(adata, obs_key="injury_day", category="sham_15")
+        plot_heatmaps(adata, obs_key="injury_day", category="injured_15")
+        plot_heatmaps(adata, obs_key="injury_day", category="injured_60")
 
         # # Lineages vs Other lineages interactions
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Neu")
