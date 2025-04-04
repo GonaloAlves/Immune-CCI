@@ -308,7 +308,7 @@ def start() -> None:
             output_suffix="final_merged_injured_60"        # Replaces the timestamp in the output files by a user defined string in the  (default: None).
         )
     
-    ### Differential expression analysis
+    # ## Differential expression analysis
     # This method will retrieve interactions where at least one of the interacting partners
     # (genes involved in the interaction) is differentially expressed.
     # if deg_analysis:

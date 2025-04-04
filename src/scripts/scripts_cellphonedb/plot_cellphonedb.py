@@ -51,21 +51,39 @@ def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, 
     elif obs_key is not None:
         dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}.txt"
     else:
-        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged.txt"
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
     
     
     # Load p-values file (assuming a fixed filename)
     # dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
     pvalues = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
 
+
+    all_clusters = list(pvalues.columns[1:])  # Exclude 'interacting_pair'
+    imm_clusters = sorted([c for c in all_clusters if c.startswith("Imm")])
+    mev_clusters = sorted([c for c in all_clusters if c.startswith("MeV")])
+    neu_clusters = sorted([c for c in all_clusters if c.startswith("Neu")])
+    ordered_cell_types = imm_clusters + mev_clusters + neu_clusters
+
+    # Reorder pvalues DataFrame by ordered clusters
+    pvalues = pvalues[["interacting_pair"] + ordered_cell_types]
+
+    print(pvalues)
+    
     # Generate heatmap
     clusterg = kpy.plot_cpdb_heatmap(
         pvals=pvalues,
+        #cell_types=ordered_cell_types,  
         log1p_transform=log1p,
         figsize=(60, 60),
-        linewidths=0.2
+        linewidths=0.2,
+        annot = True,
+        col_cluster=False,  # prevent it from reordering automatically
+        row_cluster=False
     )
 
+    print(type(clusterg))
+    print(clusterg)
     # Title customization
     suptitle = "Number of significant interactions (log1p transformed)" if log1p \
         else "Number of significant interactions"
@@ -425,9 +443,9 @@ def start() -> None:
         # Heatmaps
         plot_heatmaps(adata)
         
-        plot_heatmaps(adata, obs_key="injury_day", category="sham_15")
-        plot_heatmaps(adata, obs_key="injury_day", category="injured_15")
-        plot_heatmaps(adata, obs_key="injury_day", category="injured_60")
+        # plot_heatmaps(adata, obs_key="injury_day", category="sham_15")
+        # plot_heatmaps(adata, obs_key="injury_day", category="injured_15")
+        # plot_heatmaps(adata, obs_key="injury_day", category="injured_60")
 
         # # Lineages vs Other lineages interactions
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Neu")
