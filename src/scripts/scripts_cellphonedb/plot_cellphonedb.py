@@ -55,42 +55,31 @@ def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, 
     
     
     # Load p-values file (assuming a fixed filename)
-    # dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
+    dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
     pvalues = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
 
 
-    all_clusters = list(pvalues.columns[1:])  # Exclude 'interacting_pair'
-    imm_clusters = sorted([c for c in all_clusters if c.startswith("Imm")])
-    mev_clusters = sorted([c for c in all_clusters if c.startswith("MeV")])
-    neu_clusters = sorted([c for c in all_clusters if c.startswith("Neu")])
-    ordered_cell_types = imm_clusters + mev_clusters + neu_clusters
-
-    # Reorder pvalues DataFrame by ordered clusters
-    pvalues = pvalues[["interacting_pair"] + ordered_cell_types]
-
-    print(pvalues)
-    
     # Generate heatmap
     clusterg = kpy.plot_cpdb_heatmap(
         pvals=pvalues,
-        #cell_types=ordered_cell_types,  
+        #cell_types=ordered_matrix,  
         log1p_transform=log1p,
         figsize=(60, 60),
-        linewidths=0.2,
-        annot = True,
-        col_cluster=False,  # prevent it from reordering automatically
-        row_cluster=False
+        linewidths=0.2 
+        #annot = True
+        # col_cluster=True,  # prevent it from reordering automatically
+        # row_cluster=True
     )
 
-    print(type(clusterg))
-    print(clusterg)
+    ###########
+
     # Title customization
     suptitle = "Number of significant interactions (log1p transformed)" if log1p \
         else "Number of significant interactions"
     clusterg.figure.suptitle(suptitle, y=0.85, size=60)
     clusterg.ax_cbar.set_position((1.1, 0.0, .02, .3))  # Move color bar to the right
     clusterg.ax_cbar.tick_params(labelsize=50)  # Increase scale label font size
-    
+
     # Adjust heatmap
     ax = clusterg.ax_heatmap
     ax.grid(False)
@@ -103,6 +92,108 @@ def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, 
     output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona_{category}.png"
     print(f"Saving heatmap to: {output_path}")
     clusterg.savefig(output_path, bbox_inches="tight")
+    plt.close()
+
+def plot_heatmaps_order(adata: sc.AnnData, obs_key: str = None, category: str = None, log1p: bool = False) -> None:
+    """
+    Plots a heatmap using ktplotspy for a given AnnData object.
+
+    Parameters
+    ----------
+    `adata` : sc.AnnData
+        AnnData object used for plotting.
+        
+    `log1p` : bool, optional
+        Whether to log-transform the number of significant interactions for better visualization.
+    """
+
+    if obs_key is not None and category is None:
+        raise ValueError("If obs_key is not None then category cannot be None!")
+    elif obs_key is not None:
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}.txt"
+    else:
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
+    
+    
+    # Load p-values file (assuming a fixed filename)
+    # dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
+    pvalues = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
+
+
+    # all_clusters = list(pvalues.columns[1:])  # Exclude 'interacting_pair'
+    # imm_clusters = sorted([c for c in all_clusters if c.startswith("Imm")])
+    # mev_clusters = sorted([c for c in all_clusters if c.startswith("MeV")])
+    # neu_clusters = sorted([c for c in all_clusters if c.startswith("Neu")])
+    # ordered_cell_types = imm_clusters + mev_clusters + neu_clusters
+
+    # # Reorder pvalues DataFrame by ordered clusters
+    # pvalues = pvalues[["interacting_pair"] + ordered_cell_types]
+
+    # print(pvalues)
+    
+    # Generate heatmap
+    clusterg = kpy.plot_cpdb_heatmap(
+        pvals=pvalues,
+        #cell_types=ordered_cell_types,  
+        log1p_transform=log1p,
+        figsize=(60, 60),
+        linewidths=0.2,
+        annot = True,
+        return_tables=True,
+        col_cluster=False,  # prevent it from reordering automatically
+        row_cluster=False
+    )
+
+    # Extract the data
+    count_matrix = clusterg["count_network"]
+    interaction_count = clusterg["interaction_count"]
+
+    # Get the ordered list of clusters
+    ordered_clusters = (
+        interaction_count["total_interactions"]
+        .sort_values(ascending=False)
+        .index
+        .tolist()
+    )
+
+    # Reorder the matrix rows and columns
+    ordered_matrix = count_matrix.loc[ordered_clusters, ordered_clusters]
+    print(ordered_matrix)
+
+    # Generate heatmap
+    clusterg2 = kpy.plot_cpdb_heatmap(
+        pvals=pvalues,
+        #cell_types=ordered_matrix,  
+        log1p_transform=log1p,
+        figsize=(60, 60),
+        linewidths=0.2,
+        annot = True,
+        col_cluster=False,  # prevent it from reordering automatically
+        row_cluster=False
+    )
+
+    ###########
+    print(type(clusterg2))
+    print(clusterg2)
+    # Title customization
+    suptitle = "Number of significant interactions (log1p transformed)" if log1p \
+        else "Number of significant interactions"
+    clusterg2.figure.suptitle(suptitle, y=0.85, size=60)
+    clusterg2.ax_cbar.set_position((1.1, 0.0, .02, .3))  # Move color bar to the right
+    clusterg2.ax_cbar.tick_params(labelsize=50)  # Increase scale label font size
+
+    # Adjust heatmap
+    ax = clusterg2.ax_heatmap
+    ax.grid(False)
+
+    # Increase font size of cluster labels
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=40)  # Adjust as needed
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)  # Rotate for readability
+    
+    # Save plot
+    output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona_{category}.png"
+    print(f"Saving heatmap to: {output_path}")
+    clusterg2.savefig(output_path, bbox_inches="tight")
     plt.close()
 
 def plot_heatmaps_major_cells(obs_key: Optional[str] = None,
