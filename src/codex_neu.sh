@@ -12,6 +12,12 @@ conda activate mkpy
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_neu/neuron_canonical.py
 
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/copy_fusions.py
+
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/fusion_clusters.py
+
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/rename_cluster.py
+
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/merge_datasets.py
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/a_cellphonedb.py

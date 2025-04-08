@@ -65,10 +65,11 @@ def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, 
         #cell_types=ordered_matrix,  
         log1p_transform=log1p,
         figsize=(60, 60),
-        linewidths=0.2 
+        linewidths=0.2,
         #annot = True
-        # col_cluster=True,  # prevent it from reordering automatically
-        # row_cluster=True
+        col_cluster=True,  # prevent it from reordering automatically
+        row_cluster=True,
+        method='ward'
     )
 
     ###########
