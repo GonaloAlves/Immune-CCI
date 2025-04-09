@@ -46,13 +46,6 @@ def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, 
         Whether to log-transform the number of significant interactions for better visualization.
     """
 
-    if obs_key is not None and category is None:
-        raise ValueError("If obs_key is not None then category cannot be None!")
-    elif obs_key is not None:
-        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}.txt"
-    else:
-        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
-    
     
     # Load p-values file (assuming a fixed filename)
     dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
@@ -62,17 +55,14 @@ def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, 
     # Generate heatmap
     clusterg = kpy.plot_cpdb_heatmap(
         pvals=pvalues,
-        #cell_types=ordered_matrix,  
         log1p_transform=log1p,
         figsize=(60, 60),
         linewidths=0.2,
-        #annot = True
+        annot = True,
         col_cluster=True,  # prevent it from reordering automatically
         row_cluster=True,
         method='ward'
     )
-
-    ###########
 
     # Title customization
     suptitle = "Number of significant interactions (log1p transformed)" if log1p \
@@ -108,51 +98,33 @@ def plot_heatmaps_order(adata: sc.AnnData, obs_key: str = None, category: str = 
         Whether to log-transform the number of significant interactions for better visualization.
     """
 
-    if obs_key is not None and category is None:
-        raise ValueError("If obs_key is not None then category cannot be None!")
-    elif obs_key is not None:
-        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}.txt"
-    else:
-        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
-    
+
     
     # Load p-values file (assuming a fixed filename)
-    # dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
-    pvalues = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
-
-
-    # all_clusters = list(pvalues.columns[1:])  # Exclude 'interacting_pair'
-    # imm_clusters = sorted([c for c in all_clusters if c.startswith("Imm")])
-    # mev_clusters = sorted([c for c in all_clusters if c.startswith("MeV")])
-    # neu_clusters = sorted([c for c in all_clusters if c.startswith("Neu")])
-    # ordered_cell_types = imm_clusters + mev_clusters + neu_clusters
-
-    # # Reorder pvalues DataFrame by ordered clusters
-    # pvalues = pvalues[["interacting_pair"] + ordered_cell_types]
-
-    # print(pvalues)
+    dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
+    pvalues1 = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
+    
     
     # Generate heatmap
     clusterg = kpy.plot_cpdb_heatmap(
-        pvals=pvalues,
-        #cell_types=ordered_cell_types,  
-        log1p_transform=log1p,
-        figsize=(60, 60),
-        linewidths=0.2,
-        annot = True,
+        pvals=pvalues1,
+        # log1p_transform=log1p,
+        # figsize=(60, 60),
+        # linewidths=0.2,
+        # annot = True,
         return_tables=True,
-        col_cluster=False,  # prevent it from reordering automatically
-        row_cluster=False
+        col_cluster=True, 
+        row_cluster=True,
+        method='ward'
     )
-
-    # Extract the data
+    print(clusterg)
+    # Extract the matrix
     count_matrix = clusterg["count_network"]
-    interaction_count = clusterg["interaction_count"]
+    print(count_matrix)
 
     # Get the ordered list of clusters
     ordered_clusters = (
-        interaction_count["total_interactions"]
-        .sort_values(ascending=False)
+        count_matrix
         .index
         .tolist()
     )
@@ -161,21 +133,29 @@ def plot_heatmaps_order(adata: sc.AnnData, obs_key: str = None, category: str = 
     ordered_matrix = count_matrix.loc[ordered_clusters, ordered_clusters]
     print(ordered_matrix)
 
+    if obs_key is not None and category is None:
+        raise ValueError("If obs_key is not None then category cannot be None!")
+    elif obs_key is not None:
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}.txt"
+    print(f"loadin... {dest}")
+
+    # Load p-values file (assuming a fixed filename)
+    pvalues = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
+
     # Generate heatmap
     clusterg2 = kpy.plot_cpdb_heatmap(
         pvals=pvalues,
-        #cell_types=ordered_matrix,  
+        cell_types=ordered_matrix,  
         log1p_transform=log1p,
         figsize=(60, 60),
         linewidths=0.2,
         annot = True,
         col_cluster=False,  # prevent it from reordering automatically
         row_cluster=False
+        # method='ward'
     )
 
-    ###########
-    print(type(clusterg2))
-    print(clusterg2)
+
     # Title customization
     suptitle = "Number of significant interactions (log1p transformed)" if log1p \
         else "Number of significant interactions"
@@ -535,8 +515,8 @@ def start() -> None:
         # Heatmaps
         plot_heatmaps(adata)
         
-        # plot_heatmaps(adata, obs_key="injury_day", category="sham_15")
-        # plot_heatmaps(adata, obs_key="injury_day", category="injured_15")
+        plot_heatmaps_order(adata, obs_key="injury_day", category="sham_15")
+        plot_heatmaps_order(adata, obs_key="injury_day", category="injured_15")
         # plot_heatmaps(adata, obs_key="injury_day", category="injured_60")
 
         # # Lineages vs Other lineages interactions

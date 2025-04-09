@@ -169,10 +169,14 @@ def start() -> None:
     # Build meta files
     print("Build meta files...")
     metafile_all = build_meta_file(adata2, cell_type="leiden_merge")   # All cells
-    metafile_uinj = build_meta_file(adata2, cell_type="leiden_merge", group_by="injury_day", subset="uninjured.0")         # Uninjured cells
-    metafile_sham = build_meta_file(adata2, cell_type="leiden_merge", group_by="injury_day", subset="sham.15")             # Sham cells
+    # metafile_uinj = build_meta_file(adata2, cell_type="leiden_merge", group_by="injury_day", subset="uninjured.0")         # Uninjured cells
+    # metafile_sham = build_meta_file(adata2, cell_type="leiden_merge", group_by="injury_day", subset="sham.15")             # Sham cells
     metafile_injury_15 = build_meta_file(adata2, cell_type="leiden_merge", group_by="injury_day", subset="injured.15")     # Injury_15 cells
     metafile_injury_60 = build_meta_file(adata2, cell_type="leiden_merge", group_by="injury_day", subset="injured.60")     # Injury_60 cells
+    # Build meta file for "not injured"
+    adata_notinjured = adata2[adata2.obs["injury_day"].isin(["uninjured.0", "sham.15"])]
+    metafile_notinjured = build_meta_file(adata_notinjured, cell_type="leiden_merge")
+
 
     # Free memory
     del adata
@@ -265,48 +269,69 @@ def start() -> None:
         #     output_path=out_path,                          # Path to save results.
         #     output_suffix="final_merged_sham_15"           # Replaces the timestamp in the output files by a user defined string in the  (default: None).
         # )
-        # # For Injury_15
-        # deconvoluted, means, pvalues, significant_means = cpdb_statistical_analysis_method.call(
-        #     cpdb_file_path=cpdb_file_path,                 # mandatory: CellPhoneDB database zip file.
-        #     meta_file_path=metafile_injury_15,             # mandatory: tsv file defining barcodes to cell label.
-        #     counts_file_path=counts_file_path,             # mandatory: normalized count matrix.
-        #     counts_data='hgnc_symbol',                     # defines the gene annotation in counts matrix.
-        #     iterations=1000,                               # denotes the number of shufflings performed in the analysis.
-        #     threshold=0.3,                                 # defines the min % of cells expressing a gene for this to be employed in the analysis.
-        #     threads=os.cpu_count() - 1,                    # number of threads to use in the analysis.
-        #     debug_seed=42,                                 # debug randome seed. To disable >=0.
-        #     result_precision=4,                            # Sets the rounding for the mean values in significan_means.
-        #     pvalue=0.05,                                   # P-value threshold to employ for significance.
-        #     subsampling=False,                             # To enable subsampling the data (geometri sketching).
-        #     subsampling_log=False,                         # (mandatory) enable subsampling log1p for non log-transformed data inputs.
-        #     subsampling_num_pc=100,                        # Number of componets to subsample via geometric skectching (dafault: 100).
-        #     subsampling_num_cells=None,                    # Number of cells to subsample (integer) (default: 1/3 of the dataset).
-        #     separator='|',                                 # Sets the string to employ to separate cells in the results dataframes "cellA|CellB".
-        #     debug=False,                                   # Saves all intermediate tables employed during the analysis in pkl format.
-        #     output_path=out_path,                          # Path to save results.
-        #     output_suffix="final_merged_injured_15"        # Replaces the timestamp in the output files by a user defined string in the  (default: None).
-        # )
-        # # For Injury_60
-        # deconvoluted, means, pvalues, significant_means = cpdb_statistical_analysis_method.call(
-        #     cpdb_file_path=cpdb_file_path,                 # mandatory: CellPhoneDB database zip file.
-        #     meta_file_path=metafile_injury_60,             # mandatory: tsv file defining barcodes to cell label.
-        #     counts_file_path=counts_file_path,             # mandatory: normalized count matrix.
-        #     counts_data='hgnc_symbol',                     # defines the gene annotation in counts matrix.
-        #     iterations=1000,                               # denotes the number of shufflings performed in the analysis.
-        #     threshold=0.3,                                 # defines the min % of cells expressing a gene for this to be employed in the analysis.
-        #     threads=os.cpu_count() - 1,                    # number of threads to use in the analysis.
-        #     debug_seed=42,                                 # debug randome seed. To disable >=0.
-        #     result_precision=4,                            # Sets the rounding for the mean values in significan_means.
-        #     pvalue=0.05,                                   # P-value threshold to employ for significance.
-        #     subsampling=False,                             # To enable subsampling the data (geometri sketching).
-        #     subsampling_log=False,                         # (mandatory) enable subsampling log1p for non log-transformed data inputs.
-        #     subsampling_num_pc=100,                        # Number of componets to subsample via geometric skectching (dafault: 100).
-        #     subsampling_num_cells=None,                    # Number of cells to subsample (integer) (default: 1/3 of the dataset).
-        #     separator='|',                                 # Sets the string to employ to separate cells in the results dataframes "cellA|CellB".
-        #     debug=False,                                   # Saves all intermediate tables employed during the analysis in pkl format.
-        #     output_path=out_path,                          # Path to save results.
-        #     output_suffix="final_merged_injured_60"        # Replaces the timestamp in the output files by a user defined string in the  (default: None).
-        # )
+        #For controll
+        deconvoluted, means, pvalues, significant_means = cpdb_statistical_analysis_method.call(
+            cpdb_file_path=cpdb_file_path,                 # mandatory: CellPhoneDB database zip file.
+            meta_file_path=metafile_notinjured,                  # mandatory: tsv file defining barcodes to cell label.
+            counts_file_path=counts_file_path,             # mandatory: normalized count matrix.
+            counts_data='hgnc_symbol',                     # defines the gene annotation in counts matrix.
+            iterations=1000,                               # denotes the number of shufflings performed in the analysis.
+            threshold=0.3,                                 # defines the min % of cells expressing a gene for this to be employed in the analysis.
+            threads=os.cpu_count() - 1,                    # number of threads to use in the analysis.
+            debug_seed=42,                                 # debug randome seed. To disable >=0.
+            result_precision=4,                            # Sets the rounding for the mean values in significan_means.
+            pvalue=0.05,                                   # P-value threshold to employ for significance.
+            subsampling=False,                             # To enable subsampling the data (geometri sketching).
+            subsampling_log=False,                         # (mandatory) enable subsampling log1p for non log-transformed data inputs.
+            subsampling_num_pc=100,                        # Number of componets to subsample via geometric skectching (dafault: 100).
+            subsampling_num_cells=None,                    # Number of cells to subsample (integer) (default: 1/3 of the dataset).
+            separator='|',                                 # Sets the string to employ to separate cells in the results dataframes "cellA|CellB".
+            debug=False,                                   # Saves all intermediate tables employed during the analysis in pkl format.
+            output_path=out_path,                          # Path to save results.
+            output_suffix="final_merged_sham_15"           # Replaces the timestamp in the output files by a user defined string in the  (default: None).
+        )
+        # For Injury_15
+        deconvoluted, means, pvalues, significant_means = cpdb_statistical_analysis_method.call(
+            cpdb_file_path=cpdb_file_path,                 # mandatory: CellPhoneDB database zip file.
+            meta_file_path=metafile_injury_15,             # mandatory: tsv file defining barcodes to cell label.
+            counts_file_path=counts_file_path,             # mandatory: normalized count matrix.
+            counts_data='hgnc_symbol',                     # defines the gene annotation in counts matrix.
+            iterations=1000,                               # denotes the number of shufflings performed in the analysis.
+            threshold=0.3,                                 # defines the min % of cells expressing a gene for this to be employed in the analysis.
+            threads=os.cpu_count() - 1,                    # number of threads to use in the analysis.
+            debug_seed=42,                                 # debug randome seed. To disable >=0.
+            result_precision=4,                            # Sets the rounding for the mean values in significan_means.
+            pvalue=0.05,                                   # P-value threshold to employ for significance.
+            subsampling=False,                             # To enable subsampling the data (geometri sketching).
+            subsampling_log=False,                         # (mandatory) enable subsampling log1p for non log-transformed data inputs.
+            subsampling_num_pc=100,                        # Number of componets to subsample via geometric skectching (dafault: 100).
+            subsampling_num_cells=None,                    # Number of cells to subsample (integer) (default: 1/3 of the dataset).
+            separator='|',                                 # Sets the string to employ to separate cells in the results dataframes "cellA|CellB".
+            debug=False,                                   # Saves all intermediate tables employed during the analysis in pkl format.
+            output_path=out_path,                          # Path to save results.
+            output_suffix="final_merged_injured_15"        # Replaces the timestamp in the output files by a user defined string in the  (default: None).
+        )
+        # For Injury_60
+        deconvoluted, means, pvalues, significant_means = cpdb_statistical_analysis_method.call(
+            cpdb_file_path=cpdb_file_path,                 # mandatory: CellPhoneDB database zip file.
+            meta_file_path=metafile_injury_60,             # mandatory: tsv file defining barcodes to cell label.
+            counts_file_path=counts_file_path,             # mandatory: normalized count matrix.
+            counts_data='hgnc_symbol',                     # defines the gene annotation in counts matrix.
+            iterations=1000,                               # denotes the number of shufflings performed in the analysis.
+            threshold=0.3,                                 # defines the min % of cells expressing a gene for this to be employed in the analysis.
+            threads=os.cpu_count() - 1,                    # number of threads to use in the analysis.
+            debug_seed=42,                                 # debug randome seed. To disable >=0.
+            result_precision=4,                            # Sets the rounding for the mean values in significan_means.
+            pvalue=0.05,                                   # P-value threshold to employ for significance.
+            subsampling=False,                             # To enable subsampling the data (geometri sketching).
+            subsampling_log=False,                         # (mandatory) enable subsampling log1p for non log-transformed data inputs.
+            subsampling_num_pc=100,                        # Number of componets to subsample via geometric skectching (dafault: 100).
+            subsampling_num_cells=None,                    # Number of cells to subsample (integer) (default: 1/3 of the dataset).
+            separator='|',                                 # Sets the string to employ to separate cells in the results dataframes "cellA|CellB".
+            debug=False,                                   # Saves all intermediate tables employed during the analysis in pkl format.
+            output_path=out_path,                          # Path to save results.
+            output_suffix="final_merged_injured_60"        # Replaces the timestamp in the output files by a user defined string in the  (default: None).
+        )
     
     # ## Differential expression analysis
     # This method will retrieve interactions where at least one of the interacting partners
