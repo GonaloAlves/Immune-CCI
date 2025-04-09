@@ -58,7 +58,8 @@ def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, 
         log1p_transform=log1p,
         figsize=(60, 60),
         linewidths=0.2,
-        annot = True,
+        # annot = True,
+        # annot_kws={"size": 20},
         col_cluster=True,  # prevent it from reordering automatically
         row_cluster=True,
         method='ward'
@@ -76,8 +77,8 @@ def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, 
     ax.grid(False)
 
     # Increase font size of cluster labels
-    ax.set_yticklabels(ax.get_yticklabels(), fontsize=40)  # Adjust as needed
-    ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)  # Rotate for readability
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=50)  # Adjust as needed
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=50, rotation=90)  # Rotate for readability
     
     # Save plot
     output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona_{category}.png"
@@ -515,9 +516,9 @@ def start() -> None:
         # Heatmaps
         plot_heatmaps(adata)
         
-        plot_heatmaps_order(adata, obs_key="injury_day", category="sham_15")
-        plot_heatmaps_order(adata, obs_key="injury_day", category="injured_15")
-        # plot_heatmaps(adata, obs_key="injury_day", category="injured_60")
+        # plot_heatmaps_order(adata, obs_key="injury_day", category="sham_15")
+        # plot_heatmaps_order(adata, obs_key="injury_day", category="injured_15")
+        # # plot_heatmaps(adata, obs_key="injury_day", category="injured_60")
 
         # # Lineages vs Other lineages interactions
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Neu")
