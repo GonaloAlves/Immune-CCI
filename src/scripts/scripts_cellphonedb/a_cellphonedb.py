@@ -288,7 +288,7 @@ def start() -> None:
             separator='|',                                 # Sets the string to employ to separate cells in the results dataframes "cellA|CellB".
             debug=False,                                   # Saves all intermediate tables employed during the analysis in pkl format.
             output_path=out_path,                          # Path to save results.
-            output_suffix="final_merged_sham_15"           # Replaces the timestamp in the output files by a user defined string in the  (default: None).
+            output_suffix="final_merged_uninjured_nona"           # Replaces the timestamp in the output files by a user defined string in the  (default: None).
         )
         # For Injury_15
         deconvoluted, means, pvalues, significant_means = cpdb_statistical_analysis_method.call(
@@ -309,7 +309,7 @@ def start() -> None:
             separator='|',                                 # Sets the string to employ to separate cells in the results dataframes "cellA|CellB".
             debug=False,                                   # Saves all intermediate tables employed during the analysis in pkl format.
             output_path=out_path,                          # Path to save results.
-            output_suffix="final_merged_injured_15"        # Replaces the timestamp in the output files by a user defined string in the  (default: None).
+            output_suffix="final_merged_injured_15_nona"        # Replaces the timestamp in the output files by a user defined string in the  (default: None).
         )
         # For Injury_60
         deconvoluted, means, pvalues, significant_means = cpdb_statistical_analysis_method.call(
@@ -330,7 +330,7 @@ def start() -> None:
             separator='|',                                 # Sets the string to employ to separate cells in the results dataframes "cellA|CellB".
             debug=False,                                   # Saves all intermediate tables employed during the analysis in pkl format.
             output_path=out_path,                          # Path to save results.
-            output_suffix="final_merged_injured_60"        # Replaces the timestamp in the output files by a user defined string in the  (default: None).
+            output_suffix="final_merged_injured_60_nona"        # Replaces the timestamp in the output files by a user defined string in the  (default: None).
         )
     
     # ## Differential expression analysis

@@ -33,7 +33,7 @@ def get_cell_types(cci: str,
     
     return tuple(cell_types)
 
-def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, log1p: bool = False) -> None:
+def plot_heatmaps(adata: sc.AnnData, log1p: bool = False) -> None:
     """
     Plots a heatmap using ktplotspy for a given AnnData object.
 
@@ -81,12 +81,191 @@ def plot_heatmaps(adata: sc.AnnData, obs_key: str = None, category: str = None, 
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=50, rotation=90)  # Rotate for readability
     
     # Save plot
-    output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona_{category}.png"
+    output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona.png"
     print(f"Saving heatmap to: {output_path}")
     clusterg.savefig(output_path, bbox_inches="tight")
     plt.close()
 
-def plot_heatmaps_order(adata: sc.AnnData, obs_key: str = None, category: str = None, log1p: bool = False) -> None:
+def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, remove_clusters: list = []):
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import pandas as pd
+    from matplotlib.colors import LinearSegmentedColormap
+
+    if obs_key is not None and category is None:
+        raise ValueError("If obs_key is not None then category cannot be None!")
+    elif obs_key is not None:
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}_nona.txt"
+    else:
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona.txt"
+
+    pvalues = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
+    
+    # Generate heatmap
+    clusterg = kpy.plot_cpdb_heatmap(
+        pvals=pvalues,
+        return_tables=True,
+        col_cluster=True, 
+        row_cluster=True,
+        method='ward'
+    )
+    
+    # Extract the matrix
+    count_matrix = clusterg["count_network"]
+    
+    custom_order = [
+        "Imm.M0Like.1", "Imm.M0Like.2", "Imm.DAM.0", "Imm.MHCII.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1", "Imm.Proliferative.0",
+        "Neu.CSFcN.0", "Neu.Epend.0", "MeV.Epithelial.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.SMC.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
+        "MeV.FibProlif.0", "MeV.Endothelial.3", "MeV.FibCollagen.2", "MeV.VLMC.1", "MeV.FibLaminin.0", "MeV.VLMC.0", "MeV.Fib.3",
+        "Imm.M0Like.0", "MeV.Endothelial.1", "MeV.Fib.2", "MeV.FibCollagen.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
+    ]
+
+    # Check if all your custom labels exist in the matrix
+    missing = set(custom_order) - set(count_matrix.index)
+    if missing:
+        print("Warning: These cluster names are not in the matrix:", missing)
+
+    # Remove clusters you want to exclude from the count_matrix
+    if remove_clusters:
+        print(f"Removing the following clusters: {remove_clusters}")
+        count_matrix = count_matrix.drop(index=remove_clusters, columns=remove_clusters, errors='ignore')
+
+    # Reorder the matrix rows and columns (if custom_order still applies)
+    ordered_matrix = count_matrix.loc[custom_order, custom_order]
+    print(f"Ordered Matrix:\n{ordered_matrix}")
+
+    plt.figure(figsize=(60, 60))
+
+    # Define your custom gradient colors: Blue → Light Beige → Purplish-Red
+    custom_colors = ["#2166ac", "#ffead0", "#b2182b"]  # Replace with exact hex if needed
+
+    # Create the colormap
+    custom_cmap = LinearSegmentedColormap.from_list("custom_bluered", custom_colors, N=256)
+
+    # Create the heatmap
+    ax = sns.heatmap(
+        ordered_matrix,
+        annot=True,
+        fmt=".0f",
+        cmap= custom_cmap,  
+        linewidths=0.2,
+        linecolor='gray',
+        square=True,
+        cbar_kws={"shrink": 0.8},
+        xticklabels=True,
+        yticklabels=True,
+        annot_kws={"size": 30}
+    )
+
+    # Title and axis customization
+    plt.title(f"Number of Significant Interactions in {category}", fontsize=60, pad=60)
+    ax.yaxis.set_ticks_position('right')
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=40, rotation=0)
+
+    # Adjust colorbar ticksM0Like.1
+    cbar = ax.collections[0].colorbar
+    cbar.ax.tick_params(labelsize=40)
+    cbar.ax.set_position([0.85, 0.2, 0.5, 0.3])  # [left, bottom, width, height]
+
+    # Save the figure
+    output_path = f"{cellphonedb_dir}/manual_heatmap_{category}.png"
+    plt.savefig(output_path, bbox_inches="tight")
+    plt.close()
+
+def plot_heatmaps_fixed_order(adata: sc.AnnData, obs_key: str = None, category: str = None, log1p: bool = False) -> None:
+    """
+    Plots a heatmap using ktplotspy for a given AnnData object.
+
+    Parameters
+    ----------
+    `adata` : sc.AnnData
+        AnnData object used for plotting.
+        
+    `log1p` : bool, optional
+        Whether to log-transform the number of significant interactions for better visualization.
+    """
+
+
+    
+    if obs_key is not None and category is None:
+        raise ValueError("If obs_key is not None then category cannot be None!")
+    elif obs_key is not None:
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}.txt"
+
+    pvalues = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
+    
+    
+    # Generate heatmap
+    clusterg = kpy.plot_cpdb_heatmap(
+        pvals=pvalues,
+        # log1p_transform=log1p,
+        # figsize=(60, 60),
+        # linewidths=0.2,
+        # annot = True,
+        return_tables=True,
+        col_cluster=True, 
+        row_cluster=True,
+        method='ward'
+    )
+    #print(clusterg)
+    # Extract the matrix
+    count_matrix = clusterg["count_network"]
+    #print(count_matrix)
+
+    custom_order = [
+        "Imm.M0Like.1", "Imm.M0Like.2", "Imm.DAM.0", "Imm.MHCII.0", "Imm.Interferon.0", "MeV.ImmuneDoublets.0", "Imm.PVM.0", "Imm.DAM.1", "Imm.Proliferative.0",
+        "Neu.CSFcN.0", "Neu.Epend.0", "MeV.Epithelial.0" ,"MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.SMC.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
+        "MeV.FibProlif.0", "MeV.Endothelial.3", "MeV.FibCollagen.2", "MeV.VLMC.1", "MeV.FibLaminin.0", "MeV.VLMC.0", "MeV.Fib.3", "MeV.FibUnknown.6", "MeV.LowQuality.0",
+        "Imm.M0Like.0", "MeV.Endothelial.1", "MeV.Fib.2", "MeV.FibCollagen.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
+    ]
+
+    # Check if all your custom labels exist in the matrix
+    missing = set(custom_order) - set(count_matrix.index)
+    if missing:
+        print("Warning: These cluster names are not in the matrix:", missing)
+
+    # Reorder the matrix rows and columns
+    ordered_matrix = count_matrix.loc[custom_order, custom_order]
+    print(f"hey_{ordered_matrix}")
+
+    # Generate heatmap
+    clusterg2 = kpy.plot_cpdb_heatmap(
+        pvals=pvalues,
+        cell_types=ordered_matrix,  
+        log1p_transform=log1p,
+        figsize=(60, 60),
+        linewidths=0.2,
+        annot = True,
+        col_cluster=False,  # prevent it from reordering automatically
+        row_cluster=False
+        # method='ward'
+    )
+
+
+    # Title customization
+    suptitle = "Number of significant interactions (log1p transformed)" if log1p \
+        else f"Number of significant interactions in {category}"
+    clusterg2.figure.suptitle(suptitle, y=0.85, size=60)
+    clusterg2.ax_cbar.set_position((1.1, 0.0, .02, .3))  # Move color bar to the right
+    clusterg2.ax_cbar.tick_params(labelsize=50)  # Increase scale label font size
+
+    # Adjust heatmap
+    ax = clusterg2.ax_heatmap
+    ax.grid(False)
+
+    # Increase font size of cluster labels
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=40)  # Adjust as needed
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)  # Rotate for readability
+    
+    # Save plot
+    output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona_{category}.png"
+    print(f"Saving heatmap to: {output_path}")
+    clusterg2.savefig(output_path, bbox_inches="tight")
+    plt.close()
+
+
+def plot_heatmaps_auto_order(adata: sc.AnnData, obs_key: str = None, category: str = None, log1p: bool = False) -> None:
     """
     Plots a heatmap using ktplotspy for a given AnnData object.
 
@@ -137,7 +316,7 @@ def plot_heatmaps_order(adata: sc.AnnData, obs_key: str = None, category: str = 
     if obs_key is not None and category is None:
         raise ValueError("If obs_key is not None then category cannot be None!")
     elif obs_key is not None:
-        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_{category.replace('.', '_')}.txt"
+        dest = f"{cellphonedb_dir}/statistical_analysis_pvalues_final_merged_nona_{category.replace('.', '_')}.txt"
     print(f"loadin... {dest}")
 
     # Load p-values file (assuming a fixed filename)
@@ -177,6 +356,7 @@ def plot_heatmaps_order(adata: sc.AnnData, obs_key: str = None, category: str = 
     print(f"Saving heatmap to: {output_path}")
     clusterg2.savefig(output_path, bbox_inches="tight")
     plt.close()
+
 
 def plot_heatmaps_major_cells(obs_key: Optional[str] = None,
                               category: Optional[str] = None,
@@ -260,8 +440,6 @@ def plot_heatmaps_major_cells(obs_key: Optional[str] = None,
     dest = f"{cellphonedb_dir}/{dest}_log1p.txt" if log1p else \
         f"{cellphonedb_dir}/{dest}.txt"
     mtx_source_target.to_csv(dest, sep='\t')
-
-
 
 
 def plot_lineage_vs_other_interactions(adata: sc.AnnData, lineage_prefix: str) -> None:
@@ -423,6 +601,7 @@ def chord_diagram(adata: sc.AnnData, lineage_prefix: str) -> None:
 
     print(f"Saved plot: {dest_plot}")
 
+
 def schord_diagram(adata: sc.AnnData) -> None:
 
     # help(kpy.plot_cpdb_chord)
@@ -514,11 +693,17 @@ def start() -> None:
     print(adata)
     if statistical_analysis:
         # Heatmaps
-        plot_heatmaps(adata)
+        # plot_heatmaps(adata)
         
-        # plot_heatmaps_order(adata, obs_key="injury_day", category="sham_15")
-        # plot_heatmaps_order(adata, obs_key="injury_day", category="injured_15")
-        # # plot_heatmaps(adata, obs_key="injury_day", category="injured_60")
+        # plot_heatmaps_fixed_order(adata, obs_key="injury_day", category="sham_15")
+        # plot_heatmaps_fixed_order(adata, obs_key="injury_day", category="injured_15")
+        # plot_heatmaps_fixed_order(adata, obs_key="injury_day", category="injured_60")
+        
+        remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
+        test_heatmap(adata)
+        test_heatmap(adata, obs_key="injury_day", category="injured_15", remove_clusters=remove_clusters)
+        test_heatmap(adata, obs_key="injury_day", category="injured_60", remove_clusters=remove_clusters)
+        test_heatmap(adata, obs_key="injury_day", category="uninjured", remove_clusters=remove_clusters)
 
         # # Lineages vs Other lineages interactions
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Neu")
