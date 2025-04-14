@@ -539,16 +539,17 @@ if __name__ == "__main__":
     filtered_adata = remove_NA_cat(adata)
 
     #print(adata)
-    print(adata.obs['leiden_fusion_old1'].cat.categories.to_list())
+    #print(adata.obs['leiden_fusion_old1'].cat.categories.to_list())
     #Create cluster resolutions UMAP
-    # umap_reso_cluster(filtered_adata, 'leiden_fusion')
+    
+    umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
     pts_thresholds = [0, 0.4, 0.8]
 
-    # Create dotplot of the top genes
-    create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
+    # # Create dotplot of the top genes
+    # create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
 
-    print("\n********\n* DONE *\n********")  # Indicate completion
+    print("\n********\n* DONE *\n********")  
 
     # Prints
     #print_gene_names(top_genes_names)

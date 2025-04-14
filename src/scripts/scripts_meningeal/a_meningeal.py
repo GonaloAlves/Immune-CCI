@@ -577,7 +577,7 @@ if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
-    print(adata)
+    # print(adata)
 
     filtered_adata = remove_NA_cat(adata)
 
@@ -586,12 +586,12 @@ if __name__ == "__main__":
 
     pts_thresholds = [0.3, 0.4, 0.5]
 
-    # Create dotplot of the top genes
-    create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
+    # # Create dotplot of the top genes
+    # create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
 
-    print("----")
-    print(adata.obs['leiden_fusion'].cat.categories.to_list())
-    print("----")
+    # print("----")
+    # print(adata.obs['leiden_fusion'].cat.categories.to_list())
+    # print("----")
 
     
 

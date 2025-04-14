@@ -468,9 +468,9 @@ if __name__ == "__main__":
     # Define thresholds
     pts_thresholds = [0, 0.2, 0.3]
 
-    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.EndoUnknowed.4", "MeV.Epithelial.0",
+    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.EndoUnknow.4", "MeV.Epithelial.0",
                             "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
-                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0", "MeV.FibUnknown.8"]
+                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0", "MeV.FibUnknown.6"]
     
 
     # Check for mismatches before reordering

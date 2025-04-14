@@ -57,7 +57,6 @@ def load_obsp_from_excel(adata, excel_path):
     
     print("obsp data successfully loaded.")
 
-    import scanpy as sc
 
 def set_umap_key(adata):
     """
@@ -172,7 +171,7 @@ if __name__ == "__main__":
         adatas[d] = adata
         print(adata)
     
-        umap_reso_cluster(adata, "leiden_fusion", "new", d)
+        # umap_reso_cluster(adata, "leiden_fusion", "new", d)
 
         # Save the updated AnnData object
         output_file = f"/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_{d}_raw_norm_ranked_copy_copy.h5ad"
