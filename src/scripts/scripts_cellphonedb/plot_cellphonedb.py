@@ -86,7 +86,8 @@ def plot_heatmaps(adata: sc.AnnData, log1p: bool = False) -> None:
     clusterg.savefig(output_path, bbox_inches="tight")
     plt.close()
 
-def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, remove_clusters: list = []):
+def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, remove_clusters: list = [], vmin: int = None, vmax: int = None):
+
     import matplotlib.pyplot as plt
     import seaborn as sns
     import pandas as pd
@@ -142,19 +143,20 @@ def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, r
     # Create the colormap
     custom_cmap = LinearSegmentedColormap.from_list("custom_bluered", custom_colors, N=256)
 
-    # Create the heatmap
     ax = sns.heatmap(
         ordered_matrix,
         annot=True,
         fmt=".0f",
-        cmap= custom_cmap,  
+        cmap=custom_cmap,
         linewidths=0.2,
         linecolor='gray',
         square=True,
         cbar_kws={"shrink": 0.8},
         xticklabels=True,
         yticklabels=True,
-        annot_kws={"size": 30}
+        annot_kws={"size": 30},
+        vmin=vmin,
+        vmax=vmax
     )
 
     # Title and axis customization
@@ -701,9 +703,9 @@ def start() -> None:
         
         remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
         test_heatmap(adata)
-        test_heatmap(adata, obs_key="injury_day", category="injured_15", remove_clusters=remove_clusters)
-        test_heatmap(adata, obs_key="injury_day", category="injured_60", remove_clusters=remove_clusters)
-        test_heatmap(adata, obs_key="injury_day", category="uninjured", remove_clusters=remove_clusters)
+        test_heatmap(adata, obs_key="injury_day", category="injured_15", remove_clusters=remove_clusters, vmin = 0, vmax = 95)
+        test_heatmap(adata, obs_key="injury_day", category="injured_60", remove_clusters=remove_clusters, vmin = 0, vmax = 95)
+        test_heatmap(adata, obs_key="injury_day", category="uninjured", remove_clusters=remove_clusters, vmin = 0, vmax = 95)
 
         # # Lineages vs Other lineages interactions
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Neu")
