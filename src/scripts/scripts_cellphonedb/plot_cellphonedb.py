@@ -135,6 +135,11 @@ def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, r
     ordered_matrix = count_matrix.loc[custom_order, custom_order]
     print(f"Ordered Matrix:\n{ordered_matrix}")
 
+
+    # print("######")
+    # print(ordered_matrix.shape)
+    # print("######")
+
     plt.figure(figsize=(60, 60))
 
     # Define your custom gradient colors: Blue → Light Beige → Purplish-Red
@@ -174,6 +179,22 @@ def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, r
     output_path = f"{cellphonedb_dir}/manual_heatmap_{category}.png"
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()
+
+    return ordered_matrix
+
+def export_to_excel(df, output_path):
+    """
+    Exports the given DataFrame to an Excel file.
+    
+    Parameters:
+    - df: pd.DataFrame
+    - output_path: str, full path to save the Excel file
+    """
+    try:
+        df.to_excel(output_path, index=False)
+        print(f"DataFrame exported successfully to {output_path}")
+    except Exception as e:
+        print(f"Failed to export DataFrame: {e}")
 
 def plot_heatmaps_fixed_order(adata: sc.AnnData, obs_key: str = None, category: str = None, log1p: bool = False) -> None:
     """
@@ -703,9 +724,11 @@ def start() -> None:
         
         remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
         test_heatmap(adata)
-        test_heatmap(adata, obs_key="injury_day", category="injured_15", remove_clusters=remove_clusters, vmin = 0, vmax = 95)
+        test = test_heatmap(adata, obs_key="injury_day", category="injured_15", remove_clusters=remove_clusters, vmin = 0, vmax = 95)
         test_heatmap(adata, obs_key="injury_day", category="injured_60", remove_clusters=remove_clusters, vmin = 0, vmax = 95)
         test_heatmap(adata, obs_key="injury_day", category="uninjured", remove_clusters=remove_clusters, vmin = 0, vmax = 95)
+
+        export_to_excel(test, "test_simplified.xlsx")
 
         # # Lineages vs Other lineages interactions
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Neu")

@@ -4,8 +4,15 @@
 # Goncalo Alves Msc Thesis 2025
 
 import pandas as pd
-import scanpy as sc
-import numpy as np
+from collections import defaultdict
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+from matplotlib.colors import LinearSegmentedColormap
+
+
+checkpoint_dir = "/home/makowlg/Documents/Immune-CCI/h5ad_files"
+cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
 
 def load_and_simplify(control_path, injured_15_path, injured_60_path):
     """
@@ -104,17 +111,104 @@ def filter_injured_by_control(control_dict, injured_dict, verbose=True):
     return filtered_dict
 
 
-def transform_dict():
-  """
-    This function will remove the unwanted rows from each df 
-    (we only want the interations that are only significant and unique in the injured condictions)
-    
-    Ent a minha ideia é tendo em conta o facto que o txt dos pvalues tem todas as interacoes que tem e n tem pvalues decentes
-    a ideia seria primeiro remover todas as rows que n tem pelo menos um pvalues menor que 0.05.
-    dps podiamos isolar as interacoes itself, ou seja temos uma row com um id, e dps remover todas as colunas que tem o pvalue superior a 0.05.
-    dps o proximo step seria criar um df com cada id de interacao por row e as colunas seriam os conjuntos de clusters que sao detetados as interacoes.
-   e dps ias ver os ids e clusters que se verificam no uninjured e ver quais os que se repetem os outros e se sim retirar
-"""
+
+def build_cluster_interaction_matrix(filtered_dict):
+    """
+    Builds a symmetric cluster-cluster interaction matrix from the interaction dictionary.
+    """
+    interaction_counts = defaultdict(lambda: defaultdict(int))
+    all_clusters = set()
+
+    for interaction_id, cluster_pairs in filtered_dict.items():
+        for pair in cluster_pairs:
+            clusterA, clusterB = pair.split('|')
+            all_clusters.update([clusterA, clusterB])
+
+            # Symmetric matrix: increment both directions, unless it's a self-interaction
+            interaction_counts[clusterA][clusterB] += 1
+            if clusterA != clusterB:
+                interaction_counts[clusterB][clusterA] += 1
+
+    # Create a sorted list of unique clusters for the index/columns
+    sorted_clusters = sorted(all_clusters)
+    matrix = pd.DataFrame(0, index=sorted_clusters, columns=sorted_clusters)
+
+    for clusterA in sorted_clusters:
+        for clusterB in sorted_clusters:
+            matrix.at[clusterA, clusterB] = interaction_counts[clusterA][clusterB]
+
+    return matrix
+
+
+
+def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.DataFrame = None , vmin: int = None, vmax: int = None):
+ 
+    custom_order = [
+        "Imm.M0Like.1", "Imm.M0Like.2", "Imm.DAM.0", "Imm.MHCII.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1", "Imm.Proliferative.0",
+        "Neu.CSFcN.0", "Neu.Epend.0", "MeV.Epithelial.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.SMC.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
+        "MeV.FibProlif.0", "MeV.Endothelial.3", "MeV.FibCollagen.2", "MeV.VLMC.1", "MeV.FibLaminin.0", "MeV.VLMC.0", "MeV.Fib.3",
+        "Imm.M0Like.0", "MeV.Endothelial.1", "MeV.Fib.2", "MeV.FibCollagen.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
+    ]
+
+    # Check if all your custom labels exist in the matrix
+    missing = set(custom_order) - set(matrix.index)
+    if missing:
+        print("Warning: These cluster names are not in the matrix:", missing)
+
+    # Remove clusters you want to exclude from the matrix
+    if remove_clusters:
+        print(f"Removing the following clusters: {remove_clusters}")
+        matrix = matrix.drop(index=remove_clusters, columns=remove_clusters, errors='ignore')
+
+    # Reorder the matrix rows and columns (if custom_order still applies)
+    ordered_matrix = matrix.loc[custom_order, custom_order]
+    print(f"Ordered Matrix:\n{ordered_matrix}")
+
+
+    # print("######")
+    # print(ordered_matrix.shape)
+    # print("######")
+
+    plt.figure(figsize=(60, 60))
+
+    # Define your custom gradient colors: Blue → Light Beige → Purplish-Red
+    custom_colors = ["#2166ac", "#ffead0", "#b2182b"]  # Replace with exact hex if needed
+
+    # Create the colormap
+    custom_cmap = LinearSegmentedColormap.from_list("custom_bluered", custom_colors, N=256)
+
+    ax = sns.heatmap(
+        ordered_matrix,
+        annot=True,
+        fmt=".0f",
+        cmap=custom_cmap,
+        linewidths=0.2,
+        linecolor='gray',
+        square=True,
+        cbar_kws={"shrink": 0.8},
+        xticklabels=True,
+        yticklabels=True,
+        annot_kws={"size": 30},
+        vmin=vmin,
+        vmax=vmax
+    )
+
+    # Title and axis customization
+    plt.title(f"Number of Significant Interactions in {category}", fontsize=60, pad=60)
+    ax.yaxis.set_ticks_position('right')
+    ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=40, rotation=0)
+
+    # Adjust colorbar ticksM0Like.1
+    cbar = ax.collections[0].colorbar
+    cbar.ax.tick_params(labelsize=40)
+    cbar.ax.set_position([0.85, 0.2, 0.5, 0.3])  # [left, bottom, width, height]
+
+    # Save the figure
+    output_path = f"{cellphonedb_dir}/manual_filtered_heatmap_{category}.png"
+    plt.savefig(output_path, bbox_inches="tight")
+    plt.close()
+
 
 # Main execution block
 if __name__ == "__main__":
@@ -143,11 +237,24 @@ if __name__ == "__main__":
 
     # Filter injury-specific interactions
     filtered_15_dict = filter_injured_by_control(control_dict, injured_15_dict, verbose=False)
+    #print(filtered_15_dict)
     filtered_60_dict = filter_injured_by_control(control_dict, injured_60_dict, verbose=False)
+    #print(filtered_60_dict)
+    
+    # from pprint import pprint
+    # print("\nExample from Injured 15:")
+    # pprint(list(injured_15_dict.items())[:3])
 
-    from pprint import pprint
-    print("\nExample from Injured 15:")
-    pprint(list(injured_15_dict.items())[:3])
+    matrix_15 = build_cluster_interaction_matrix(filtered_15_dict)
+    matrix_60 = build_cluster_interaction_matrix(filtered_60_dict)
+
+    print(matrix_15)
+    print(matrix_60)
+
+    remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
+    test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 62)
+    test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 62)
+
 
     # export_to_excel(control_df, "control_simplified.xlsx")
     # export_to_excel(injured_15_df, "injured_15_simplified.xlsx")
