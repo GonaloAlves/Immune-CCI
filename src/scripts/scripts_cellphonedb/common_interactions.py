@@ -9,10 +9,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
+from collections import defaultdict
 
 
 checkpoint_dir = "/home/makowlg/Documents/Immune-CCI/h5ad_files"
-cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
+cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/heatmaps"
+
 
 def load_and_simplify(control_path, injured_15_path, injured_60_path):
     """
@@ -205,9 +207,92 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
     cbar.ax.set_position([0.85, 0.2, 0.5, 0.3])  # [left, bottom, width, height]
 
     # Save the figure
-    output_path = f"{cellphonedb_dir}/manual_filtered_heatmap_{category}.png"
+    output_path = f"{cellphonedb_dir}/manual_filtered_heatmap_{category}_100.png"
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()
+
+
+def export_to_excel_inverted(interaction_dict, output_path):
+    """
+    Inverts the interaction dictionary and exports it to Excel with sorted columns.
+    
+    - Keys of the original dict are interaction IDs.
+    - Values are lists of cluster pairs (e.g., 'clusterA|clusterB').
+
+    The output Excel will have:
+    - Columns = sorted unique cluster pairs
+    - Rows = interaction IDs where that pair occurred
+    """
+    from collections import defaultdict
+    import pandas as pd
+
+    # Step 1: Invert the dictionary
+    inverted = defaultdict(list)
+    for interaction_id, pairs in interaction_dict.items():
+        for pair in pairs:
+            inverted[pair].append(interaction_id)
+
+    # Step 2: Sort the cluster pairs alphabetically
+    sorted_pairs = sorted(inverted.keys())
+
+    # Step 3: Create a DataFrame with equal-length columns
+    max_rows = max(len(inverted[pair]) for pair in sorted_pairs)
+    inverted_df = pd.DataFrame({
+        pair: inverted[pair] + [None] * (max_rows - len(inverted[pair])) for pair in sorted_pairs
+    })
+
+    # Step 4: Export to Excel
+    try:
+        inverted_df.to_excel(output_path, index=False)
+        print(f"Inverted interaction matrix exported successfully to {output_path}")
+    except Exception as e:
+        print(f"Failed to export inverted DataFrame: {e}")
+
+
+def export_detailed_excel_inverted(interaction_dict, pval_df_path, output_path):
+    """
+    Export an Excel where:
+    - Each column is a sorted cluster-cluster pair
+    - Each column contains alternating rows: [interaction_id, interacting_pair]
+    """
+    import pandas as pd
+    from collections import defaultdict
+
+    # Load full p-value dataframe
+    full_df = pd.read_csv(pval_df_path, sep='\t')
+
+    # Map id_cp_interaction → interacting_pair
+    interaction_pair_map = full_df.set_index("id_cp_interaction")["interacting_pair"].to_dict()
+
+    # Invert the interaction_dict: cluster_pair → list of interaction_ids
+    inverted = defaultdict(list)
+    for interaction_id, pairs in interaction_dict.items():
+        for pair in pairs:
+            inverted[pair].append(interaction_id)
+
+    # Sort the cluster pairs alphabetically
+    sorted_pairs = sorted(inverted.keys())
+
+    # Build the new table with alternating id/pair rows
+    output_data = {}
+    for pair in sorted_pairs:
+        ids = inverted[pair]
+        paired_list = []
+        for inter_id in ids:
+            paired_list.append(inter_id)
+            paired_list.append(interaction_pair_map.get(inter_id, "NA"))
+        output_data[pair] = paired_list
+
+    # Normalize lengths
+    max_len = max(len(col) for col in output_data.values())
+    for k in output_data:
+        output_data[k] += [None] * (max_len - len(output_data[k]))
+
+    # Create DataFrame and export
+    df_out = pd.DataFrame(output_data)
+    df_out.to_excel(output_path, index=False)
+    print(f"✅ Exported enriched Excel to {output_path}")
+
 
 
 # Main execution block
@@ -251,13 +336,27 @@ if __name__ == "__main__":
     print(matrix_15)
     print(matrix_60)
 
-    remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
-    test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 62)
-    test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 62)
+    # remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
+    # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 100)
+    # test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 100)
 
+    export_detailed_excel_inverted(
+        interaction_dict=filtered_15_dict,
+        pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_15_nona.txt",
+        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_enriched.xlsx"
+    )
 
-    # export_to_excel(control_df, "control_simplified.xlsx")
-    # export_to_excel(injured_15_df, "injured_15_simplified.xlsx")
-    # export_to_excel(injured_60_df, "injured_60_simplified.xlsx")
+    export_detailed_excel_inverted(
+        interaction_dict=filtered_60_dict,
+        pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_60_nona.txt",
+        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_enriched.xlsx"
+    )
+
+    # export_to_excel_inverted(filtered_15_dict, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_inverted.xlsx")
+    # export_to_excel_inverted(filtered_60_dict, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_inverted.xlsx")
+
+    # export_to_excel(control_df, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/control_simplified.xlsx")
+    # export_to_excel(injured_15_df, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_simplified.xlsx")
+    # export_to_excel(injured_60_df, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_simplified.xlsx")
 
 

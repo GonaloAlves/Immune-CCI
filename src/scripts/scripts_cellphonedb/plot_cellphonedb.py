@@ -21,6 +21,7 @@ deg_analysis = True
 
 checkpoint_dir = "/home/makowlg/Documents/Immune-CCI/h5ad_files"
 cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
+cellphonedb_dir_plots = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/heatmaps"
 
 def get_cell_types(cci: str,
                    major: bool      # Only major cell types, no clusters
@@ -176,7 +177,7 @@ def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, r
     cbar.ax.set_position([0.85, 0.2, 0.5, 0.3])  # [left, bottom, width, height]
 
     # Save the figure
-    output_path = f"{cellphonedb_dir}/manual_heatmap_{category}.png"
+    output_path = f"{cellphonedb_dir_plots}/manual_heatmap_{category}.png"
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()
 
@@ -282,7 +283,7 @@ def plot_heatmaps_fixed_order(adata: sc.AnnData, obs_key: str = None, category: 
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)  # Rotate for readability
     
     # Save plot
-    output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona_{category}.png"
+    output_path = f"{cellphonedb_dir_plots}/significant_interactions_final_merged_nona_{category}.png"
     print(f"Saving heatmap to: {output_path}")
     clusterg2.savefig(output_path, bbox_inches="tight")
     plt.close()
@@ -375,7 +376,7 @@ def plot_heatmaps_auto_order(adata: sc.AnnData, obs_key: str = None, category: s
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)  # Rotate for readability
     
     # Save plot
-    output_path = f"{cellphonedb_dir}/significant_interactions_final_merged_nona_{category}.png"
+    output_path = f"{cellphonedb_dir_plots}/significant_interactions_final_merged_nona_{category}.png"
     print(f"Saving heatmap to: {output_path}")
     clusterg2.savefig(output_path, bbox_inches="tight")
     plt.close()
@@ -724,11 +725,11 @@ def start() -> None:
         
         remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
         test_heatmap(adata)
-        test = test_heatmap(adata, obs_key="injury_day", category="injured_15", remove_clusters=remove_clusters, vmin = 0, vmax = 95)
-        test_heatmap(adata, obs_key="injury_day", category="injured_60", remove_clusters=remove_clusters, vmin = 0, vmax = 95)
-        test_heatmap(adata, obs_key="injury_day", category="uninjured", remove_clusters=remove_clusters, vmin = 0, vmax = 95)
+        test_heatmap(adata, obs_key="injury_day", category="injured_15", remove_clusters=remove_clusters, vmin = 0, vmax = 100)
+        test_heatmap(adata, obs_key="injury_day", category="injured_60", remove_clusters=remove_clusters, vmin = 0, vmax = 100)
+        test_heatmap(adata, obs_key="injury_day", category="uninjured", remove_clusters=remove_clusters, vmin = 0, vmax = 100)
 
-        export_to_excel(test, "test_simplified.xlsx")
+        # export_to_excel(test, "test_simplified.xlsx")
 
         # # Lineages vs Other lineages interactions
         # plot_lineage_vs_other_interactions(adata=adata, lineage_prefix="Neu")
