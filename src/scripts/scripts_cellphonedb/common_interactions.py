@@ -294,6 +294,31 @@ def export_detailed_excel_inverted(interaction_dict, pval_df_path, output_path):
     print(f"✅ Exported enriched Excel to {output_path}")
 
 
+def build_directional_edge_list(filtered_dict):
+    """
+    Builds a directional interaction DataFrame (edge list) from the interaction dictionary.
+    Each row represents a directed pair (from, to) with a count of interactions.
+    
+    Returns:
+    - A DataFrame with columns: ['from', 'to', 'value']
+    """
+    from collections import defaultdict
+    import pandas as pd
+
+    interaction_counts = defaultdict(int)
+
+    for interaction_id, cluster_pairs in filtered_dict.items():
+        for pair in cluster_pairs:
+            clusterA, clusterB = pair.split('|')
+            interaction_counts[(clusterA, clusterB)] += 1
+
+    # Convert to DataFrame
+    edge_list = pd.DataFrame(
+        [(a, b, count) for (a, b), count in interaction_counts.items()],
+        columns=["from", "to", "value"]
+    )
+
+    return edge_list
 
 # Main execution block
 if __name__ == "__main__":
@@ -333,6 +358,13 @@ if __name__ == "__main__":
     matrix_15 = build_cluster_interaction_matrix(filtered_15_dict)
     matrix_60 = build_cluster_interaction_matrix(filtered_60_dict)
 
+    edge_list_15 = build_directional_edge_list(filtered_15_dict)
+    edge_list_60 = build_directional_edge_list(filtered_60_dict)
+
+    # Optional: Save to CSV or Excel
+    edge_list_15.to_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list_injured_15.csv", index=False)
+    edge_list_60.to_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list_injured_60.csv", index=False)
+
     print(matrix_15)
     print(matrix_60)
 
@@ -340,17 +372,17 @@ if __name__ == "__main__":
     # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 100)
     # test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 100)
 
-    export_detailed_excel_inverted(
-        interaction_dict=filtered_15_dict,
-        pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_15_nona.txt",
-        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_enriched.xlsx"
-    )
+    # export_detailed_excel_inverted(
+    #     interaction_dict=filtered_15_dict,
+    #     pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_15_nona.txt",
+    #     output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_enriched.xlsx"
+    # )
 
-    export_detailed_excel_inverted(
-        interaction_dict=filtered_60_dict,
-        pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_60_nona.txt",
-        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_enriched.xlsx"
-    )
+    # export_detailed_excel_inverted(
+    #     interaction_dict=filtered_60_dict,
+    #     pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_60_nona.txt",
+    #     output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_enriched.xlsx"
+    # )
 
     # export_to_excel_inverted(filtered_15_dict, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_inverted.xlsx")
     # export_to_excel_inverted(filtered_60_dict, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_inverted.xlsx")
@@ -358,5 +390,8 @@ if __name__ == "__main__":
     # export_to_excel(control_df, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/control_simplified.xlsx")
     # export_to_excel(injured_15_df, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_simplified.xlsx")
     # export_to_excel(injured_60_df, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_simplified.xlsx")
+
+
+
 
 
