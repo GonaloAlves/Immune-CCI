@@ -10,6 +10,7 @@ import seaborn as sns
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
 from collections import defaultdict
+import os
 
 
 checkpoint_dir = "/home/makowlg/Documents/Immune-CCI/h5ad_files"
@@ -320,6 +321,34 @@ def build_directional_edge_list(filtered_dict):
 
     return edge_list
 
+
+def plot_interaction_distribution(edge_list_df, condition_label="", output_dir="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/histograms"):
+    """
+    Saves a histogram showing the distribution of interaction counts for a given condition.
+
+    Parameters:
+    - edge_list_df: pd.DataFrame with columns ['from', 'to', 'value']
+    - condition_label: str, used in plot title and filename (e.g., "injured_15")
+    - output_dir: str, directory where the histogram will be saved
+    """
+    if 'value' not in edge_list_df.columns:
+        raise ValueError("Input DataFrame must contain a 'value' column.")
+    
+    os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
+    output_path = os.path.join(output_dir, f"interaction_distribution_{condition_label}.png")
+
+    plt.figure(figsize=(10, 6))
+    sns.histplot(edge_list_df['value'], bins=30, kde=True, color='skyblue', edgecolor='black')
+    plt.title(f"Distribution of Interaction Counts - {condition_label}", fontsize=16)
+    plt.xlabel("Number of Significant Interactions", fontsize=14)
+    plt.ylabel("Number of Cluster Pairs", fontsize=14)
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.savefig(output_path)
+    plt.close()
+    print(f"✅ Histogram saved to {output_path}")
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -367,6 +396,9 @@ if __name__ == "__main__":
 
     print(matrix_15)
     print(matrix_60)
+
+    plot_interaction_distribution(edge_list_15, condition_label="Injured 15 min")
+    plot_interaction_distribution(edge_list_60, condition_label="Injured 60 min")
 
     # remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
     # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 100)
