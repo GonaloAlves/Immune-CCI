@@ -249,8 +249,60 @@ def export_to_excel_inverted(interaction_dict, output_path):
     except Exception as e:
         print(f"Failed to export inverted DataFrame: {e}")
 
-
 def export_detailed_excel_inverted(interaction_dict, pval_df_path, output_path):
+    """
+    Export an Excel file where:
+    - Each cluster|cluster pair gets two columns:
+        * One for interaction IDs
+        * One for corresponding interacting_pair names
+    - Row i of column A is an ID
+    - Row i of column B is its corresponding name
+    """
+
+    import pandas as pd
+    from collections import defaultdict
+
+    # Load p-value DataFrame and map ID to interacting_pair
+    full_df = pd.read_csv(pval_df_path, sep='\t')
+    interaction_pair_map = full_df.set_index("id_cp_interaction")["interacting_pair"].to_dict()
+
+    # Invert interaction_dict to group by cluster pairs
+    from collections import defaultdict
+    inverted = defaultdict(list)
+    for interaction_id, pairs in interaction_dict.items():
+        for pair in pairs:
+            inverted[pair].append(interaction_id)
+
+    # Sort cluster pairs alphabetically
+    sorted_pairs = sorted(inverted.keys())
+
+    # Prepare output structure
+    output_data = {}
+
+    for pair in sorted_pairs:
+        ids = inverted[pair]
+        id_col = []
+        name_col = []
+
+        for inter_id in ids:
+            id_col.append(inter_id)
+            name_col.append(interaction_pair_map.get(inter_id, "NA"))
+
+        # Add columns for IDs and their corresponding names
+        output_data[pair] = id_col
+        output_data[f"{pair}_names"] = name_col
+
+    # Normalize lengths
+    max_len = max(len(col) for col in output_data.values())
+    for k in output_data:
+        output_data[k] += [None] * (max_len - len(output_data[k]))
+
+    # Create DataFrame and save
+    df_out = pd.DataFrame(output_data)
+    df_out.to_excel(output_path, index=False)
+    print(f"✅ Exported enriched Excel to {output_path}") 
+    
+def eexport_detailed_excel_inverted(interaction_dict, pval_df_path, output_path):
     """
     Export an Excel where:
     - Each column is a sorted cluster-cluster pair
@@ -447,17 +499,17 @@ if __name__ == "__main__":
     # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 100)
     # test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 100)
 
-    # export_detailed_excel_inverted(
-    #     interaction_dict=filtered_15_dict,
-    #     pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_15_nona.txt",
-    #     output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_enriched.xlsx"
-    # )
+    export_detailed_excel_inverted(
+        interaction_dict=filtered_15_dict,
+        pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_15_nona.txt",
+        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/test_injured_15_enriched.xlsx"
+    )
 
-    # export_detailed_excel_inverted(
-    #     interaction_dict=filtered_60_dict,
-    #     pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_60_nona.txt",
-    #     output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_enriched.xlsx"
-    # )
+    export_detailed_excel_inverted(
+        interaction_dict=filtered_60_dict,
+        pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_60_nona.txt",
+        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/test_injured_60_enriched.xlsx"
+    )
 
     # export_to_excel_inverted(filtered_15_dict, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_inverted.xlsx")
     # export_to_excel_inverted(filtered_60_dict, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_inverted.xlsx")
@@ -484,19 +536,19 @@ if __name__ == "__main__":
     "Prolifs": ["Imm.Proliferative.0","MeV.FibProlif.0"]
     }
 
-    # Run it
-    reorder_edge_list_by_groups(
-        edge_list_df=edge_list_15,
-        group_dict=biological_groups,
-        output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_15.csv",
-        output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_15.csv"
-    )
-    reorder_edge_list_by_groups(
-        edge_list_df=edge_list_60,
-        group_dict=biological_groups,
-        output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_60.csv",
-        output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_60.csv"
-    )
+    # # Run it
+    # reorder_edge_list_by_groups(
+    #     edge_list_df=edge_list_15,
+    #     group_dict=biological_groups,
+    #     output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_15.csv",
+    #     output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_15.csv"
+    # )
+    # reorder_edge_list_by_groups(
+    #     edge_list_df=edge_list_60,
+    #     group_dict=biological_groups,
+    #     output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_60.csv",
+    #     output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_60.csv"
+    # )
 
 
 
