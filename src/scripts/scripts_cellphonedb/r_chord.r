@@ -2,8 +2,8 @@ library("circlize")
 library("readr")
 
 # Load the CSV files
-edge_list_15 <- read_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list_injured_15.csv")
-edge_list_60 <- read_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list_injured_60_copy.csv")
+edge_list_15 <- read_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_15.csv")
+edge_list_60 <- read_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_60.csv")
 
 # Ensure 'value' is numeric
 edge_list_15$value <- as.numeric(edge_list_15$value)
@@ -21,7 +21,7 @@ get_group <- function(label) sub("\\..*$", "", label)
 # =============================
 # Plot for Injured_15
 # =============================
-pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/chord_diagram_15.pdf", width = 10, height = 10)
+pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/order_chord_diagram_15.pdf", width = 10, height = 10)
 circos.clear()
 
 # Build color map
@@ -48,7 +48,7 @@ dev.off()
 # =============================
 # Plot for Injured_60
 # =============================
-pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/chord_diagram_60_10lig.pdf", width = 10, height = 10)
+pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/order_chord_diagram_60.pdf", width = 10, height = 10)
 circos.clear()
 
 # Build color map

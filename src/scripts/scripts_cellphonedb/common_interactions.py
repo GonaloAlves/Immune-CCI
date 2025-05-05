@@ -349,6 +349,49 @@ def plot_interaction_distribution(edge_list_df, condition_label="", output_dir="
     print(f"✅ Histogram saved to {output_path}")
 
 
+def reorder_edge_list_by_groups(edge_list_df, group_dict, output_edge_path, output_group_path):
+    """
+    Reorders the edge list based on a user-defined biological grouping dictionary
+    and exports both the reordered edge list and group annotations.
+
+    Parameters:
+    - edge_list_df: pd.DataFrame with 'from', 'to', 'value'
+    - group_dict: dict, e.g., {"Immune": ["Imm.M0Like.1", ...], "Mesenchymal": [...], ...}
+    - output_edge_path: path to save the reordered edge list
+    - output_group_path: path to save the cluster-to-group mapping
+    """
+
+    # Flatten and order all clusters
+    ordered_clusters = [cl for group in group_dict.values() for cl in group]
+
+    # Filter only relevant cluster pairs (i.e., both in group_dict)
+    included_clusters = set(ordered_clusters)
+    filtered_df = edge_list_df[
+        edge_list_df['from'].isin(included_clusters) & edge_list_df['to'].isin(included_clusters)
+    ]
+
+    # Enforce ordering on 'from' and 'to' for consistent plotting
+    filtered_df['from'] = pd.Categorical(filtered_df['from'], categories=ordered_clusters, ordered=True)
+    filtered_df['to'] = pd.Categorical(filtered_df['to'], categories=ordered_clusters, ordered=True)
+
+    # Optional: sort edge list by order in groups
+    filtered_df = filtered_df.sort_values(by=['from', 'to'])
+
+    # Save edge list
+    filtered_df.to_csv(output_edge_path, index=False)
+    print(f"✅ Reordered edge list saved to: {output_edge_path}")
+
+    # Build and export cluster → group mapping
+    cluster_to_group = {}
+    for group_name, clusters in group_dict.items():
+        for cl in clusters:
+            cluster_to_group[cl] = group_name
+
+    group_df = pd.DataFrame(list(cluster_to_group.items()), columns=["cluster", "group"])
+    group_df.to_csv(output_group_path, index=False)
+    print(f"✅ Cluster-group mapping saved to: {output_group_path}")
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -397,8 +440,8 @@ if __name__ == "__main__":
     print(matrix_15)
     print(matrix_60)
 
-    plot_interaction_distribution(edge_list_15, condition_label="Injured 15 min")
-    plot_interaction_distribution(edge_list_60, condition_label="Injured 60 min")
+    # plot_interaction_distribution(edge_list_15, condition_label="Injured 15 min")
+    # plot_interaction_distribution(edge_list_60, condition_label="Injured 60 min")
 
     # remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
     # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 100)
@@ -423,6 +466,37 @@ if __name__ == "__main__":
     # export_to_excel(injured_15_df, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_simplified.xlsx")
     # export_to_excel(injured_60_df, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_simplified.xlsx")
 
+    biological_groups = {
+    "Imm_Resting": ["Imm.M0Like.0", "Imm.M0Like.1", "Imm.M0Like.2"], 
+    "Imm_Other": ["Imm.MHCII.0", "Imm.PVM.0"], 
+    "Imm_Injury": ["Imm.Interferon.0", "Imm.DAM.0", "Imm.DAM.1"],
+
+    "Neu": ["Neu.CSFcN.0", "Neu.Epend.0"],
+
+    "MeV_Vascular": ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Pericytes.0", "MeV.SMC.0"],
+    "MeV_Epithelial": ["MeV.Epithelial.0"],
+    "MeV_Fibroblast": ["MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.3", "MeV.Fib.4", "MeV.Fib.5"],
+    "MeV_Fib_Col": ["MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3"],
+    "MeV_Fib_Lam": ["MeV.FibLaminin.0"],
+
+    "VLMC": ["MeV.VLMC.0", "MeV.VLMC.1"],
+
+    "Prolifs": ["Imm.Proliferative.0","MeV.FibProlif.0"]
+    }
+
+    # Run it
+    reorder_edge_list_by_groups(
+        edge_list_df=edge_list_15,
+        group_dict=biological_groups,
+        output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_15.csv",
+        output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_15.csv"
+    )
+    reorder_edge_list_by_groups(
+        edge_list_df=edge_list_60,
+        group_dict=biological_groups,
+        output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_60.csv",
+        output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_60.csv"
+    )
 
 
 
