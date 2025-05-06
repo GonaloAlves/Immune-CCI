@@ -1,0 +1,5 @@
+	cell_count	expected_percentage
+uninjured	749.0	20.27
+sham	1035.0	28.0
+injured	1912.0	51.73
+total in cluster	3696.0	100.0

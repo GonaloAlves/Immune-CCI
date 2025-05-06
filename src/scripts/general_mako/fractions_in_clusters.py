@@ -160,6 +160,75 @@ def plot_stacked_bar(data, dataset_name, output_dir, alternate_names=None, clust
 
     print(f"Saved plot: {output_file}")
 
+def summarize_condition_counts(table_frac):
+    """
+    Extracts the absolute cell counts and expected (non-clustered) percentages per condition.
+
+    Parameters:
+    - table_frac (pd.DataFrame): Output of `calculate_cell_fractions`
+
+    Returns:
+    - summary (pd.DataFrame): DataFrame with counts and expected percentages
+    """
+    # Last two rows contain 'frac sample in total' and 'total in sample'
+    frac_row = table_frac.loc['frac sample in total'].copy()
+    count_row = table_frac.loc['total in sample'].copy()
+
+    summary = pd.DataFrame({
+        'cell_count': count_row,
+        'expected_percentage': (frac_row * 100).round(2)  # Convert to percentage
+    })
+
+    return summary
+
+def save_condition_summary(table_frac, condition, output_dir):
+    """
+    Summarizes and saves the number of cells and expected percentages per condition.
+
+    Parameters:
+    - table_frac (pd.DataFrame): Table from `calculate_cell_fractions`
+    - condition (str): Name of the condition (e.g., 'injury_day')
+    - output_dir (str): Directory to save the summary
+    """
+    summary = summarize_condition_counts(table_frac)
+    
+    # Ensure directory exists
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Define output file name
+    output_path = os.path.join(output_dir, f"cell_count_summary_{condition}.csv")
+    
+    # Save to file
+    summary.to_csv(output_path, sep='\t')
+    print(f"Saved condition summary to: {output_path}")
+
+def save_cluster_cell_counts(adata, cluster_key, condition_key, output_path):
+    """
+    Computes and saves a table of cell counts per cluster split by condition (e.g., sci/no_sci).
+
+    Parameters:
+    - adata (AnnData): Annotated data matrix
+    - cluster_key (str): Key in `adata.obs` indicating the clusters (e.g., 'leiden_fusion')
+    - condition_key (str): Key in `adata.obs` for grouping (e.g., 'injury_grouped')
+    - output_path (str): Full path to save the output file (TSV or XLSX)
+    """
+    # Filter out any cells without cluster or condition annotation
+    valid_mask = adata.obs[cluster_key].notna() & adata.obs[condition_key].notna()
+    adata_valid = adata[valid_mask].copy()
+    
+    # Group and count
+    count_table = pd.crosstab(adata_valid.obs[cluster_key], adata_valid.obs[condition_key])
+    
+    # Save based on file extension
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    if output_path.endswith(".tsv"):
+        count_table.to_csv(output_path, sep='\t')
+    elif output_path.endswith(".xlsx"):
+        count_table.to_excel(output_path)
+    else:
+        raise ValueError("Unsupported file format. Use .tsv or .xlsx")
+
+    print(f"Cluster cell counts saved to: {output_path}")
     
 def start_analysis(input_file, output_dir):
     """
@@ -188,7 +257,16 @@ def start_analysis(input_file, output_dir):
     for condition in ['injury_day', 'injury', 'injury_grouped']:  
         print(f"Processing condition: {condition}...")
 
+        if condition == 'injury_grouped':
+            save_cluster_cell_counts(
+                adata,
+                cluster_key=clusters_key,
+                condition_key='injury_grouped',
+                output_path="/home/makowlg/Documents/Immune-CCI/src/fractions_related/cluster_cell_counts_injury_grouped.tsv")
+
         table_frac = calculate_cell_fractions(adata, 'Meningeal', clusters_key, condition)
+
+        save_condition_summary(table_frac, condition, "/home/makowlg/Documents/Immune-CCI/src/fractions_related")
         
         # Save fraction table
         output_file = os.path.join(output_dir, f"Meningeal_sample_frac_{clusters_key}_{condition}.txt")
@@ -207,10 +285,10 @@ def start_analysis(input_file, output_dir):
         alternate_names = list(table_frac.index[:-2]) + ['Nonclustered_expected']
 
         cluster_order_immune = [
-    "Imm.M0_like.0", "Imm.M0_like.1", 
-    "Imm.M0_like.2", "Imm.MHCII.0" ,
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0", "Nonclustered_expected"]
+            "Imm.M0_like.0", "Imm.M0_like.1", 
+            "Imm.M0_like.2", "Imm.MHCII.0" ,
+            "Imm.Interferon.0", "Imm.DAM.0", 
+            "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0", "Nonclustered_expected"]
         
         cluster_order_meningeal = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.EndoUnknow.4", "MeV.Epithelial.0",
                             "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
@@ -224,6 +302,8 @@ def start_analysis(input_file, output_dir):
                          cluster_order=cluster_order_meningeal)    
             
     adata.write_h5ad(input_file, compression='gzip')
+
+
     print("Analysis completed.")
 
 if __name__ == "__main__":

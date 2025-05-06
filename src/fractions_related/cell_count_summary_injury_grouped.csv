@@ -1,0 +1,4 @@
+	cell_count	expected_percentage
+no_sci	1784.0	48.27
+sci	1912.0	51.73
+total in cluster	3696.0	100.0
