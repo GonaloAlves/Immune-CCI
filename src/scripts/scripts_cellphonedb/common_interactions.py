@@ -7,6 +7,7 @@ import pandas as pd
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
 from collections import defaultdict
@@ -14,7 +15,7 @@ import os
 
 
 checkpoint_dir = "/home/makowlg/Documents/Immune-CCI/h5ad_files"
-cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/heatmaps"
+cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/heatmaps/cutted"
 
 
 def load_and_simplify(control_path, injured_15_path, injured_60_path):
@@ -167,6 +168,8 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
     ordered_matrix = matrix.loc[custom_order, custom_order]
     print(f"Ordered Matrix:\n{ordered_matrix}")
 
+    #show only one part
+    mask = np.triu(np.ones(ordered_matrix.shape, dtype=bool), k=1)
 
     # print("######")
     # print(ordered_matrix.shape)
@@ -182,6 +185,7 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
 
     ax = sns.heatmap(
         ordered_matrix,
+        mask = mask,
         annot=True,
         fmt=".0f",
         cmap=custom_cmap,
@@ -208,7 +212,7 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
     cbar.ax.set_position([0.85, 0.2, 0.5, 0.3])  # [left, bottom, width, height]
 
     # Save the figure
-    output_path = f"{cellphonedb_dir}/manual_filtered_heatmap_{category}_100.png"
+    output_path = f"{cellphonedb_dir}/manual_filtered_heatmap_{category}_70.png"
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()
 
@@ -495,21 +499,21 @@ if __name__ == "__main__":
     # plot_interaction_distribution(edge_list_15, condition_label="Injured 15 min")
     # plot_interaction_distribution(edge_list_60, condition_label="Injured 60 min")
 
-    # remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
-    # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 100)
-    # test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 100)
+    remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
+    test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 70)
+    test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 70)
 
-    export_detailed_excel_inverted(
-        interaction_dict=filtered_15_dict,
-        pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_15_nona.txt",
-        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/test_injured_15_enriched.xlsx"
-    )
+    # export_detailed_excel_inverted(
+    #     interaction_dict=filtered_15_dict,
+    #     pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_15_nona.txt",
+    #     output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/test_injured_15_enriched.xlsx"
+    # )
 
-    export_detailed_excel_inverted(
-        interaction_dict=filtered_60_dict,
-        pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_60_nona.txt",
-        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/test_injured_60_enriched.xlsx"
-    )
+    # export_detailed_excel_inverted(
+    #     interaction_dict=filtered_60_dict,
+    #     pval_df_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_60_nona.txt",
+    #     output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/test_injured_60_enriched.xlsx"
+    # )
 
     # export_to_excel_inverted(filtered_15_dict, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_15_inverted.xlsx")
     # export_to_excel_inverted(filtered_60_dict, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/injured_60_inverted.xlsx")

@@ -21,7 +21,7 @@ deg_analysis = True
 
 checkpoint_dir = "/home/makowlg/Documents/Immune-CCI/h5ad_files"
 cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
-cellphonedb_dir_plots = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/heatmaps"
+cellphonedb_dir_plots = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/heatmaps/cutted"
 
 def get_cell_types(cci: str,
                    major: bool      # Only major cell types, no clusters
@@ -136,7 +136,9 @@ def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, r
     ordered_matrix = count_matrix.loc[custom_order, custom_order]
     print(f"Ordered Matrix:\n{ordered_matrix}")
 
-
+    #show only one part
+    mask = np.triu(np.ones(ordered_matrix.shape, dtype=bool), k=1)
+    
     # print("######")
     # print(ordered_matrix.shape)
     # print("######")
@@ -151,6 +153,7 @@ def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, r
 
     ax = sns.heatmap(
         ordered_matrix,
+        mask=mask,
         annot=True,
         fmt=".0f",
         cmap=custom_cmap,
