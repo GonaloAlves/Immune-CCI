@@ -1,0 +1,3 @@
+injury_grouped	Imm.M0Like.0	Imm.M0Like.1	Imm.M0Like.2	Imm.Interferon.0	Imm.DAM.0	Imm.MHCII.0	Imm.Proliferative.0	Imm.PVM.0	Imm.DAM.1	Imm.NA	expected_percentage	cell_count
+sci	273	229	138	36	51	32	12	70	120	3	67.89	964
+no_sci	149	135	85	3	1	12	6	51	14	0	32.11	456

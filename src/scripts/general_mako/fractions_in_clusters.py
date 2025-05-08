@@ -222,9 +222,9 @@ def save_cluster_cell_counts(adata, cluster_key, condition_key, output_path):
     # Save based on file extension
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     if output_path.endswith(".tsv"):
-        count_table.to_csv(output_path, sep='\t')
+        count_table.T.to_csv(output_path, sep='\t')
     elif output_path.endswith(".xlsx"):
-        count_table.to_excel(output_path)
+        count_table.T.to_excel(output_path)
     else:
         raise ValueError("Unsupported file format. Use .tsv or .xlsx")
 
@@ -262,7 +262,7 @@ def start_analysis(input_file, output_dir):
                 adata,
                 cluster_key=clusters_key,
                 condition_key='injury_grouped',
-                output_path="/home/makowlg/Documents/Immune-CCI/src/fractions_related/cluster_cell_counts_injury_grouped.tsv")
+                output_path="/home/makowlg/Documents/Immune-CCI/src/fractions_related/cluster_cell_counts_injury_grouped_mev.tsv")
 
         table_frac = calculate_cell_fractions(adata, 'Meningeal', clusters_key, condition)
 
@@ -290,11 +290,16 @@ def start_analysis(input_file, output_dir):
             "Imm.Interferon.0", "Imm.DAM.0", 
             "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0", "Nonclustered_expected"]
         
-        cluster_order_meningeal = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.EndoUnknow.4", "MeV.Epithelial.0",
+        cluster_order_meningeal = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
                             "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
-                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0", "MeV.FibUnknown.6", 'Nonclustered_expected']
+                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0", 'Nonclustered_expected']
+        cluster_order_immune = [
+    "Imm.M0Like.0", "Imm.M0Like.1", 
+    "Imm.M0Like.2", "Imm.MHCII.0" ,
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0", 'Nonclustered_expected']
         
-
+        cluster_order_neu = ["Neu.CSFcN.0", "Neu.Epend.0", "Nonclustered_expected"]
         plot_stacked_bar(plot_data, 
                          dataset_name=f'Meningeal_final_{clusters_key}_{condition}', 
                          output_dir=output_dir, 
