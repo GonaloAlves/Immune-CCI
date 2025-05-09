@@ -10,14 +10,30 @@ edge_list_60 <- read_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/exc
 edge_list_15$value <- as.numeric(edge_list_15$value)
 edge_list_60$value <- as.numeric(edge_list_60$value)
 
-# Define group colors
-group_colors <- setNames(
-  c("red", "blue", "green"),
-  c("Imm", "MeV", "Neu")
-)
 
 # Function to extract group prefix
-get_group <- function(label) sub("\\..*$", "", label)
+#get_group <- function(label) sub("\\..*$", "", label)
+
+get_group <- function(label) {
+  # Match everything up to the second dot (if exists), else return entire string
+  m <- regexpr("^([^\\.]+\\.[^\\.]+)", label)
+  ifelse(m > 0, regmatches(label, m), label)
+}
+
+# Define group colors
+# group_colors <- setNames(
+#   c("red", "blue", "green"),
+#   c("Imm", "MeV", "Neu")
+# )
+
+get_main_group <- function(label) sub("\\..*$", "", label)
+group_colors <- setNames(
+  c("blue", "red", "green")[match(get_main_group(unique(sapply(c(edge_list_15$from, edge_list_15$to), get_group))), c("MeV", "Imm", "Neu"))],
+  unique(sapply(c(edge_list_15$from, edge_list_15$to), get_group))
+)
+
+
+
 
 # Function to highlight sectors by group
 highlight_groups <- function(labels, track_index = 1) {
@@ -67,7 +83,7 @@ highlight_groups <- function(labels, track_index = 1) {
 # =============================
 # Plot for Injured_15
 # =============================
-pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/order_chord_diagram_15_.pdf", width = 18, height = 18)
+pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/order_chord_diagram_15__.pdf", width = 18, height = 18)
 circos.clear()
 
 # Build color map
@@ -99,7 +115,7 @@ dev.off()
 # =============================
 # Plot for Injured_60
 # =============================
-pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/order_chord_diagram_60_.pdf", width = 18, height = 18)
+pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/order_chord_diagram_60__.pdf", width = 18, height = 18)
 circos.clear()
 
 # Build color map
