@@ -449,6 +449,67 @@ def reorder_edge_list_by_groups(edge_list_df, group_dict, output_edge_path, outp
     print(f"✅ Cluster-group mapping saved to: {output_group_path}")
 
 
+def plot_interaction_distribution(edge_list_df, condition_label="", output_dir="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/histograms/sigs"):
+    """
+    Saves a histogram showing the distribution of interaction counts for a given condition,
+    with clean bar alignment and no KDE line.
+
+    Parameters:
+    - edge_list_df: pd.DataFrame with columns ['from', 'to', 'value']
+    - condition_label: str, used in plot title and filename (e.g., "injured_15")
+    - output_dir: str, directory where the histogram will be saved
+    """
+    if 'value' not in edge_list_df.columns:
+        raise ValueError("Input DataFrame must contain a 'value' column.")
+    
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, f"interaction_distribution_{condition_label}.png")
+
+    plt.figure(figsize=(10, 6))
+    sns.histplot(edge_list_df['value'], bins=30, kde=False, color='skyblue', edgecolor='black')  # <-- kde=False here
+    plt.title(f"Distribution of Interaction Counts - {condition_label}", fontsize=16)
+    plt.xlabel("Number of Significant Interactions", fontsize=14)
+    plt.ylabel("Number of Cluster Pairs", fontsize=14)
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.savefig(output_path)
+    plt.close()
+
+    print(f"✅ Histogram saved to {output_path}")
+
+
+def plot_interaction_distribution_matplotlib(edge_list_df, condition_label="", output_dir="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/histograms/sigs"):
+    """
+    Saves a histogram using Matplotlib to show the distribution of interaction counts
+    with correct bar alignment and axis labels.
+
+    Parameters:
+    - edge_list_df: pd.DataFrame with a 'value' column
+    - condition_label: str, label for the plot
+    - output_dir: str, path to save the figure
+    """
+    if 'value' not in edge_list_df.columns:
+        raise ValueError("Input DataFrame must contain a 'value' column.")
+    
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, f"interaction_distribution_{condition_label}.png")
+
+    values = edge_list_df['value']
+    
+    plt.figure(figsize=(10, 6))
+    counts, bins, patches = plt.hist(values, bins=range(int(values.min()), int(values.max()) + 2), color='skyblue', edgecolor='black', align='left')
+
+    plt.title(f"Distribution of Interaction Counts - {condition_label}", fontsize=16)
+    plt.xlabel("Number of Significant Interactions", fontsize=14)
+    plt.ylabel("Number of Cluster Pairs", fontsize=14)
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.xticks(bins[:-1])  # show each bin value on x-axis
+
+    plt.tight_layout()
+    plt.savefig(output_path)
+    plt.close()
+    print(f"✅ Histogram saved to {output_path}")
+
 
 # Main execution block
 if __name__ == "__main__":
@@ -519,5 +580,12 @@ if __name__ == "__main__":
         output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/grouped_edge_list_60.csv",
         output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/group_annotation_60.csv"
     )
+
+    plot_interaction_distribution_matplotlib(edge_list_15, condition_label="Injured 15")
+    plot_interaction_distribution_matplotlib(edge_list_60, condition_label="Injured 60")
+    # plot_interaction_distribution(edge_list_15, condition_label="Injured 15")
+    # plot_interaction_distribution(edge_list_60, condition_label="Injured 60")
+
+
 
 

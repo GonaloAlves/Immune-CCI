@@ -4,6 +4,8 @@
 #conda init
 conda activate mkpy
 
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/merge_datasets.py
+
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/a_cellphonedb.py
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/plot_cellphonedb.py
@@ -24,4 +26,4 @@ conda activate mkpy
 
 python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/common_interactions_sigs.py
 
-Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/r_chord_sigs.r
+# Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/r_chord_sigs.r
