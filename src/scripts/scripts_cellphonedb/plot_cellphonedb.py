@@ -137,7 +137,7 @@ def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, r
     print(f"Ordered Matrix:\n{ordered_matrix}")
 
     #show only one part
-    mask = np.triu(np.ones(ordered_matrix.shape, dtype=bool), k=1)
+    mask = np.tril(np.ones(ordered_matrix.shape, dtype=bool), k=-1)     
     
     # print("######")
     # print(ordered_matrix.shape)
@@ -168,11 +168,14 @@ def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, r
         vmax=vmax
     )
 
-    # Title and axis customization
-    plt.title(f"Number of Significant Interactions in {category}", fontsize=60, pad=60)
-    ax.yaxis.set_ticks_position('right')
+    # Move x-tick labels to top
+    ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)
     ax.set_yticklabels(ax.get_yticklabels(), fontsize=40, rotation=0)
+    ax.yaxis.set_ticks_position('right')
+
+    # Add title at the bottom manually
+    plt.figtext(0.5, 0.01, f"Number of Significant Interactions in {category}", ha='center', fontsize=60)
 
     # Adjust colorbar ticksM0Like.1
     cbar = ax.collections[0].colorbar
