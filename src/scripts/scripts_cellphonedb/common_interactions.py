@@ -536,8 +536,8 @@ if __name__ == "__main__":
     # plot_interaction_distribution(edge_list_60, condition_label="Injured 60 min")
 
     remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
-    test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 70)
-    test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 70)
+    # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 70)
+    # test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 70)
 
     # export_detailed_excel_inverted(
     #     interaction_dict=filtered_15_dict,
@@ -576,22 +576,22 @@ if __name__ == "__main__":
     "Prolifs": ["Imm.Proliferative.0","MeV.FibProlif.0"]
     }
 
-    # # Run it
-    # reorder_edge_list_by_groups(
-    #     edge_list_df=edge_list_15,
-    #     group_dict=biological_groups,
-    #     output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_15.csv",
-    #     output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_15.csv"
-    # )
-    # reorder_edge_list_by_groups(
-    #     edge_list_df=edge_list_60,
-    #     group_dict=biological_groups,
-    #     output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_60.csv",
-    #     output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_60.csv"
-    # )
+    # Run it
+    reorder_edge_list_by_groups(
+        edge_list_df=edge_list_15,
+        group_dict=biological_groups,
+        output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_15.csv",
+        output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_15.csv"
+    )
+    reorder_edge_list_by_groups(
+        edge_list_df=edge_list_60,
+        group_dict=biological_groups,
+        output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_60.csv",
+        output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_60.csv"
+    )
 
-    plot_interaction_distribution_matplotlib(edge_list_15, condition_label="Injured 15")
-    plot_interaction_distribution_matplotlib(edge_list_60, condition_label="Injured 60")
+    # plot_interaction_distribution_matplotlib(edge_list_15, condition_label="Injured 15")
+    # plot_interaction_distribution_matplotlib(edge_list_60, condition_label="Injured 60")
 
 
 

@@ -26,11 +26,45 @@ get_group <- function(label) {
 #   c("Imm", "MeV", "Neu")
 # )
 
-get_main_group <- function(label) sub("\\..*$", "", label)
-group_colors <- setNames(
-  c("blue", "red", "green")[match(get_main_group(unique(sapply(c(edge_list_15$from, edge_list_15$to), get_group))), c("MeV", "Imm", "Neu"))],
-  unique(sapply(c(edge_list_15$from, edge_list_15$to), get_group))
+imm_red_colors <- c(  
+  "#fb6a4a", 
+  "#fc8d59", 
+  "#d73027",  
+  "#e41a1c",
+  "#99000d", "#fcae91"  
 )
+mev_blue_colors <- c(
+  "#08306b",  # very dark blue
+  "#144b73",
+  "#0b4f8a",
+  "#08519c",
+  "#1361a9",
+  "#2171b5",
+  "#2b8cbe",
+  "#3182bd",
+  "#4292c6"   # lightest among these
+)
+neu_green_colors <- c("#44ce1b", "#bbdb44")
+
+
+mev_groups <- c("MeV.Endothelial", "MeV.Pericytes", "MeV.SMC", "MeV.Epithelial", "MeV.Fib", "MeV.FibCollagen", "MeV.FibLaminin", "MeV.VLMC", "MeV.FibProlif")
+imm_groups <- c("Imm.M0Like", "Imm.MHCII", "Imm.PVM", "Imm.Interferon", "Imm.DAM", "Imm.Proliferative")
+neu_groups <- c("Neu.Epend", "Neu.CSFcN")
+
+
+get_main_group <- function(label) sub("\\..*$", "", label)
+# group_colors <- setNames(
+#   c("blue", "red", "green")[match(get_main_group(unique(sapply(c(edge_list_15$from, edge_list_15$to), get_group))), c("MeV", "Imm", "Neu"))],
+#   unique(sapply(c(edge_list_15$from, edge_list_15$to), get_group))
+# )
+
+group_colors <- setNames(
+  c(mev_blue_colors[1:length(mev_groups)],
+    imm_red_colors[1:length(imm_groups)],
+    neu_green_colors[1:length(neu_groups)]),
+  c(mev_groups, imm_groups, neu_groups)
+)
+
 
 
 
@@ -89,15 +123,16 @@ circos.clear()
 # Build color map
 all_labels_15 <- unique(c(edge_list_15$from, edge_list_15$to))
 grid.col_15 <- setNames(
-  group_colors[get_group(all_labels_15)],
+  group_colors[sapply(all_labels_15, get_group)],
   all_labels_15
 )
+
 
 # Draw chord diagram
 chordDiagram(
   edge_list_15,
   grid.col = grid.col_15,
-  transparency = 0.4,
+  transparency = 0,
   directional = 1,
   direction.type = c("diffHeight", "arrows"),
   annotationTrack = c("grid", "name", "axis"),
@@ -121,15 +156,16 @@ circos.clear()
 # Build color map
 all_labels_60 <- unique(c(edge_list_60$from, edge_list_60$to))
 grid.col_60 <- setNames(
-  group_colors[get_group(all_labels_60)],
+  group_colors[sapply(all_labels_60, get_group)],
   all_labels_60
 )
+
 
 # Draw chord diagram
 chordDiagram(
   edge_list_60,
   grid.col = grid.col_60,
-  transparency = 0.4,
+  transparency = 0,
   directional = 1,
   direction.type = c("diffHeight", "arrows"),
   annotationTrack = c("grid", "name", "axis"),
