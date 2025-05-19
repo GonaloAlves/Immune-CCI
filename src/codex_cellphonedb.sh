@@ -20,6 +20,6 @@ Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/r_cho
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/heatmaps_sigs.py
 
-#python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/common_interactions_sigs.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/common_interactions_sigs.py
 
-# Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/r_chord_sigs.r
+Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/r_chord_sigs.r

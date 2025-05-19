@@ -546,8 +546,8 @@ if __name__ == "__main__":
     print(matrix_60)
 
     remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
-    test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 90)
-    test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 90)
+    test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
+    test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
 
     biological_groups = {
     "Imm_Resting": ["Imm.M0Like.0", "Imm.M0Like.1", "Imm.M0Like.2"], 

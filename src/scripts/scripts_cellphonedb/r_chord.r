@@ -115,7 +115,7 @@ highlight_groups <- function(labels, track_index = 1) {
 # =============================
 # Plot for Injured_15
 # =============================
-pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/order_chord_diagram_15__.pdf", width = 18, height = 18)
+pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/order_chord_diagram_15.pdf", width = 18, height = 18)
 circos.clear()
 
 # Build color map
@@ -147,7 +147,7 @@ dev.off()
 # =============================
 # Plot for Injured_60
 # =============================
-pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/order_chord_diagram_60__.pdf", width = 18, height = 18)
+pdf("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/chord/order_chord_diagram_60.pdf", width = 18, height = 18)
 circos.clear()
 
 # Build color map

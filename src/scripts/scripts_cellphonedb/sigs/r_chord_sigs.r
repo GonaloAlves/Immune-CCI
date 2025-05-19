@@ -31,7 +31,8 @@ imm_red_colors <- c(
   "#fc8d59", 
   "#d73027",  
   "#e41a1c",
-  "#99000d", "#fcae91"  
+  "#99000d", 
+  "#fcae91"  
 )
 mev_blue_colors <- c(
   "#08306b",  # very dark blue
@@ -64,9 +65,6 @@ group_colors <- setNames(
     neu_green_colors[1:length(neu_groups)]),
   c(mev_groups, imm_groups, neu_groups)
 )
-
-
-
 
 
 # Function to highlight sectors by group
