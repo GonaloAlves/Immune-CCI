@@ -16,10 +16,10 @@ conda activate mkpy
 
 # Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/r_chord.r
 
-# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/simplify_clusters.py
+python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/simplify_clusters.py
 
-# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/heatmaps_sigs.py
+python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/heatmaps_sigs.py
 
-# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/common_interactions_sigs.py
+python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/common_interactions_sigs.py
 
 Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/r_chord_sigs.r

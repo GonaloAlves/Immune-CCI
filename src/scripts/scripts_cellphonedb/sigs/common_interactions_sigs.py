@@ -153,8 +153,11 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
         "MeV.FibCollagen.2", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
     ]
 
+    relevant_clusters = ["Imm.DAM.0", "Imm.Interferon.0","Imm.PVM.0", "Imm.DAM.1", "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2"]
+
+
     # Check if all your custom labels exist in the matrix
-    missing = set(custom_order) - set(matrix.index)
+    missing = set(relevant_clusters) - set(matrix.index)
     if missing:
         print("Warning: These cluster names are not in the matrix:", missing)
 
@@ -164,7 +167,7 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
         matrix = matrix.drop(index=remove_clusters, columns=remove_clusters, errors='ignore')
 
     # Reorder the matrix rows and columns (if custom_order still applies)
-    ordered_matrix = matrix.loc[custom_order, custom_order]
+    ordered_matrix = matrix.loc[relevant_clusters, relevant_clusters]
     print(f"Ordered Matrix:\n{ordered_matrix}")
 
     #show only one part
@@ -515,9 +518,9 @@ def plot_interaction_distribution_matplotlib(edge_list_df, condition_label="", o
 if __name__ == "__main__":
     # Load data
     
-    control = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/filtered_pvalues/statistical_analysis_pvalues_final_merged_uninjured_nona_two.txt"
-    injured_15 = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/filtered_pvalues/statistical_analysis_pvalues_final_merged_injured_15_nona_two.txt"
-    injured_60 = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/filtered_pvalues/statistical_analysis_pvalues_final_merged_injured_60_nona_two.txt"
+    control = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/filtered_pvalues/control_only_significant_clusters.txt"
+    injured_15 = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/filtered_pvalues/injured_15_only_significant_clusters.txt"
+    injured_60 = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/filtered_pvalues/injured_60_only_significant_clusters.txt"
 
     # Load and simplify
     control_df, injured_15_df, injured_60_df = load_and_simplify(control, injured_15, injured_60)

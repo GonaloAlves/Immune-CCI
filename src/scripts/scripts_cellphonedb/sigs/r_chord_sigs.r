@@ -53,6 +53,7 @@ imm_groups <- c("Imm.M0Like", "Imm.MHCII", "Imm.PVM", "Imm.Interferon", "Imm.DAM
 neu_groups <- c("Neu.Epend", "Neu.CSFcN")
 
 
+
 get_main_group <- function(label) sub("\\..*$", "", label)
 # group_colors <- setNames(
 #   c("blue", "red", "green")[match(get_main_group(unique(sapply(c(edge_list_15$from, edge_list_15$to), get_group))), c("MeV", "Imm", "Neu"))],
