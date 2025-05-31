@@ -29,7 +29,11 @@ def load_and_simplify(control_path, injured_15_path, injured_60_path):
     injured_15_df = simplify_table(injured_15_path)
     injured_60_df = simplify_table(injured_60_path)
 
-    return control_df, injured_15_df, injured_60_df
+    control_df2 = simplify_table_2(control_path)
+    injured_15_df2 = simplify_table_2(injured_15_path)
+    injured_60_df2 = simplify_table_2(injured_60_path)
+
+    return control_df, injured_15_df, injured_60_df, control_df2, injured_15_df2, injured_60_df2 
 
 
 def simplify_table(file_path):
@@ -37,6 +41,15 @@ def simplify_table(file_path):
     df = pd.read_csv(file_path, sep='\t')
     # Keep only 'id_cp_interaction' and columns with '|' (which identify cluster interactions)
     columns_to_keep = ['id_cp_interaction'] + [col for col in df.columns if '|' in col]
+    simplified_df = df[columns_to_keep]
+
+    return simplified_df
+
+def simplify_table_2(file_path):
+      
+    df = pd.read_csv(file_path, sep='\t')
+    # Keep only 'id_cp_interaction' and columns with '|' (which identify cluster interactions)
+    columns_to_keep = ['id_cp_interaction'] + ['interacting_pair'] + [col for col in df.columns if '|' in col]
     simplified_df = df[columns_to_keep]
 
     return simplified_df
@@ -532,19 +545,19 @@ def export_top_interactions_per_cluster(edge_list_df, output_path):
 
     for cluster in all_clusters:
         # Who interacts the most with this cluster (incoming)
-        incoming = edge_list_df[edge_list_df['to'] == cluster]
+        incoming = edge_list_df[edge_list_df['from'] == cluster]
         if not incoming.empty:
             max_in_value = incoming['value'].max()
-            top_incoming = incoming[incoming['value'] == max_in_value]['from'].tolist()
+            top_incoming = incoming[incoming['value'] == max_in_value]['to'].tolist()
         else:
             max_in_value = 0
             top_incoming = []
 
         # Who this cluster interacts with the most (outgoing)
-        outgoing = edge_list_df[edge_list_df['from'] == cluster]
+        outgoing = edge_list_df[edge_list_df['to'] == cluster]
         if not outgoing.empty:
             max_out_value = outgoing['value'].max()
-            top_outgoing = outgoing[outgoing['value'] == max_out_value]['to'].tolist()
+            top_outgoing = outgoing[outgoing['value'] == max_out_value]['from'].tolist()
         else:
             max_out_value = 0
             top_outgoing = []
@@ -563,6 +576,125 @@ def export_top_interactions_per_cluster(edge_list_df, output_path):
     print(f"✅ Exported top interaction summary to {output_path}")
 
 
+
+
+def all_export_cluster_interactions_excel(df_pvalues, df_edges, output_path):
+    """
+    For each cluster in the edge list, extracts all interactions where the cluster is a sender or receiver.
+    Creates an Excel sheet per cluster showing:
+    - Sent interactions (cluster is 'from')
+    - Received interactions (cluster is 'to')
+    
+    Parameters:
+    - df_pvalues: pd.DataFrame with interaction metadata and cluster pair columns (e.g., A|B)
+    - df_edges: pd.DataFrame with columns ['from', 'to', 'value']
+    - output_path: full path to output .xlsx file
+    """
+    from xlsxwriter import Workbook
+    writer = pd.ExcelWriter(output_path, engine='xlsxwriter')
+
+    clusters = set(df_edges['from']).union(set(df_edges['to']))
+    #print(clusters)
+
+    for cluster in clusters:
+        sent_rows = []
+        recv_rows = []
+
+        # Sent: cluster is 'from' in the edge list
+        sent_pairs = df_edges[df_edges['from'] == cluster]
+        print(sent_pairs)
+        for _, row in sent_pairs.iterrows():
+            partner = row['to']
+            col_name = f"{cluster}|{partner}"
+            print(partner)
+            print(col_name)
+            print(df_pvalues)
+            if col_name in df_pvalues.columns:
+                matches = df_pvalues[df_pvalues[col_name] == 1][['id_cp_interaction', 'interacting_pair']].copy()
+                matches['partner'] = partner
+                matches['direction'] = 'sent'
+                sent_rows.append(matches)
+
+        # Received: cluster is 'to' in the edge list
+        recv_pairs = df_edges[df_edges['to'] == cluster]
+        for _, row in recv_pairs.iterrows():
+            partner = row['from']
+            col_name = f"{partner}|{cluster}"
+            if col_name in df_pvalues.columns:
+                matches = df_pvalues[df_pvalues[col_name] == 1][['id_cp_interaction', 'interacting_pair']].copy()
+                matches['partner'] = partner
+                matches['direction'] = 'received'
+                recv_rows.append(matches)
+
+        # Combine and export
+        all_rows = pd.concat(sent_rows + recv_rows, ignore_index=True)
+        if not all_rows.empty:
+            all_rows = all_rows[['direction', 'partner', 'id_cp_interaction', 'interacting_pair']]
+            all_rows = all_rows.sort_values(by=['direction', 'partner', 'interacting_pair'])
+            sheet_name = cluster[:31]  # Excel limit
+            all_rows.to_excel(writer, sheet_name=sheet_name, index=False)
+
+    writer.close()
+    print(f"✅ Excel saved to {output_path}")
+
+def export_filtered_interactions_excel(df_pvalues, filtered_dict, output_path):
+    """
+    Export an Excel file with one sheet per cluster, showing significant interactions
+    from `filtered_dict` only (injury-specific). Each sheet includes interactions where
+    the cluster is sender or receiver.
+
+    Parameters:
+    - df_pvalues: Full CellPhoneDB significant matrix with interaction IDs and cluster pairs
+    - filtered_dict: Dict where keys are interaction IDs (id_cp_interaction),
+                     values are lists of cluster-pair strings (e.g., 'A|B')
+    - output_path: Excel file path
+    """
+    from xlsxwriter import Workbook
+    writer = pd.ExcelWriter(output_path, engine='xlsxwriter')
+
+    # Invert the dict into a list of (interaction_id, cluster_pair) rows
+    interaction_rows = []
+    for interaction_id, pairs in filtered_dict.items():
+        for pair in pairs:
+            sender, receiver = pair.split('|')
+            interaction_rows.append({
+                'id_cp_interaction': interaction_id,
+                'cluster_pair': pair,
+                'sender': sender,
+                'receiver': receiver
+            })
+
+    interaction_df = pd.DataFrame(interaction_rows)
+
+    # Merge with interaction names from df_pvalues
+    interaction_info = df_pvalues[['id_cp_interaction', 'interacting_pair']].drop_duplicates()
+    merged = interaction_df.merge(interaction_info, on='id_cp_interaction', how='left')
+
+    # Get unique clusters
+    clusters = pd.unique(merged[['sender', 'receiver']].values.ravel())
+
+    # For each cluster, extract relevant interactions
+    for cluster in clusters:
+        sent = merged[merged['sender'] == cluster].copy()
+        sent['direction'] = 'sent'
+        sent['partner'] = sent['receiver']
+
+        recv = merged[merged['receiver'] == cluster].copy()
+        recv['direction'] = 'received'
+        recv['partner'] = recv['sender']
+
+        cluster_df = pd.concat([sent, recv], ignore_index=True)
+        if not cluster_df.empty:
+            sheet_df = cluster_df[['direction', 'partner', 'id_cp_interaction', 'interacting_pair']].sort_values(
+                by=['direction', 'partner', 'interacting_pair']
+            )
+            sheet_name = cluster[:31]  # Excel sheet name limit
+            sheet_df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+    writer.close()
+    print(f"✅ Filtered Excel saved to {output_path}")
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -572,8 +704,9 @@ if __name__ == "__main__":
     injured_60 = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/filtered_pvalues/injured_60_only_significant_clusters.txt"
 
     # Load and simplify
-    control_df, injured_15_df, injured_60_df = load_and_simplify(control, injured_15, injured_60)
+    control_df, injured_15_df, injured_60_df, control_df2, injured_15_df2, injured_60_df2 = load_and_simplify(control, injured_15, injured_60)
     
+    # print(injured_60_df)
     # Convert to dictionaries of significant interactions
     control_dict = df_to_significant_dict(control_df)
     injured_15_dict = df_to_significant_dict(injured_15_df)
@@ -582,7 +715,6 @@ if __name__ == "__main__":
     # Filter injury-specific interactions
     filtered_15_dict = filter_injured_by_control(control_dict, injured_15_dict, verbose=False)
     filtered_60_dict = filter_injured_by_control(control_dict, injured_60_dict, verbose=False)
-
     
     matrix_15 = build_cluster_interaction_matrix(filtered_15_dict)
     matrix_60 = build_cluster_interaction_matrix(filtered_60_dict)
@@ -594,8 +726,8 @@ if __name__ == "__main__":
     edge_list_15.to_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/edge_list_injured_15.csv", index=False)
     edge_list_60.to_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/edge_list_injured_60.csv", index=False)
 
-    print(matrix_15)
-    print(matrix_60)
+    # print(matrix_15)
+    # print(matrix_60)
 
     remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
     # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
@@ -619,25 +751,44 @@ if __name__ == "__main__":
     "Prolifs": ["Imm.Proliferative.0","MeV.FibProlif.0"]
     }
 
-    # Run it
-    reorder_edge_list_by_groups(
-        edge_list_df=edge_list_15,
-        group_dict=biological_groups,
-        output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/grouped_edge_list_15.csv",
-        output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/group_annotation_15.csv"
-    )
-    reorder_edge_list_by_groups(
-        edge_list_df=edge_list_60,
-        group_dict=biological_groups,
-        output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/grouped_edge_list_60.csv",
-        output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/group_annotation_60.csv"
-    )
+    siginficant_clusters = [
+        "Imm.M0Like.1", "Imm.DAM.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1",
+        "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
+        "MeV.FibCollagen.2", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
+    ]
+
+    # # Run it
+    # reorder_edge_list_by_groups(
+    #     edge_list_df=edge_list_15,
+    #     group_dict=biological_groups,
+    #     output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/grouped_edge_list_15.csv",
+    #     output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/group_annotation_15.csv"
+    # )
+    # reorder_edge_list_by_groups(
+    #     edge_list_df=edge_list_60,
+    #     group_dict=biological_groups,
+    #     output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/grouped_edge_list_60.csv",
+    #     output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/group_annotation_60.csv"
+    # )
 
     # plot_interaction_distribution_matplotlib(edge_list_15, condition_label="Injured 15")
     # plot_interaction_distribution_matplotlib(edge_list_60, condition_label="Injured 60")
     # plot_interaction_distribution(edge_list_15, condition_label="Injured 15")
     # plot_interaction_distribution(edge_list_60, condition_label="Injured 60")
 
-    export_top_interactions_per_cluster(edge_list_15, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/top_cluster_interactions_15.xlsx")
-    export_top_interactions_per_cluster(edge_list_60, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/top_cluster_interactions_60.xlsx")
+    # export_top_interactions_per_cluster(edge_list_15, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/top_cluster_interactions_15.xlsx")
+    # export_top_interactions_per_cluster(edge_list_60, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/top_cluster_interactions_60.xlsx")
 
+    export_filtered_interactions_excel(
+        df_pvalues=injured_15_df2,
+        filtered_dict=filtered_15_dict,
+        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/significant_interaction_ids_15.xlsx"
+    )
+
+    export_filtered_interactions_excel(
+        df_pvalues=injured_60_df2,
+        filtered_dict=filtered_60_dict,
+        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/significant_interaction_ids_60.xlsx"
+    )
+    
+        
