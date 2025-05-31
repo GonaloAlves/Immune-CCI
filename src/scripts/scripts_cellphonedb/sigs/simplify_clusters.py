@@ -2,13 +2,13 @@ import pandas as pd
 import os
 
 # List of significant clusters
-# significant_clusters = [
-#     "Imm.M0Like.1", "Imm.DAM.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1",
-#     "Neu.CSFcN.0", "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
-#     "MeV.FibCollagen.2", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
-# ]
+significant_clusters = [
+    "Imm.M0Like.1", "Imm.DAM.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1",
+    "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
+    "MeV.FibCollagen.2", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
+]
 
-relevant_clusters = ["Imm.DAM.0", "Imm.Interferon.0","Imm.PVM.0", "Imm.DAM.1","Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2"]
+# relevant_clusters = ["Imm.DAM.0", "Imm.Interferon.0","Imm.PVM.0", "Imm.DAM.1","Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2"]
 
 # Paths
 base_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
@@ -27,9 +27,9 @@ def is_valid_column(col, mode):
         return False
     parts = col.split("|")
     if mode == "both":
-        return all(p in relevant_clusters for p in parts)
+        return all(p in significant_clusters for p in parts)
     elif mode == "one":
-        return any(p in relevant_clusters for p in parts)
+        return any(p in significant_clusters for p in parts)
     return False
 
 # Process

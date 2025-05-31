@@ -149,15 +149,15 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
  
     custom_order = [
         "Imm.M0Like.1", "Imm.DAM.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1",
-        "Neu.CSFcN.0", "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
+        "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
         "MeV.FibCollagen.2", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
     ]
 
-    relevant_clusters = ["Imm.DAM.0", "Imm.Interferon.0","Imm.PVM.0", "Imm.DAM.1", "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2"]
+    #relevant_clusters = ["Imm.DAM.0", "Imm.Interferon.0","Imm.PVM.0", "Imm.DAM.1", "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2"]
 
 
     # Check if all your custom labels exist in the matrix
-    missing = set(relevant_clusters) - set(matrix.index)
+    missing = set(custom_order) - set(matrix.index)
     if missing:
         print("Warning: These cluster names are not in the matrix:", missing)
 
@@ -167,7 +167,7 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
         matrix = matrix.drop(index=remove_clusters, columns=remove_clusters, errors='ignore')
 
     # Reorder the matrix rows and columns (if custom_order still applies)
-    ordered_matrix = matrix.loc[relevant_clusters, relevant_clusters]
+    ordered_matrix = matrix.loc[custom_order, custom_order]
     print(f"Ordered Matrix:\n{ordered_matrix}")
 
     #show only one part
@@ -514,6 +514,55 @@ def plot_interaction_distribution_matplotlib(edge_list_df, condition_label="", o
     print(f"✅ Histogram saved to {output_path}")
 
 
+def export_top_interactions_per_cluster(edge_list_df, output_path):
+    """
+    For each cluster, identifies the top clusters it receives interactions from and sends to.
+    Exports the results to an Excel file.
+
+    Parameters:
+    - edge_list_df: pd.DataFrame with columns ['from', 'to', 'value']
+    - output_path: str, full path to output Excel file
+    """
+    import pandas as pd
+
+    # Initialize result storage
+    cluster_summary = []
+
+    all_clusters = sorted(set(edge_list_df['from']).union(set(edge_list_df['to'])))
+
+    for cluster in all_clusters:
+        # Who interacts the most with this cluster (incoming)
+        incoming = edge_list_df[edge_list_df['to'] == cluster]
+        if not incoming.empty:
+            max_in_value = incoming['value'].max()
+            top_incoming = incoming[incoming['value'] == max_in_value]['from'].tolist()
+        else:
+            max_in_value = 0
+            top_incoming = []
+
+        # Who this cluster interacts with the most (outgoing)
+        outgoing = edge_list_df[edge_list_df['from'] == cluster]
+        if not outgoing.empty:
+            max_out_value = outgoing['value'].max()
+            top_outgoing = outgoing[outgoing['value'] == max_out_value]['to'].tolist()
+        else:
+            max_out_value = 0
+            top_outgoing = []
+
+        cluster_summary.append({
+            'Cluster': cluster,
+            'Top Sender(s)': ', '.join(top_incoming),
+            'Max Incoming Interactions': max_in_value,
+            'Top Receiver(s)': ', '.join(top_outgoing),
+            'Max Outgoing Interactions': max_out_value
+        })
+
+    # Convert to DataFrame and export
+    summary_df = pd.DataFrame(cluster_summary)
+    summary_df.to_excel(output_path, index=False)
+    print(f"✅ Exported top interaction summary to {output_path}")
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -549,8 +598,8 @@ if __name__ == "__main__":
     print(matrix_60)
 
     remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
-    test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
-    test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
+    # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
+    # test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
 
     biological_groups = {
     "Imm_Resting": ["Imm.M0Like.0", "Imm.M0Like.1", "Imm.M0Like.2"], 
@@ -584,11 +633,11 @@ if __name__ == "__main__":
         output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/group_annotation_60.csv"
     )
 
-    plot_interaction_distribution_matplotlib(edge_list_15, condition_label="Injured 15")
-    plot_interaction_distribution_matplotlib(edge_list_60, condition_label="Injured 60")
+    # plot_interaction_distribution_matplotlib(edge_list_15, condition_label="Injured 15")
+    # plot_interaction_distribution_matplotlib(edge_list_60, condition_label="Injured 60")
     # plot_interaction_distribution(edge_list_15, condition_label="Injured 15")
     # plot_interaction_distribution(edge_list_60, condition_label="Injured 60")
 
-
-
+    export_top_interactions_per_cluster(edge_list_15, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/top_cluster_interactions_15.xlsx")
+    export_top_interactions_per_cluster(edge_list_60, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/top_cluster_interactions_60.xlsx")
 
