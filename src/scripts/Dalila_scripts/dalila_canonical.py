@@ -23,6 +23,22 @@ def load_data(file_path):
     return sc.read_h5ad(file_path)
 
 
+def split_adata_by_injury_day(adata: sc.AnnData):
+    """
+    Split an AnnData object into four sub-objects based on the 'injury_day' column in obs.
+
+    Returns:
+        tuple: (adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60)
+    """
+    print("Splitting AnnData by injury_day...")
+    adata_uninjured_0 = adata[adata.obs['injury_day'] == "uninjured_0"].copy()
+    adata_sham_15     = adata[adata.obs['injury_day'] == "sham_15"].copy()
+    adata_injured_15  = adata[adata.obs['injury_day'] == "injured_15"].copy()
+    adata_injured_60  = adata[adata.obs['injury_day'] == "injured_60"].copy()
+
+    return adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60
+
+
 def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
@@ -123,7 +139,7 @@ def dendogram_sc(adata):
     )
 
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gene, output_dir="canonical/canonical_dalila"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gene, prefix ,output_dir="canonical/canonical_dalila"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -141,9 +157,20 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
 
     #print(adata['leiden_fusion'].cat.categories.to_list())
     
-    # Ensure leiden_fusion is categorical and reorder it
+    # Convert to categorical and reorder only existing categories
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
+
+    # Find actual categories present in this subset
+    present_categories = [cat for cat in cluster_order if cat in adata.obs['leiden_fusion'].cat.categories]
+
+    # Inform if some clusters are missing
+    missing_clusters = [cat for cat in cluster_order if cat not in present_categories]
+    if missing_clusters:
+        print(f"Skipping missing clusters in dotplot: {missing_clusters}")
+
+    # Reorder with only present ones
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(present_categories, ordered=True)
+
 
 
 
@@ -163,7 +190,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         filtered_genes = compare_canonical(genes, cluster_dfs)
 
         # Export filtered genes to Excel
-        export_to_excel(filtered_genes, pts_threshold=threshold)
+        export_to_excel(filtered_genes, pts_threshold=threshold, prefix=prefix)
 
         # Aggregate filtered genes by gene group
         top_genes_names = top_gene_names(filtered_genes, genes)
@@ -230,10 +257,11 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_{threshold}.png")
-        output_scaled_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_{threshold}.png")
-        output_normal_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_dendro_{threshold}.png")
+        output_scaled_no_dendro = os.path.join(output_dir, f"{prefix}_{gene}_dotplot_scaled_{threshold}.png")
+        output_scaled_dendro = os.path.join(output_dir, f"{prefix}_{gene}_dotplot_scaled_dendro_{threshold}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"{prefix}_{gene}_dotplot_normal_{threshold}.png")
+        output_normal_dendro = os.path.join(output_dir, f"{prefix}_{gene}_dotplot_normal_dendro_{threshold}.png")
+
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
         dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
@@ -388,13 +416,15 @@ def check_cluster_order(adata, cluster_order):
     if not missing_in_data and not missing_in_order:
         print("\n All categories match! Reordering should work.")
 
-def export_to_excel(filtered_genes, pts_threshold, output_dir="excels/dalila"):
+def export_to_excel(filtered_genes, pts_threshold, prefix, output_dir="excels/dalila"):
     """
-    Export filtered genes into separate Excel files, one for each gene group.
+    Export filtered genes into separate Excel files, one for each gene group and condition.
     Each sheet in the Excel file represents a cluster, containing gene expression data for that gene group.
 
     Parameters:
     - filtered_genes (dict): Dictionary of filtered genes grouped by gene group and cluster.
+    - pts_threshold (float): The threshold used for filtering.
+    - prefix (str): Prefix to indicate injury condition.
     - output_dir (str): Directory where the Excel files will be saved.
 
     Returns:
@@ -404,8 +434,8 @@ def export_to_excel(filtered_genes, pts_threshold, output_dir="excels/dalila"):
     os.makedirs(output_dir, exist_ok=True)
     
     for gene_group, clusters in filtered_genes.items():
-        output_file = os.path.join(output_dir, f"{gene_group}_{pts_threshold}.xlsx")
-        print(f"\n Exporting data for gene group '{gene_group}' to: {output_file}")
+        output_file = os.path.join(output_dir, f"{prefix}_{gene_group}_{pts_threshold}.xlsx")
+        print(f"\n Exporting data for gene group '{gene_group}' ({prefix}) to: {output_file}")
 
         with pd.ExcelWriter(output_file) as writer:
             empty_sheets = True  # Flag to track if we have at least one sheet
@@ -413,17 +443,18 @@ def export_to_excel(filtered_genes, pts_threshold, output_dir="excels/dalila"):
             for cluster_name, df in clusters.items():
                 if not df.empty:
                     df = df.sort_index()  # Sort genes alphabetically
-                    df.to_excel(writer, sheet_name=cluster_name)
-                    empty_sheets = False  # At least one sheet is valid
+                    df.to_excel(writer, sheet_name=cluster_name[:31])  # Sheet names max 31 chars
+                    empty_sheets = False
                 else:
                     print(f" WARNING: No data for {cluster_name}. Skipping sheet.")
             
-            # If no sheets were added, create a placeholder sheet
             if empty_sheets:
                 placeholder_df = pd.DataFrame({"Message": ["No data available"]})
                 placeholder_df.to_excel(writer, sheet_name="Placeholder")
 
         print(f" Saved Excel file: {output_file}")
+
+
 
 def filter_cells_by_gene_expression(adata: sc.AnnData, gene_name: str):
     """
@@ -454,38 +485,50 @@ def filter_cells_by_gene_expression(adata: sc.AnnData, gene_name: str):
 
 
 
-# Main execution block
 if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
+    # Remove NA categories
     filtered_adata = remove_NA_cat(adata)
 
-    gene_filtered_adata = filter_cells_by_gene_expression(filtered_adata, "Mylip")
+    # Split into injury_day groups
+    adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60 = split_adata_by_injury_day(filtered_adata)
 
-    clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0']
-    adata_filtered = remove_clusters(filtered_adata, clusters_to_remove)
-
-    #preform dendrogram
-    dendogram_sc(adata_filtered)
+    # Group into a dictionary for looping
+    adata_groups = {
+        "uninjured_0": adata_uninjured_0,
+        "sham_15": adata_sham_15,
+        "injured_15": adata_injured_15,
+        "injured_60": adata_injured_60
+    }
 
     # Load canonical gene lists from a directory
     canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Dalila"
     genes = load_canonical_from_dir(canonical_genes_dir)
 
-
-    # Define thresholds
+    # Thresholds and cluster order
     pts_thresholds = [0, 0.2, 0.3]
+    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
+                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
 
-    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.3", "MeV.Endothelial.2", "MeV.Endothelial.1", "MeV.EndothelialInjury.4", "MeV.EpithelialECad.0","MeV.SMC.0", 
-     "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.ECM.0", "MeV.ECM.1", "MeV.ECM.2"
-     , "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.3","MeV.FibCD34.7", "MeV.Fib.4", "MeV.Fib.5", "MeV.Fib.6", "MeV.FibProlif.0","MeV.FibUnknown.8" ]
-    
+    # Process each subset
+    for label, ad in adata_groups.items():
+        print(f"\n--- Processing condition: {label} ---")
 
+        # Filter cells by gene expression
+        gene_filtered_adata = filter_cells_by_gene_expression(ad, "Mylip")
 
-    # Check for mismatches before reordering
-    check_cluster_order(adata_filtered, custom_cluster_order)
-    
-    # Generate dotplots for each threshold
-    create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order, "")
+        # Remove unwanted clusters
+        clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', "MeV.FibUnknown.6", "MeV.EndoUnknow.4"]
+        adata_filtered = remove_clusters(ad, clusters_to_remove)
 
+        # Create dendrogram
+        dendogram_sc(adata_filtered)
+
+        # Check cluster order
+        check_cluster_order(adata_filtered, custom_cluster_order)
+
+        # Generate dotplots
+        create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order, gene="", prefix=label)

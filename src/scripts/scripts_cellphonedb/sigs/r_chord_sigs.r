@@ -27,22 +27,22 @@ get_group <- function(label) {
 # )
 
 imm_red_colors <- c(  
-  "#fb6a4a", 
-  "#fc8d59", 
-  "#d73027",  
-  "#e41a1c",
-  "#99000d", 
-  "#fcae91"  
+  "#b14a50", 
+  "#d15842", 
+  "#ff6932",  
+  "#ff8643",
+  "#feae34", 
+  "#f6757a"  
 )
 mev_blue_colors <- c(
-  "#08306b",  # very dark blue
-  "#144b73",
-  "#0b4f8a",
-  "#08519c",
-  "#1361a9",
-  "#2171b5",
-  "#2b8cbe",
-  "#3182bd",
+  "#4c549b",  # very dark blue
+  "#6975b2",
+  "#8494c0",
+  "#97a8bd",
+  "#aec2bb",
+  "#78789e",
+  "#9898ab",
+  "#b2b2a4",
   "#4292c6"   # lightest among these
 )
 neu_green_colors <- c("#44ce1b", "#bbdb44")
