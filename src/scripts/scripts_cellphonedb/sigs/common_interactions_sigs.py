@@ -660,8 +660,8 @@ def export_filtered_interactions_excel(df_pvalues, filtered_dict, output_path):
             interaction_rows.append({
                 'id_cp_interaction': interaction_id,
                 'cluster_pair': pair,
-                'sender': sender,
-                'receiver': receiver
+                'sender': receiver,
+                'receiver': sender
             })
 
     interaction_df = pd.DataFrame(interaction_rows)
@@ -676,11 +676,11 @@ def export_filtered_interactions_excel(df_pvalues, filtered_dict, output_path):
     # For each cluster, extract relevant interactions
     for cluster in clusters:
         sent = merged[merged['sender'] == cluster].copy()
-        sent['direction'] = 'sent'
+        sent['direction'] = 'received'  # flipped
         sent['partner'] = sent['receiver']
 
         recv = merged[merged['receiver'] == cluster].copy()
-        recv['direction'] = 'received'
+        recv['direction'] = 'sent'  # flipped
         recv['partner'] = recv['sender']
 
         cluster_df = pd.concat([sent, recv], ignore_index=True)
@@ -688,11 +688,47 @@ def export_filtered_interactions_excel(df_pvalues, filtered_dict, output_path):
             sheet_df = cluster_df[['direction', 'partner', 'id_cp_interaction', 'interacting_pair']].sort_values(
                 by=['direction', 'partner', 'interacting_pair']
             )
-            sheet_name = cluster[:31]  # Excel sheet name limit
+            sheet_name = cluster[:31]
             sheet_df.to_excel(writer, sheet_name=sheet_name, index=False)
 
     writer.close()
     print(f"✅ Filtered Excel saved to {output_path}")
+
+
+
+def simplify_significant_interactions_precise(top_clusters_path, full_interactions_path, output_path):
+    # Load top clusters summary
+    top_df = pd.read_excel(top_clusters_path)
+
+    # Load full interactions (all sheets)
+    xl = pd.read_excel(full_interactions_path, sheet_name=None)
+
+    # Prepare writer
+    writer = pd.ExcelWriter(output_path, engine='xlsxwriter')
+
+    for _, row in top_df.iterrows():
+        cluster = row["Cluster"]
+        top_receivers = [x.strip() for x in str(row["Top Sender(s)"]).split(",") if x.strip()]
+        top_senders= [x.strip() for x in str(row["Top Receiver(s)"]).split(",") if x.strip()]
+
+        # Skip if the cluster is not in the full Excel
+        if cluster not in xl:
+            print(f"⚠️ Skipping missing sheet: {cluster}")
+            continue
+
+        df = xl[cluster]
+
+        # Apply filtering logic
+        filtered_df = df[
+            ((df["direction"] == "sent") & (df["partner"].isin(top_receivers))) |
+            ((df["direction"] == "received") & (df["partner"].isin(top_senders)))
+        ]
+
+        if not filtered_df.empty:
+            filtered_df.to_excel(writer, sheet_name=cluster[:31], index=False)
+
+    writer.close()
+    print(f"✅ Simplified file saved to {output_path}")
 
 
 # Main execution block
@@ -776,19 +812,32 @@ if __name__ == "__main__":
     # plot_interaction_distribution(edge_list_15, condition_label="Injured 15")
     # plot_interaction_distribution(edge_list_60, condition_label="Injured 60")
 
-    # export_top_interactions_per_cluster(edge_list_15, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/top_cluster_interactions_15.xlsx")
-    # export_top_interactions_per_cluster(edge_list_60, "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/top_cluster_interactions_60.xlsx")
+    edge_list_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/"
+
+    export_top_interactions_per_cluster(edge_list_15, f"{edge_list_dir}top_cluster_interactions_15.xlsx")
+    # export_top_interactions_per_cluster(edge_list_60, f"{edge_list_dir}top_cluster_interactions_60.xlsx")
 
     export_filtered_interactions_excel(
         df_pvalues=injured_15_df2,
         filtered_dict=filtered_15_dict,
-        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/significant_interaction_ids_15.xlsx"
+        output_path=f"{edge_list_dir}significant_interaction_ids_15.xlsx"
     )
 
     export_filtered_interactions_excel(
         df_pvalues=injured_60_df2,
         filtered_dict=filtered_60_dict,
-        output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/significant_interaction_ids_60.xlsx"
+        output_path=f"{edge_list_dir}significant_interaction_ids_60.xlsx"
     )
-    
-        
+
+    simplify_significant_interactions_precise(
+        top_clusters_path= f"{edge_list_dir}top_cluster_interactions_15.xlsx",
+        full_interactions_path= f"{edge_list_dir}significant_interaction_ids_15.xlsx",
+        output_path= f"{edge_list_dir}simplified_significant_interactions_15.xlsx"
+    )
+
+    simplify_significant_interactions_precise(
+        top_clusters_path= f"{edge_list_dir}top_cluster_interactions_60.xlsx",
+        full_interactions_path= f"{edge_list_dir}significant_interaction_ids_60.xlsx",
+        output_path= f"{edge_list_dir}simplified_significant_interactions_60.xlsx"
+    )
+            
