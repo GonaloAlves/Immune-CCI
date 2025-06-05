@@ -27,25 +27,58 @@ get_group <- function(label) {
 # )
 
 imm_red_colors <- c(  
-  "#b14a50", 
-  "#d15842", 
-  "#ff6932",  
-  "#ff8643",
-  "#feae34", 
-  "#f6757a"  
+  "#9c70c2", #
+  "#729fcf", 
+  "#7b70d2", #
+  "#729fcf", #
+  "#486ec7", #
+  
+  
+  "#f57c73", 
+  "#f68c70",  
+  "#f6ac69",
+  "#f6bc66", 
+  "#f6bc66"  
 )
 mev_blue_colors <- c(
-  "#4c549b",  # very dark blue
-  "#6975b2",
-  "#8494c0",
-  "#97a8bd",
-  "#aec2bb",
-  "#78789e",
+  "#f6ac69", #
+  "#ff666b", #
+
+  "#7ec4cf",
+  "#9cadce",
+
+  "#fe9e9e", # 
+  "#c24b72", #
+
   "#9898ab",
-  "#b2b2a4",
-  "#4292c6"   # lightest among these
+  "#8494c0",
+  "#b2b2a4"  
 )
-neu_green_colors <- c("#44ce1b", "#bbdb44")
+neu_green_colors <- c("#00bf63", #
+ "#bbdb44")
+
+
+imma_red_colors <- c(  
+  "#f55c7a", 
+  "#f57c73", 
+  "#f68c70",  
+  "#f6ac69",
+  "#f6bc66", 
+  "#f6bc66"  
+)
+meva_blue_colors <- c(
+  "#486ec7", #
+  "#729fcf", #
+  "#7ec4cf",
+  "#9cadce",
+  "#7b70d2", #
+  "#9c70c2", #
+  "#9898ab",
+  "#8494c0",
+  "#b2b2a4"  
+)
+neua_green_colors <- c("#79d466", #
+ "#bbdb44")
 
 
 mev_groups <- c("MeV.Endothelial", "MeV.Pericytes", "MeV.SMC", "MeV.Epithelial", "MeV.Fib", "MeV.FibCollagen", "MeV.FibLaminin", "MeV.VLMC", "MeV.FibProlif")
