@@ -15,28 +15,10 @@ cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
 cellphonedb_dir_out = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary"
 
 
-lineage_colors = {
-    'Neuron': 'darkorchid',
-    'Meningeal_Vascular': 'slategrey',
-    'Immune': 'lime'
-}
-
 datset_names = {'Neu': 'Neuron',
                 'MeV': 'Meningeal_Vascular',
                 'Imm': 'Immune'
                 }
-
-def get_cell_types(cci: str,
-                   major: bool      # Only major cell types, no clusters
-                   
-                   ) -> tuple[str, ...]:
-    cell_types = cci.split('|')
-    if major:
-        cell_types[0] = cell_types[0].split('.')[0]
-        cell_types[1] = cell_types[1].split('.')[0]
-
-    
-    return tuple(cell_types)
 
 def simple_uniprot_to_gene_name(df_simple: pd.DataFrame,      # gene_input.csv dataframe
                                 uniprot: str) -> str:
@@ -154,206 +136,47 @@ def collect_partners(df_stat: pd.DataFrame,      # statistical_analysis_signific
         # Free memory
         gc.collect()
 
-    #import sys
-    #    # Progress
-    #    if (counter % steps == 0) or (counter == (len(df_partner.columns) - 1)):
-    #        if counter != 0:
-    #            sys.stdout.write("\r\033[2K")
-    #        print(f"Genes for: {counter}/{total_cci} ccis", end="", flush=True)
-    #    counter += 1
-    #
-    #print()
-    
 
     return cluster_cci
-
-
-def get_source_targets(summary_df: pd.DataFrame,
-                       major_cell_types: bool,      # Only use major cell types, no clusters
-                       unique_cci: bool,            # Only report unique cci. Useful when collapsing cell types
-                       ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    from itertools import product
-    import numpy as np
-    # Build a source/target matrix - row = source, col = target
-    # Get all possible sources and targets
-    sources = []
-    targets = []
-    for row in summary_df.index:
-        cci = get_cell_types(row, major_cell_types)
-        sources.append(cci[0])
-        targets.append(cci[1])
-    sources = list(set(sources))
-    sources.sort()
-    targets = list(set(targets))
-    targets.sort()
-    mtx_source_target = pd.DataFrame(np.zeros((len(sources), len(targets))), index=sources, columns=targets, dtype='int64')
-    
-    # For every interaction add a +1 weight
-    # Get all ccis for each src/tgt combination
-    keys = list(product(mtx_source_target.index, mtx_source_target.columns))
-    interactions: dict[str, list] = {k: [] for k in keys}
-    for row in summary_df.index:
-        ccis = summary_df.loc[row, summary_df.loc[row, :].notna()].values.tolist()
-        src_tgt = get_cell_types(row, major_cell_types)
-        interactions[src_tgt].extend(ccis)
-    
-    # Only collect unique cci
-    if unique_cci:
-        for row in summary_df.index:
-            src_tgt = get_cell_types(row, major_cell_types)
-            interactions[src_tgt] = list(set(interactions[src_tgt]))
-            interactions[src_tgt].sort()
-            
-    # Add weights
-    for src_tgt in interactions:
-        mtx_source_target.loc[src_tgt[0], src_tgt[1]] = len(interactions[src_tgt])
-    
-    # holoviews requires input data containing the following columns:
-    # “source”, “target”, “weight”
-    df_source_target = {"source": [],
-                        "target": [],
-                        "value": []}
-     
-    # Get indexes for src_tgt
-    nodes = [src_tgt[0] if not major_cell_types else src_tgt[0].split('.')[0] for src_tgt in interactions]
-    nodes.extend([src_tgt[1] if not major_cell_types else src_tgt[1].split('.')[0] for src_tgt in interactions])
-    nodes = list(set(nodes))
-    nodes.sort()
-    nodes = {n: i for i, n in enumerate(nodes)}
-    # print("nodes.....")
-    # print(nodes)
-    for src_tgt in interactions:
-        src = src_tgt[0]
-        tgt = src_tgt[1]
-        df_source_target["source"].append(nodes[src])
-        df_source_target["target"].append(nodes[tgt])
-        df_source_target["value"].append(mtx_source_target.loc[src, tgt])
-    
-    df_source_target = pd.DataFrame(df_source_target)
-    # nodes = {"index": nodes.values(),
-    #          "names": nodes.keys(),
-    #          "group": [0] * len(nodes.values())}
-    # nodes = pd.DataFrame(nodes)
-
-    # Construct nodes correctly
-    node_list = list(nodes.keys())  # Extract node names
-    node_indices = list(nodes.values())  # Extract corresponding indices
-    
-    nodes = pd.DataFrame({
-        "index": node_indices,
-        "names": node_list,
-        "group": [0] * len(node_list)   
-    })
-
-    
-    # Also return index names
-
-    print("hey")
-    print(df_source_target)
-    print("2ndhey")
-    print(nodes)    
-
-    return df_source_target, nodes
-    
-
-
-def chord_diagram(chord_input: pd.DataFrame,
-                  node_info: pd.DataFrame,
-                  out_file: str) -> None:
-    import holoviews as hv
-    from bokeh.io import export_svgs, export_png
-    from holoviews import opts, dim
-    from matplotlib.colors import ListedColormap
-    
-    # Initialize
-    hv.extension('bokeh', 'matplotlib')       # Bokeh backend to draw chords
-    hv.output(size=500, dpi=300)
-
-    print("node_info DataFrame:")
-    print(node_info)
-    print("end")
-
-    # Get colors
-    cmap = list(set(node_info["names"].values.tolist()))
-    cmap.sort()
-    # Ensure that lineages are ok
-    for i in range(len(cmap)):
-        if '.' in cmap[i]:
-            for k in datset_names:
-                if cmap[i].startswith(k):
-                    cmap[i] = datset_names[k]
-                    break
-        else:
-            cmap[i] = datset_names[cmap[i]]
-    cmap = ListedColormap([lineage_colors[c] for c in cmap], len(cmap))
-
-    print(cmap)
-
-    # Build chord diagram    
-
-    # Até aqui ta tudo bem, o df dos nodes está a parecer bem, so que dps se entrar o df normal:
-    # AttributeError: 'DataFrame' object has no attribute 'ndims'
-    # Se eu fizer esta linha a baixo como fizeste antes dá outro erro, o que parece que faz sentido pois a linha so mostra os index do df: :Dataset   [index]   (names,group)
-    # ValueError: OutputDocumentFor expects a non-empty sequence of Models
-    node_info = hv.Dataset(node_info, "index")  
-
-    print("chord_input DataFrame:")
-    print(chord_input)
-    print("node_info DataFrame:")
-    print(node_info)
-    print("end")
-
-    chord = hv.Chord(data=(chord_input, node_info))
-    plot = chord.opts(opts.Chord(cmap=cmap, edge_cmap=cmap, edge_color=dim('source').str(),
-                      labels='names', node_color=dim('index').str(), label_text_font_size='24pt'))
-    
-    print(chord_input.shape, node_info.shape)  # Check if they have data
-    print(chord_input.head())
-    
-    p = hv.render(plot, backend='bokeh')
-    #p.output_backend = "svg"
-    #export_svgs(p, filename=out_file)
-    export_png(plot, filename=out_file)
-
 
 
 def start(n_proc: int = None) -> None:
     import pandas as pd
 
-    ### Statistical analysis - Summarize by cci
-    if statistical_analysis:
-        # Load the multiple statistical analysis
-        dest = f"{cellphonedb_dir}/statistical_analysis_significant_means_final_merged.txt"
-        print("Summarizing ", dest)
-        df = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
-        # Columns with CCI
-        cols_cci = df.columns[df.columns.str.contains('|', regex=False)]
-        df_cci = df.loc[:, ["id_cp_interaction", "interacting_pair"] + cols_cci.to_list()]
-        # There are duplicate names in interacting_pair, append id to interaction
-        new_index = []
-        for i in df_cci.index:
-            new_index.append(f"{df_cci.loc[i, 'interacting_pair']}_{df_cci.loc[i, 'id_cp_interaction']}")
-        df_cci.index = new_index
-        if df_cci.index.has_duplicates:
-            raise ValueError("Index has duplicates!")
-        df_cci.index.name = 'cci'
-        df_cci.drop(labels=["id_cp_interaction", "interacting_pair"], axis=1, inplace=True)
+    # ### Statistical analysis - Summarize by cci
+    # if statistical_analysis:
+    #     # Load the multiple statistical analysis
+    #     dest = f"{cellphonedb_dir}/statistical_analysis_significant_means_final_merged.txt"
+    #     print("Summarizing ", dest)
+    #     df = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
+    #     # Columns with CCI
+    #     cols_cci = df.columns[df.columns.str.contains('|', regex=False)]
+    #     df_cci = df.loc[:, ["id_cp_interaction", "interacting_pair"] + cols_cci.to_list()]
+    #     # There are duplicate names in interacting_pair, append id to interaction
+    #     new_index = []
+    #     for i in df_cci.index:
+    #         new_index.append(f"{df_cci.loc[i, 'interacting_pair']}_{df_cci.loc[i, 'id_cp_interaction']}")
+    #     df_cci.index = new_index
+    #     if df_cci.index.has_duplicates:
+    #         raise ValueError("Index has duplicates!")
+    #     df_cci.index.name = 'cci'
+    #     df_cci.drop(labels=["id_cp_interaction", "interacting_pair"], axis=1, inplace=True)
 
-        # Collect cci for each interaction
-        cluster_cci = {}
-        for col in df_cci.columns:
-            cluster_cci[col] = []
-        for j in range(len(df_cci.columns)):
-            mask = pd.isna(df_cci.iloc[:, j])
-            cluster_cci[df_cci.columns[j]].extend(df_cci.iloc[:, j].loc[~mask].index.to_list())
-        # Sort cci names
-        for col in df_cci.columns:
-            cluster_cci[col].sort()
+    #     # Collect cci for each interaction
+    #     cluster_cci = {}
+    #     for col in df_cci.columns:
+    #         cluster_cci[col] = []
+    #     for j in range(len(df_cci.columns)):
+    #         mask = pd.isna(df_cci.iloc[:, j])
+    #         cluster_cci[df_cci.columns[j]].extend(df_cci.iloc[:, j].loc[~mask].index.to_list())
+    #     # Sort cci names
+    #     for col in df_cci.columns:
+    #         cluster_cci[col].sort()
 
-        # Save
-        dest = f"{cellphonedb_dir_out}/summary_significant_cci_means_final_merged.txt"
-        cluster_cci = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in cluster_cci.items()]))
-        cluster_cci.T.to_csv(dest, index=True, header=False, sep='\t')
+    #     # Save
+    #     dest = f"{cellphonedb_dir_out}/summary_significant_cci_means_final_merged.txt"
+    #     cluster_cci = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in cluster_cci.items()]))
+    #     cluster_cci.T.to_csv(dest, index=True, header=False, sep='\t')
     
     ### Statistical analysis - Summarize by cci genes
     # Collect genes from each partner pair
@@ -371,48 +194,7 @@ def start(n_proc: int = None) -> None:
         cci_genes = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in cci_genes.items()]))
         cci_genes.T.to_csv(dest, index=True, header=False, sep='\t')
 
-    ## Build chord diagram for cci and cci genes
-    if statistical_analysis:
-        # Chord for major cell types
-        dest = f"{cellphonedb_dir_out}/summary_significant_cci_means_final_merged.txt" # alterei para cci
-        print(f"\nBuild chord diagram for {dest}")
-        df = pd.read_csv(dest, index_col=0, header=None, sep='\t', low_memory=False)
-        
-        # Unique interactions
-        chord_input, node_info = get_source_targets(df, major_cell_types=True, unique_cci=True)
-        dest = f"{cellphonedb_dir_out}/chord_significant_final_merged_unique_cci.png"
-        chord_diagram(chord_input, node_info, dest)
-        print(dest)
-        # Save matrices
-        dest = f"{cellphonedb_dir_out}/chord_input_major_cell_types_unique_cci.txt"
-        chord_input.to_csv(dest, sep='\t')
-        print(dest)
-        dest = f"{cellphonedb_dir_out}/node_info_major_cell_types_unique_cci.txt"
-        node_info.to_csv(dest, sep='\t')
-        print(dest)
-                    
-        # All interactions
-        chord_input, node_info = get_source_targets(df, major_cell_types=True, unique_cci=False)
-        dest = f"{cellphonedb_dir_out}/chord_significant_final_merged_all_cci.png"
-        chord_diagram(chord_input, node_info, dest)
-        print(dest)
-        # Save matrices
-        dest = f"{cellphonedb_dir_out}/chord_input_major_cell_types_all_cci.txt"
-        chord_input.to_csv(dest, sep='\t')
-        print(dest)
-        dest = f"{cellphonedb_dir_out}/node_info_major_cell_types_all_cci.txt"
-        node_info.to_csv(dest, sep='\t')
-        print(dest)
     
-        # Chord for clusters
-
-        dest = f"{cellphonedb_dir_out}/summary_significant_means_final_merged.txt"
-        print(f"\nBuild chord diagram for {dest}")
-        df = pd.read_csv(dest, index_col=0, header=None, sep='\t', low_memory=False)
-        chord_input, node_info = get_source_targets(df, major_cell_types=False, unique_cci=True)
-        dest = f"{cellphonedb_dir_out}/chord_significant_final_merged_unique_cci_clusters.png"
-        chord_diagram(chord_input, node_info, out_file=dest)
-
 
 # main guard required because processes are spawn (compatible with Windows)
 if __name__ == '__main__':
