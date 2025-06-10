@@ -11,7 +11,7 @@ import pandas as pd
 statistical_analysis = True
 
 cpdb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database"
-cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
+cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list"
 cellphonedb_dir_out = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary"
 
 
@@ -139,6 +139,53 @@ def collect_partners(df_stat: pd.DataFrame,      # statistical_analysis_signific
 
     return cluster_cci
 
+def get_genes_from_id_cp_interaction(interaction_id: str, df_stat: pd.DataFrame, df_complex: pd.DataFrame, df_simple: pd.DataFrame) -> list[str]:
+    
+    # Find row in df_stat for this interaction
+    row = df_stat[df_stat['id_cp_interaction'] == interaction_id]
+    if row.empty:
+        return []
+
+    partner_a = row['partner_a'].values[0]
+    partner_b = row['partner_b'].values[0]
+    
+    genes = []
+    # Handle partner_a
+    genes += genes_from_partner(df_complex, df_simple, partner_a)
+    # Handle partner_b
+    genes += genes_from_partner(df_complex, df_simple, partner_b)
+
+    return sorted(set(genes))  # optional: remove duplicates
+
+
+def enrich_simplified_excel_with_genes( simplified_excel_path: str, output_excel_path: str, cpdb_gene_input_path: str, cpdb_complex_input_path: str, cpdb_stat_path: str):
+
+    # Load CellPhoneDB inputs
+    df_simple = pd.read_csv(cpdb_gene_input_path, sep=',')
+    df_complex = pd.read_csv(cpdb_complex_input_path, sep=',')
+    df_stat = pd.read_csv(cpdb_stat_path, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
+
+    # Load all sheets
+    xl = pd.read_excel(simplified_excel_path, sheet_name=None)
+
+    updated_sheets = {}
+    for sheet_name, df in xl.items():
+        print(f"Processing {sheet_name}...")
+        genes_list = []
+
+        for interaction_id in df["id_cp_interaction"]:
+            genes = get_genes_from_id_cp_interaction(interaction_id, df_stat, df_complex, df_simple)
+            genes_list.append(", ".join(genes))  # Join as string for Excel
+
+        df["genes"] = genes_list
+        updated_sheets[sheet_name] = df
+
+    # Write to new Excel
+    with pd.ExcelWriter(output_excel_path, engine='xlsxwriter') as writer:
+        for sheet_name, df in updated_sheets.items():
+            df.to_excel(writer, index=False, sheet_name=sheet_name)
+
+    print("✅ Done writing enriched Excel.")
 
 def start(n_proc: int = None) -> None:
     import pandas as pd
@@ -193,6 +240,15 @@ def start(n_proc: int = None) -> None:
         dest = f"{cellphonedb_dir_out}/summary_significant_cci_genes_final_merged.txt"
         cci_genes = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in cci_genes.items()]))
         cci_genes.T.to_csv(dest, index=True, header=False, sep='\t')
+##
+        enrich_simplified_excel_with_genes(
+        simplified_excel_path="/path/to/simplified_significant_interactions_15.xlsx",
+        output_excel_path="/path/to/enriched_significant_interactions_15_with_genes.xlsx",
+        cpdb_gene_input_path="/path/to/gene_input.csv",
+        cpdb_complex_input_path="/path/to/complex_input.csv",
+        cpdb_stat_path="/path/to/statistical_analysis_significant_means_final_merged.txt"
+        )
+
 
     
 
