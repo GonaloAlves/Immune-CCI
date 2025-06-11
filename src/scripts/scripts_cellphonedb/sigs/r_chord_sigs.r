@@ -101,7 +101,7 @@ group_colors <- setNames(
 )
 
 
-# Function to highlight sectors by group
+# Function to highlight sectors by group, without text labels
 highlight_groups <- function(labels, track_index = 1) {
   unique_groups <- unique(sapply(labels, get_group))
   for (group in unique_groups) {
@@ -110,7 +110,7 @@ highlight_groups <- function(labels, track_index = 1) {
       sector_labels,
       track.index = track_index,
       col = group_colors[group],
-      text = group,
+      text = NULL,           # ← disables the label
       cex = 0.7,
       text.col = "black",
       niceFacing = TRUE
@@ -167,11 +167,27 @@ chordDiagram(
   transparency = 0,
   directional = 1,
   direction.type = c("diffHeight", "arrows"),
-  annotationTrack = c("grid", "name", "axis"),
+  annotationTrack = "grid",
+  annotationTrackHeight = c(0.02, 0.03),  # ← control size of grid + name tracks
+  preAllocateTracks = list(track.height = 0.03),  # Optional: fine-tune sector track
   link.arr.type = "big.arrow",
   link.sort = TRUE,
   link.decreasing = FALSE
 )
+
+# Add names manually with full control
+circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
+  sector_name <- CELL_META$sector.index
+  circos.text(
+    x = CELL_META$xcenter,
+    y = CELL_META$ycenter + 1.5,  # ← Move name outward
+    labels = sector_name,
+    facing = "bending",
+    niceFacing = TRUE,
+    cex = 1.7,                    # ← Font size
+    font = 2                     # ← Bold
+  )
+}, bg.border = NA)
 
 # Add group labels
 highlight_groups(all_labels_15)
@@ -200,11 +216,27 @@ chordDiagram(
   transparency = 0,
   directional = 1,
   direction.type = c("diffHeight", "arrows"),
-  annotationTrack = c("grid", "name", "axis"),
+  annotationTrack = "grid",
+  annotationTrackHeight = c(0.02, 0.03),  # ← control size of grid + name tracks
+  preAllocateTracks = list(track.height = 0.03),  # Optional: fine-tune sector track
   link.arr.type = "big.arrow",
   link.sort = TRUE,
   link.decreasing = FALSE
 )
+
+# Add names manually with full control
+circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
+  sector_name <- CELL_META$sector.index
+  circos.text(
+    x = CELL_META$xcenter,
+    y = CELL_META$ycenter + 1.5,  # ← Move name outward
+    labels = sector_name,
+    facing = "bending",
+    niceFacing = TRUE,
+    cex = 1.25,  # ← Font size
+    font = 2   # ← Bold
+  )
+}, bg.border = NA)
 
 # Add group labels
 highlight_groups(all_labels_60)
