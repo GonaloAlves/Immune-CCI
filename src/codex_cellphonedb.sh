@@ -22,6 +22,6 @@ conda activate mkpy
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/common_interactions_sigs.py
 
-# Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/r_chord_sigs.r
+Rscript /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/r_chord_sigs.r
 
-python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/percentages.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/sigs/percentages.py

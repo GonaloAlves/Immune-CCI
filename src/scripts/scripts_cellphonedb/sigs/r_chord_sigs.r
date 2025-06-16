@@ -27,6 +27,38 @@ get_group <- function(label) {
 # )
 
 imm_red_colors <- c(  #immune verdes
+  "#91cb3e", #
+  "#729fcf", 
+  "#5bba6f", #
+  "#73a942", #
+  "#119822", #
+  
+  
+  "#f57c73", #f57c73
+  "#f68c70", #aa6554
+  "#f6ac69",
+  "#f6bc66", 
+  "#f6bc66"  
+)
+mev_blue_colors <- c( # mevs azuis
+  "#7b70d2", #7b70d2
+  "#9c70c2", #9c70c2
+
+  "#7ec4cf",
+  "#9cadce",
+
+  "#729fcf", # 
+  "#3f7cac", #
+
+  "#9898ab",
+  "#8494c0",
+  "#b2b2a4"  
+)
+neu_green_colors <- c("#ff666b", #neus red/purple ff666b
+ "#bbdb44")
+
+
+imma_red_colors <- c(  #immune verdes
   "#9c70c2", #
   "#729fcf", 
   "#7b70d2", #
@@ -40,7 +72,7 @@ imm_red_colors <- c(  #immune verdes
   "#f6bc66", 
   "#f6bc66"  
 )
-mev_blue_colors <- c( # mevs azuis
+meva_blue_colors <- c( # mevs azuis
   "#f6ac69", #
   "#ff666b", #
 
@@ -54,30 +86,7 @@ mev_blue_colors <- c( # mevs azuis
   "#8494c0",
   "#b2b2a4"  
 )
-neu_green_colors <- c("#00bf63", #neus red/purple
- "#bbdb44")
-
-
-imma_red_colors <- c(  
-  "#f55c7a", 
-  "#f57c73", 
-  "#f68c70",  
-  "#f6ac69",
-  "#f6bc66", 
-  "#f6bc66"  
-)
-meva_blue_colors <- c(
-  "#486ec7", #
-  "#729fcf", #
-  "#7ec4cf",
-  "#9cadce",
-  "#7b70d2", #
-  "#9c70c2", #
-  "#9898ab",
-  "#8494c0",
-  "#b2b2a4"  
-)
-neua_green_colors <- c("#79d466", #
+neua_green_colors <- c("#00bf63", #neus red/purple
  "#bbdb44")
 
 
