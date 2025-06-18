@@ -161,9 +161,11 @@ def build_cluster_interaction_matrix(filtered_dict):
 def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.DataFrame = None , vmin: int = None, vmax: int = None):
  
     custom_order = [
-        "Imm.M0Like.1", "Imm.DAM.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1",
-        "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
-        "MeV.FibCollagen.2", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
+        "Imm.M0Like.1", "Imm.DAM.0", "Imm.DAM.1", "Imm.Interferon.0", "Imm.PVM.0",
+        "Neu.Epend.0", 
+        "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Pericytes.0", 
+        "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3", 
+        "MeV.Fib.4", "MeV.Fib.5"
     ]
 
     #relevant_clusters = ["Imm.DAM.0", "Imm.Interferon.0","Imm.PVM.0", "Imm.DAM.1", "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2"]
@@ -565,9 +567,9 @@ def export_top_interactions_per_cluster(edge_list_df, output_path):
         cluster_summary.append({
             'Cluster': cluster,
             'Top Sender(s)': ', '.join(top_incoming),
-            'Max Incoming Interactions': max_in_value,
+            'Max Outgoing Interactions': max_in_value,
             'Top Receiver(s)': ', '.join(top_outgoing),
-            'Max Outgoing Interactions': max_out_value
+            'Max Incoming Interactions': max_out_value
         })
 
     # Convert to DataFrame and export
@@ -766,8 +768,8 @@ if __name__ == "__main__":
     # print(matrix_60)
 
     remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
-    # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
-    # test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
+    test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
+    test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 60)
 
     biological_groups = {
     "Imm_Resting": ["Imm.M0Like.0", "Imm.M0Like.1", "Imm.M0Like.2"], 
@@ -814,30 +816,30 @@ if __name__ == "__main__":
 
     edge_list_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/"
 
-    export_top_interactions_per_cluster(edge_list_15, f"{edge_list_dir}top_cluster_interactions_15.xlsx")
+    # export_top_interactions_per_cluster(edge_list_15, f"{edge_list_dir}top_cluster_interactions_15.xlsx")
     # export_top_interactions_per_cluster(edge_list_60, f"{edge_list_dir}top_cluster_interactions_60.xlsx")
 
-    export_filtered_interactions_excel(
-        df_pvalues=injured_15_df2,
-        filtered_dict=filtered_15_dict,
-        output_path=f"{edge_list_dir}significant_interaction_ids_15.xlsx"
-    )
+    # export_filtered_interactions_excel(
+    #     df_pvalues=injured_15_df2,
+    #     filtered_dict=filtered_15_dict,
+    #     output_path=f"{edge_list_dir}significant_interaction_ids_15.xlsx"
+    # )
 
-    export_filtered_interactions_excel(
-        df_pvalues=injured_60_df2,
-        filtered_dict=filtered_60_dict,
-        output_path=f"{edge_list_dir}significant_interaction_ids_60.xlsx"
-    )
+    # export_filtered_interactions_excel(
+    #     df_pvalues=injured_60_df2,
+    #     filtered_dict=filtered_60_dict,
+    #     output_path=f"{edge_list_dir}significant_interaction_ids_60.xlsx"
+    # )
 
-    simplify_significant_interactions_precise(
-        top_clusters_path= f"{edge_list_dir}top_cluster_interactions_15.xlsx",
-        full_interactions_path= f"{edge_list_dir}significant_interaction_ids_15.xlsx",
-        output_path= f"{edge_list_dir}simplified_significant_interactions_15.xlsx"
-    )
+    # simplify_significant_interactions_precise(
+    #     top_clusters_path= f"{edge_list_dir}top_cluster_interactions_15.xlsx",
+    #     full_interactions_path= f"{edge_list_dir}significant_interaction_ids_15.xlsx",
+    #     output_path= f"{edge_list_dir}simplified_significant_interactions_15.xlsx"
+    # )
 
-    simplify_significant_interactions_precise(
-        top_clusters_path= f"{edge_list_dir}top_cluster_interactions_60.xlsx",
-        full_interactions_path= f"{edge_list_dir}significant_interaction_ids_60.xlsx",
-        output_path= f"{edge_list_dir}simplified_significant_interactions_60.xlsx"
-    )
+    # simplify_significant_interactions_precise(
+    #     top_clusters_path= f"{edge_list_dir}top_cluster_interactions_60.xlsx",
+    #     full_interactions_path= f"{edge_list_dir}significant_interaction_ids_60.xlsx",
+    #     output_path= f"{edge_list_dir}simplified_significant_interactions_60.xlsx"
+    # )
             
