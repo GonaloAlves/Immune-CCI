@@ -14,9 +14,9 @@ cpdb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database"
 cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb"
 cellphonedb_dir_out = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/summary2"
 
-control = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_uninjured_nona.txt"
-injured_15 = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_15_nona.txt"
-injured_60 = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_pvalues_final_merged_injured_60_nona.txt"
+control = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_significant_means_final_merged_uninjured_nona.txt"
+injured_15 = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_significant_means_final_merged_injured_15_nona.txt"
+injured_60 = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_significant_means_final_merged_injured_60_nona.txt"
 
 lineage_colors = {
     'Neuron': 'darkorchid',
@@ -266,98 +266,61 @@ def get_source_targets(summary_df: pd.DataFrame,
 def start(n_proc: int = None) -> None:
     import pandas as pd
 
-    ### Statistical analysis - Summarize by cci
-    if statistical_analysis:
-        # Load the multiple statistical analysis
-        dest = f"{cellphonedb_dir}/statistical_analysis_significant_means_final_merged.txt"
-        print("Summarizing ", dest)
-        df = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
+    ### Define multiple input files
+    input_files = {
+        "control": control,
+        "injured_15": injured_15,
+        "injured_60": injured_60
+    }
+
+    ### Statistical analysis - For each condition
+    for condition, filepath in input_files.items():
+        if not os.path.exists(filepath):
+            print(f"File not found for condition '{condition}': {filepath}")
+            continue
+
+        print(f"\nProcessing condition: {condition}")
+        df = pd.read_csv(filepath, sep='\t', dtype={"gene_a": "string", "gene_b": "string"})
+        
         # Columns with CCI
         cols_cci = df.columns[df.columns.str.contains('|', regex=False)]
         df_cci = df.loc[:, ["id_cp_interaction", "interacting_pair"] + cols_cci.to_list()]
-        # There are duplicate names in interacting_pair, append id to interaction
         new_index = []
         for i in df_cci.index:
             new_index.append(f"{df_cci.loc[i, 'interacting_pair']}_{df_cci.loc[i, 'id_cp_interaction']}")
         df_cci.index = new_index
         if df_cci.index.has_duplicates:
-            raise ValueError("Index has duplicates!")
+            raise ValueError(f"Index has duplicates in {condition}!")
         df_cci.index.name = 'cci'
         df_cci.drop(labels=["id_cp_interaction", "interacting_pair"], axis=1, inplace=True)
 
-        # Collect cci for each interaction
+        # Summarize CCIs
         cluster_cci = {}
         for col in df_cci.columns:
             cluster_cci[col] = []
         for j in range(len(df_cci.columns)):
             mask = pd.isna(df_cci.iloc[:, j])
             cluster_cci[df_cci.columns[j]].extend(df_cci.iloc[:, j].loc[~mask].index.to_list())
-        # Sort cci names
         for col in df_cci.columns:
             cluster_cci[col].sort()
 
-        # Save
-        dest = f"{cellphonedb_dir_out}/summary_significant_cci_means_final_merged.txt"
+        # Save summary of CCIs
+        dest = f"{cellphonedb_dir_out}/summary_significant_cci_means_{condition}.txt"
         cluster_cci = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in cluster_cci.items()]))
         cluster_cci.T.to_csv(dest, index=True, header=False, sep='\t')
-    
-    ### Statistical analysis - Summarize by cci genes
-    # Collect genes from each partner pair
-    if statistical_analysis:
+        
+        # Collect genes for interactions
+        print(f"Finding genes for {condition}")
         gene_input = pd.read_csv(f"{cpdb_dir}/v4.1.0/gene_input.csv", sep=',', header=0)
         complex_input = pd.read_csv(f"{cpdb_dir}/v4.1.0/complex_input.csv", sep=',', header=0)
-        # Find genes for each interaction
+        cci_genes = collect_partners(df_stat=df, df_complex=complex_input, df_simple=gene_input, n_proc=n_proc)
         
-        dest = f"{cellphonedb_dir}/statistical_analysis_significant_means_final_merged.txt"
-        print("\nFinding genes for", dest)
-        df_stat = pd.read_csv(dest, sep='\t', dtype={"gene_a": "string", "gene_b": "string"}, low_memory=False)
-        cci_genes = collect_partners(df_stat=df_stat, df_complex=complex_input, df_simple=gene_input)
-        # Save
-        dest = f"{cellphonedb_dir_out}/summary_significant_cci_genes_final_merged.txt"
+        # Save genes
+        dest = f"{cellphonedb_dir_out}/summary_significant_cci_genes_{condition}.txt"
         cci_genes = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in cci_genes.items()]))
         cci_genes.T.to_csv(dest, index=True, header=False, sep='\t')
 
-    ## Build chord diagram for cci and cci genes
-    if statistical_analysis:
-        # Chord for major cell types
-        dest = f"{cellphonedb_dir_out}/summary_significant_cci_means_final_merged.txt" # alterei para cci
-        print(f"\nBuild chord diagram for {dest}")
-        df = pd.read_csv(dest, index_col=0, header=None, sep='\t', low_memory=False)
-        
-        # Unique interactions
-        chord_input, node_info = get_source_targets(df, major_cell_types=True, unique_cci=True)
-        dest = f"{cellphonedb_dir_out}/chord_significant_final_merged_unique_cci.png"
-        chord_diagram(chord_input, node_info, dest)
-        print(dest)
-        # Save matrices
-        dest = f"{cellphonedb_dir_out}/chord_input_major_cell_types_unique_cci.txt"
-        chord_input.to_csv(dest, sep='\t')
-        print(dest)
-        dest = f"{cellphonedb_dir_out}/node_info_major_cell_types_unique_cci.txt"
-        node_info.to_csv(dest, sep='\t')
-        print(dest)
-                    
-        # All interactions
-        chord_input, node_info = get_source_targets(df, major_cell_types=True, unique_cci=False)
-        dest = f"{cellphonedb_dir_out}/chord_significant_final_merged_all_cci.png"
-        chord_diagram(chord_input, node_info, dest)
-        print(dest)
-        # Save matrices
-        dest = f"{cellphonedb_dir_out}/chord_input_major_cell_types_all_cci.txt"
-        chord_input.to_csv(dest, sep='\t')
-        print(dest)
-        dest = f"{cellphonedb_dir_out}/node_info_major_cell_types_all_cci.txt"
-        node_info.to_csv(dest, sep='\t')
-        print(dest)
-    
-        # Chord for clusters
 
-        dest = f"{cellphonedb_dir_out}/summary_significant_means_final_merged.txt"
-        print(f"\nBuild chord diagram for {dest}")
-        df = pd.read_csv(dest, index_col=0, header=None, sep='\t', low_memory=False)
-        chord_input, node_info = get_source_targets(df, major_cell_types=False, unique_cci=True)
-        dest = f"{cellphonedb_dir_out}/chord_significant_final_merged_unique_cci_clusters.png"
-        chord_diagram(chord_input, node_info, out_file=dest)
 
 
 # main guard required because processes are spawn (compatible with Windows)
