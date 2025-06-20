@@ -27,35 +27,30 @@ get_group <- function(label) {
 # )
 
 imm_red_colors <- c(  #immune verdes
-  "#91cb3e", #
-  "#729fcf", 
-  "#5bba6f", #
-  "#73a942", #
-  "#119822", #
-  
-  
-  "#f57c73", #f57c73
-  "#f68c70", #aa6554
-  "#f6ac69",
-  "#f6bc66", 
-  "#f6bc66"  
+  "#91cb3e33", # 33
+  "#00000000", 
+  "#5bba6f33", #
+  "#73a94233", #
+  "#11982233", #
+  "#00000000", 
+  "#00000000", 
+  "#00000000",
+  "#00000000", 
+  "#00000000"  
 )
 mev_blue_colors <- c( # mevs azuis
-  "#7b70d2", #7b70d2
-  "#9c70c2", #9c70c2
-
-  "#7ec4cf",
-  "#9cadce",
-
-  "#729fcf", # 
-  "#3f7cac", #
-
-  "#9898ab",
-  "#8494c0",
-  "#b2b2a4"  
+  "#7b70d233", #7b70d2ff
+  "#9c70c233", #9c70c2
+  "#00000000",
+  "#00000000",
+  "#729fcf33", # 
+  "#3f7cacff", #
+  "#00000000",
+  "#00000000",
+  "#00000000"  
 )
-neu_green_colors <- c("#ff666b", #neus red/purple ff666b
- "#bbdb44")
+neu_green_colors <- c("#ff666b33", #neus red/purple ff666b
+ "#00000000")
 
 
 imma_red_colors <- c(  #immune verdes
