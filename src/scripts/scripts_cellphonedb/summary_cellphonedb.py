@@ -1,14 +1,10 @@
 # Perform CellPhoneDB analysis - LeonorSaude10x
 #
-# Follwing these tutorials
+# 
 #
 # Daniel Ribeiro, Gonçalo Alves 2025
-import gc
 import os
-
 import pandas as pd
-
-statistical_analysis = True
 
 cpdb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database"
 cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list"
@@ -107,25 +103,138 @@ def enrich_simplified_excel_with_genes(simplified_excel_path: str, output_excel_
 
     print("✅ Done writing enriched Excel.")
 
+
+
+def alphabetic_order_int(filepath: str, output_path: str):
+    """
+    Combine all sheets into one DataFrame, keep only relevant columns,
+    and sort interactions alphabetically. Includes cluster_pair in the first column.
+
+    Args:
+        filepath (str): Path to input Excel file with multiple sheets.
+        output_path (str): Path to save the output Excel file.
+    """
+    # Load all sheets
+    xls = pd.read_excel(filepath, sheet_name=None)
+    all_data = []
+
+    for sheet_name, df in xls.items():
+        if df.empty:
+            continue
+
+        df = df.copy()
+
+        # Build cluster_pair column
+        df["cluster_pair"] = df.apply(
+            lambda row: f"{sheet_name}|{row['partner']}" if row["direction"] == "sent"
+            else f"{row['partner']}|{sheet_name}",
+            axis=1
+        )
+
+        # Drop unneeded columns
+        df.drop(columns=["direction", "partner"], inplace=True)
+
+        # Move cluster_pair to first column
+        cols = ["cluster_pair"] + [col for col in df.columns if col != "cluster_pair"]
+        df = df[cols]
+
+        all_data.append(df)
+
+    # Merge all sheets and sort
+    merged_df = pd.concat(all_data, ignore_index=True)
+    merged_df = merged_df.sort_values(by="interacting_pair", ascending=True)
+
+    # Save result
+    merged_df.to_excel(output_path, index=False)
+    print(f"Processed file saved to: {output_path}")
+
+
+def alphabetic_order_cluster(filepath: str, output_path: str):
+    """
+    Combine all sheets into one DataFrame, keep only relevant columns,
+    and sort interactions by cluster_pair and then by interacting_pair alphabetically.
+
+    Args:
+        filepath (str): Path to input Excel file with multiple sheets.
+        output_path (str): Path to save the output Excel file.
+    """
+    # Load all sheets
+    xls = pd.read_excel(filepath, sheet_name=None)
+    all_data = []
+
+    for sheet_name, df in xls.items():
+        if df.empty:
+            continue
+
+        df = df.copy()
+
+        # Build cluster_pair column
+        df["cluster_pair"] = df.apply(
+            lambda row: f"{sheet_name}|{row['partner']}" if row["direction"] == "sent"
+            else f"{row['partner']}|{sheet_name}",
+            axis=1
+        )
+
+        # Drop unneeded columns
+        df.drop(columns=["direction", "partner"], inplace=True)
+
+        # Move cluster_pair to first column
+        cols = ["cluster_pair"] + [col for col in df.columns if col != "cluster_pair"]
+        df = df[cols]
+
+        all_data.append(df)
+
+    # Merge all sheets
+    merged_df = pd.concat(all_data, ignore_index=True)
+
+    # Sort by cluster_pair first, then interacting_pair
+    merged_df = merged_df.sort_values(by=["cluster_pair", "interacting_pair"], ascending=True)
+
+    # Save result
+    merged_df.to_excel(output_path, index=False)
+    print(f"✅ Processed file saved to: {output_path}")
+
+
 def start(n_proc: int = None) -> None:
     import pandas as pd
 
-    if statistical_analysis:
 ##
-        enrich_simplified_excel_with_genes(
-        simplified_excel_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/simplified_significant_interactions_15.xlsx",
-        output_excel_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/significant_interactions_15_with_genes.xlsx",
-        cpdb_gene_input_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database/v4.1.0/gene_input.csv",
-        cpdb_complex_input_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database/v4.1.0/complex_input.csv",
-        cpdb_stat_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_significant_means_final_merged_injured_15_nona.txt"
-        )
-        enrich_simplified_excel_with_genes(
-        simplified_excel_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/simplified_significant_interactions_60.xlsx",
-        output_excel_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/significant_interactions_60_with_genes.xlsx",
-        cpdb_gene_input_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database/v4.1.0/gene_input.csv",
-        cpdb_complex_input_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database/v4.1.0/complex_input.csv",
-        cpdb_stat_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_significant_means_final_merged_injured_60_nona.txt"
-        )
+    # enrich_simplified_excel_with_genes(
+    # simplified_excel_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/simplified_significant_interactions_15.xlsx",
+    # output_excel_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/significant_interactions_15_with_genes.xlsx",
+    # cpdb_gene_input_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database/v4.1.0/gene_input.csv",
+    # cpdb_complex_input_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database/v4.1.0/complex_input.csv",
+    # cpdb_stat_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_significant_means_final_merged_injured_15_nona.txt"
+    # )
+    # enrich_simplified_excel_with_genes(
+    # simplified_excel_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/simplified_significant_interactions_60.xlsx",
+    # output_excel_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/significant_interactions_60_with_genes.xlsx",
+    # cpdb_gene_input_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database/v4.1.0/gene_input.csv",
+    # cpdb_complex_input_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/database/v4.1.0/complex_input.csv",
+    # cpdb_stat_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_significant_means_final_merged_injured_60_nona.txt"
+    # )
+
+    alphabetic_order_int(
+    filepath="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/simple_significant_interactions_15_with_genes.xlsx",
+    output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/merged_sorted_interactions_15.xlsx"
+    )
+
+    alphabetic_order_int(
+    filepath="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/simple_significant_interactions_60_with_genes.xlsx",
+    output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/merged_sorted_interactions_60.xlsx"
+    )
+
+    alphabetic_order_cluster(
+    filepath="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/simple_significant_interactions_15_with_genes.xlsx",
+    output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/merged_interactions_15.xlsx"
+    )
+
+    alphabetic_order_cluster(
+    filepath="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/simple_significant_interactions_60_with_genes.xlsx",
+    output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/merged_interactions_60.xlsx"
+    )
+
+
 
 
     
