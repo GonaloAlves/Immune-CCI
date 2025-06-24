@@ -27,7 +27,7 @@ get_group <- function(label) {
 # )
 
 imm_red_colors <- c(  #immune verdes
-  "#91cb3e33", # 33
+  "#91cb3eff", # 33
   "#00000000", 
   "#5bba6f33", #
   "#73a94233", #
@@ -44,7 +44,7 @@ mev_blue_colors <- c( # mevs azuis
   "#00000000",
   "#00000000",
   "#729fcf33", # 
-  "#3f7cacff", #
+  "#3f7cac33", #
   "#00000000",
   "#00000000",
   "#00000000"  
