@@ -284,22 +284,19 @@ def start_analysis(input_file, output_dir):
         plot_data.loc['Nonclustered_expected', :] = expected_freq
         alternate_names = list(table_frac.index[:-2]) + ['Nonclustered_expected']
 
-        cluster_order_immune = [
-            "Imm.M0_like.0", "Imm.M0_like.1", 
-            "Imm.M0_like.2", "Imm.MHCII.0" ,
-            "Imm.Interferon.0", "Imm.DAM.0", 
-            "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0", "Nonclustered_expected"]
+
         
         cluster_order_meningeal = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
                             "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
                             "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0", 'Nonclustered_expected']
         cluster_order_immune = [
-    "Imm.M0Like.0", "Imm.M0Like.1", 
-    "Imm.M0Like.2", "Imm.MHCII.0" ,
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0", 'Nonclustered_expected']
+        "Imm.M0Like.0", "Imm.M0Like.1", 
+        "Imm.M0Like.2", "Imm.MHCII.0" ,
+        "Imm.Interferon.0", "Imm.DAM.0", 
+        "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0", 'Nonclustered_expected']
         
         cluster_order_neu = ["Neu.CSFcN.0", "Neu.Epend.0", "Nonclustered_expected"]
+        
         plot_stacked_bar(plot_data, 
                          dataset_name=f'Meningeal_final_{clusters_key}_{condition}', 
                          output_dir=output_dir, 
