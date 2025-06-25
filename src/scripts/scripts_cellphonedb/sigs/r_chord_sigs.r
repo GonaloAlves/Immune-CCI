@@ -27,7 +27,7 @@ get_group <- function(label) {
 # )
 
 imm_red_colors <- c(  #immune verdes
-  "#91cb3eff", # 33
+  "#91cb3e33", # 33
   "#00000000", 
   "#5bba6f33", #
   "#73a94233", #
@@ -49,7 +49,7 @@ mev_blue_colors <- c( # mevs azuis
   "#00000000",
   "#00000000"  
 )
-neu_green_colors <- c("#ff666b33", #neus red/purple ff666b
+neu_green_colors <- c("#ff666bff", #neus red/purple ff666b
  "#00000000")
 
 
@@ -86,7 +86,7 @@ neua_green_colors <- c("#00bf63", #neus red/purple
 
 
 mev_groups <- c("MeV.Endothelial", "MeV.Pericytes", "MeV.SMC", "MeV.Epithelial", "MeV.Fib", "MeV.FibCollagen", "MeV.FibLaminin", "MeV.VLMC", "MeV.FibProlif")
-imm_groups <- c("Imm.M0Like", "Imm.MHCII", "Imm.PVM", "Imm.Interferon", "Imm.DAM", "Imm.Proliferative")
+imm_groups <- c("Imm.Homeostatic", "Imm.MHCII", "Imm.PVM", "Imm.Interferon", "Imm.DAM", "Imm.Proliferative")
 neu_groups <- c("Neu.Epend", "Neu.CSFcN")
 
 
