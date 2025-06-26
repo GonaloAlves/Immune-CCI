@@ -214,15 +214,15 @@ def start(n_proc: int = None) -> None:
     # cpdb_stat_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/statistical_analysis_significant_means_final_merged_injured_60_nona.txt"
     # )
 
-    alphabetic_order_int(
-    filepath="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/simple_significant_interactions_15_with_genes.xlsx",
-    output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/merged_sorted_interactions_15.xlsx"
-    )
+    # alphabetic_order_int(
+    # filepath="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/simple_significant_interactions_15_with_genes.xlsx",
+    # output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/merged_sorted_interactions_15.xlsx"
+    # )
 
-    alphabetic_order_int(
-    filepath="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/simple_significant_interactions_60_with_genes.xlsx",
-    output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/merged_sorted_interactions_60.xlsx"
-    )
+    # alphabetic_order_int(
+    # filepath="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/simple_significant_interactions_60_with_genes.xlsx",
+    # output_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/merged_sorted_interactions_60.xlsx"
+    # )
 
     alphabetic_order_cluster(
     filepath="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/summary/simple_significant_interactions_15_with_genes.xlsx",
