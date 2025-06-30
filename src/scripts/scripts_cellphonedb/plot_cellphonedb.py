@@ -116,10 +116,10 @@ def test_heatmap(adata: sc.AnnData, obs_key: str = None, category: str = None, r
     count_matrix = clusterg["count_network"]
     
     custom_order = [
-        "Imm.M0Like.1", "Imm.M0Like.2", "Imm.DAM.0", "Imm.MHCII.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1", "Imm.Proliferative.0",
-        "Neu.CSFcN.0", "Neu.Epend.0", "MeV.Epithelial.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.SMC.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
-        "MeV.FibProlif.0", "MeV.Endothelial.3", "MeV.FibCollagen.2", "MeV.VLMC.1", "MeV.FibLaminin.0", "MeV.VLMC.0", "MeV.Fib.3",
-        "Imm.M0Like.0", "MeV.Endothelial.1", "MeV.Fib.2", "MeV.FibCollagen.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
+        "Imm.M0Like.0", "Imm.M0Like.1", "Imm.M0Like.2", "Imm.MHCII.0", "Imm.Interferon.0","Imm.DAM.0", "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0",
+        "Neu.CSFcN.0", "Neu.Epend.0", "MeV.Endothelial.0", "MeV.Endothelial.1","MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0", "MeV.SMC.0", "MeV.Pericytes.0",
+        "MeV.VLMC.0", "MeV.VLMC.1", "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3", "MeV.FibLaminin.0", 
+        "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2" ,"MeV.Fib.3", "MeV.FibProlif.0"
     ]
 
     # Check if all your custom labels exist in the matrix
@@ -729,7 +729,7 @@ def start() -> None:
         # plot_heatmaps_fixed_order(adata, obs_key="injury_day", category="injured_15")
         # plot_heatmaps_fixed_order(adata, obs_key="injury_day", category="injured_60")
         
-        remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
+        remove_clusters = ["MeV.EndoUnknow.4" ,"MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
         test_heatmap(adata)
         test_heatmap(adata, obs_key="injury_day", category="injured_15", remove_clusters=remove_clusters, vmin = 0, vmax = 100)
         test_heatmap(adata, obs_key="injury_day", category="injured_60", remove_clusters=remove_clusters, vmin = 0, vmax = 100)

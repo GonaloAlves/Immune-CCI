@@ -148,10 +148,10 @@ def build_cluster_interaction_matrix(filtered_dict):
 def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.DataFrame = None , vmin: int = None, vmax: int = None):
  
     custom_order = [
-        "Imm.M0Like.1", "Imm.M0Like.2", "Imm.DAM.0", "Imm.MHCII.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1", "Imm.Proliferative.0",
-        "Neu.CSFcN.0", "Neu.Epend.0", "MeV.Epithelial.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.SMC.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
-        "MeV.FibProlif.0", "MeV.Endothelial.3", "MeV.FibCollagen.2", "MeV.VLMC.1", "MeV.FibLaminin.0", "MeV.VLMC.0", "MeV.Fib.3",
-        "Imm.M0Like.0", "MeV.Endothelial.1", "MeV.Fib.2", "MeV.FibCollagen.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
+        "Imm.M0Like.0", "Imm.M0Like.1", "Imm.M0Like.2", "Imm.MHCII.0", "Imm.Interferon.0","Imm.DAM.0", "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0",
+        "Neu.CSFcN.0", "Neu.Epend.0", "MeV.Endothelial.0", "MeV.Endothelial.1","MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0", "MeV.SMC.0", "MeV.Pericytes.0",
+        "MeV.VLMC.0", "MeV.VLMC.1", "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3", "MeV.FibLaminin.0", 
+        "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2" ,"MeV.Fib.3", "MeV.FibProlif.0"
     ]
 
     # Check if all your custom labels exist in the matrix
@@ -535,9 +535,9 @@ if __name__ == "__main__":
     # plot_interaction_distribution(edge_list_15, condition_label="Injured 15 min")
     # plot_interaction_distribution(edge_list_60, condition_label="Injured 60 min")
 
-    remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
-    # test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 70)
-    # test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 70)
+    remove_clusters = ["MeV.EndoUnknow.4" ,"MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
+    test_heatmap(category="injured_15", matrix = matrix_15 , remove_clusters=remove_clusters, vmin = 0, vmax = 70)
+    test_heatmap(category="injured_60", matrix = matrix_60 , remove_clusters=remove_clusters, vmin = 0, vmax = 70)
 
     # export_detailed_excel_inverted(
     #     interaction_dict=filtered_15_dict,
@@ -576,19 +576,19 @@ if __name__ == "__main__":
     "Prolifs": ["Imm.Proliferative.0","MeV.FibProlif.0"]
     }
 
-    # Run it
-    reorder_edge_list_by_groups(
-        edge_list_df=edge_list_15,
-        group_dict=biological_groups,
-        output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_15.csv",
-        output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_15.csv"
-    )
-    reorder_edge_list_by_groups(
-        edge_list_df=edge_list_60,
-        group_dict=biological_groups,
-        output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_60.csv",
-        output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_60.csv"
-    )
+    # # Run it
+    # reorder_edge_list_by_groups(
+    #     edge_list_df=edge_list_15,
+    #     group_dict=biological_groups,
+    #     output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_15.csv",
+    #     output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_15.csv"
+    # )
+    # reorder_edge_list_by_groups(
+    #     edge_list_df=edge_list_60,
+    #     group_dict=biological_groups,
+    #     output_edge_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/grouped_edge_list_60.csv",
+    #     output_group_path="/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/group_annotation_60.csv"
+    # )
 
     # plot_interaction_distribution_matplotlib(edge_list_15, condition_label="Injured 15")
     # plot_interaction_distribution_matplotlib(edge_list_60, condition_label="Injured 60")
