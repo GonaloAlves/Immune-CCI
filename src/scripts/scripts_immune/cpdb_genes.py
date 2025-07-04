@@ -364,16 +364,31 @@ def check_cluster_order(adata, cluster_order):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
+    adataimm = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
+    adatamev = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
+    adataneu = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad")
 
-    filtered_adata = remove_NA_cat(adata)
+    filtered_adataimm = remove_NA_cat(adataimm)
+    filtered_adatamev = remove_NA_cat(adatamev)
+    filtered_adataneu = remove_NA_cat(adataneu)
 
     # Load canonical gene lists from a directory
-    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes"
-    genes = load_canonical_from_dir(canonical_genes_dir)
+    can_dir_imm_rec_15_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes"
 
-    # Create dendogram ot the top genes
-    dendogram_sc(filtered_adata)
+
+    canonical_genes_dir_mev = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal/MeV_genes"
+
+
+    canonical_genes_dir_neu = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron/Neu_genes"
+
+
+    
+    genesimm = load_canonical_from_dir(canonical_genes_dir_imm)
+    genesmev = load_canonical_from_dir(canonical_genes_dir_mev)
+    genesnew = load_canonical_from_dir(canonical_genes_dir_neu)
+
+    # # Create dendogram ot the top genes
+    # dendogram_sc(filtered_adata)
 
     # Define thresholds
     pts_thresholds = [0, 0.2, 0.3]
