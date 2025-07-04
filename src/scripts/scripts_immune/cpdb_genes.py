@@ -373,19 +373,79 @@ if __name__ == "__main__":
     filtered_adataneu = remove_NA_cat(adataneu)
 
     # Load canonical gene lists from a directory
-    can_dir_imm_rec_15_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes"
 
+    # IMM receive(receptors) genes
+    can_dir_imm_rec_15_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes/Immune_genes_rec/15days_all"
+    can_dir_imm_rec_15_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes/Immune_genes_rec/15days_seperate"
+    can_dir_imm_rec_60_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes/Immune_genes_rec/60days_all"
+    can_dir_imm_rec_60_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes/Immune_genes_rec/60days_seperate"
 
-    canonical_genes_dir_mev = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal/MeV_genes"
+    # IMM send(ligands) genes
+    can_dir_imm_send_15_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes/Immune_genes_send/15days_all"
+    can_dir_imm_send_15_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes/Immune_genes_send/15days_seperate"
+    can_dir_imm_send_60_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes/Immune_genes_send/60days_all"
+    can_dir_imm_send_60_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes/Immune_genes_send/60days_seperate"
 
+    ####
+    # MeV receive(receptors) genes
+    can_dir_mev_rec_15_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal/MeV_genes/MeV_genes_rec/15days_all"
+    can_dir_mev_rec_15_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal/MeV_genes/MeV_genes_rec/15days_seperate"
+    can_dir_mev_rec_60_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal/MeV_genes/MeV_genes_rec/60days_all"
+    can_dir_mev_rec_60_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal/MeV_genes/MeV_genes_rec/60days_seperate"
 
-    canonical_genes_dir_neu = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron/Neu_genes"
+    # MeV send(ligands) genes
+    can_dir_mev_send_15_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal/MeV_genes/MeV_genes_send/15days_all"
+    can_dir_mev_send_15_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal/MeV_genes/MeV_genes_send/15days_seperate"
+    can_dir_mev_send_60_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal/MeV_genes/MeV_genes_send/60days_all"
+    can_dir_mev_send_60_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal/MeV_genes/MeV_genes_send/60days_seperate"
 
+    ####
+    # Neu receive(receptors) genes
+    can_dir_neu_rec_15_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron/Neu_genes/Neu_genes_rec/15days_all"
+    can_dir_neu_rec_15_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron/Neu_genes/Neu_genes_rec/15days_seperate"
+    can_dir_neu_rec_60_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron/Neu_genes/Neu_genes_rec/60days_all"
+    can_dir_neu_rec_60_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron/Neu_genes/Neu_genes_rec/60days_seperate"
+
+    # Neu send(ligands) genes
+    can_dir_neu_send_15_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron/Neu_genes/Neu_genes_send/15days_all"
+    can_dir_neu_send_15_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron/Neu_genes/Neu_genes_send/15days_seperate"
+    can_dir_neu_send_60_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron/Neu_genes/Neu_genes_send/60days_all"
+    can_dir_neu_send_60_seperate = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Neuron/Neu_genes/Neu_genes_send/60days_seperate"
 
     
-    genesimm = load_canonical_from_dir(canonical_genes_dir_imm)
-    genesmev = load_canonical_from_dir(canonical_genes_dir_mev)
-    genesnew = load_canonical_from_dir(canonical_genes_dir_neu)
+    recgenesimm15all = load_canonical_from_dir(can_dir_imm_rec_15_all)
+    recgenesimm15sep = load_canonical_from_dir(can_dir_imm_rec_15_seperate)
+    recgenesimm60all = load_canonical_from_dir(can_dir_imm_rec_60_all)
+    recgenesimm60spe = load_canonical_from_dir(can_dir_imm_rec_60_seperate)
+
+    sengenesimm15all = load_canonical_from_dir(can_dir_imm_send_15_all)
+    sengenesimm15sep = load_canonical_from_dir(can_dir_imm_send_15_seperate)
+    sengenesimm60all = load_canonical_from_dir(can_dir_imm_send_60_all)
+    sengenesimm60spe = load_canonical_from_dir(can_dir_imm_send_60_seperate)
+
+
+    recgenesmev15all = load_canonical_from_dir(can_dir_mev_rec_15_all)
+    recgenesmev15sep = load_canonical_from_dir(can_dir_mev_rec_15_seperate)
+    recgenesmev60all = load_canonical_from_dir(can_dir_mev_rec_60_all)
+    recgenesmev60spe = load_canonical_from_dir(can_dir_mev_rec_60_seperate)
+
+    sengenesmev15all = load_canonical_from_dir(can_dir_mev_send_15_all)
+    sengenesmev15sep = load_canonical_from_dir(can_dir_mev_send_15_seperate)
+    sengenesmev60all = load_canonical_from_dir(can_dir_mev_send_60_all)
+    sengenesmev60spe = load_canonical_from_dir(can_dir_mev_send_60_seperate)
+
+
+    recgenesneu15all = load_canonical_from_dir(can_dir_neu_rec_15_all)
+    recgenesneu15sep = load_canonical_from_dir(can_dir_neu_rec_15_seperate)
+    recgenesneu60all = load_canonical_from_dir(can_dir_neu_rec_60_all)
+    recgenesneu60spe = load_canonical_from_dir(can_dir_neu_rec_60_seperate)
+
+    sengenesneu15all = load_canonical_from_dir(can_dir_neu_send_15_all)
+    sengenesneu15sep = load_canonical_from_dir(can_dir_neu_send_15_seperate)
+    sengenesneu60all = load_canonical_from_dir(can_dir_neu_send_60_all)
+    sengenesneu60spe = load_canonical_from_dir(can_dir_neu_send_60_seperate)
+
+
 
     # # Create dendogram ot the top genes
     # dendogram_sc(filtered_adata)
@@ -393,10 +453,71 @@ if __name__ == "__main__":
     # Define thresholds
     pts_thresholds = [0, 0.2, 0.3]
 
-    custom_cluster_order = [
+####
+
+    rec_custom_cluster_order_imm_15 = [
+    "Imm.M0Like.1", 
+    "Imm.Interferon.0",
+    "Imm.PVM.0"]
+
+    send_custom_cluster_order_imm_15 = [ 
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.PVM.0"]
+
+    rec_custom_cluster_order_imm_60 = [
+    "Imm.M0Like.1", 
+    "Imm.Interferon.0", 
+    "Imm.DAM.1"]
+
+    send_custom_cluster_order_imm_60 = [
     "Imm.M0Like.1", 
     "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.DAM.1", "Imm.PVM.0"]
+    "Imm.DAM.1"]
+
+####
+
+    rec_custom_cluster_order_mev_15 = [
+    "Imm.M0Like.1", 
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.PVM.0"]
+
+    send_custom_cluster_order_mev_15 = [
+    "Imm.M0Like.1", 
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.PVM.0"]
+
+    rec_custom_cluster_order_mev_60 = [
+    "Imm.M0Like.1", 
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.DAM.1"]
+
+    send_custom_cluster_order_mev_60 = [
+    "Imm.M0Like.1", 
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.DAM.1"]
+
+####
+
+    rec_custom_cluster_order_neu_15 = [
+    "Imm.M0Like.1", 
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.PVM.0"]
+
+    send_custom_cluster_order_neu_15 = [
+    "Imm.M0Like.1", 
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.PVM.0"]
+
+    rec_custom_cluster_order_neu_60 = [
+    "Imm.M0Like.1", 
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.DAM.1"]
+
+    send_custom_cluster_order_neu_60 = [
+    "Imm.M0Like.1", 
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.DAM.1"]
+
 
     # Check for mismatches before reordering
     check_cluster_order(filtered_adata, custom_cluster_order)
