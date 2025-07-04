@@ -477,46 +477,26 @@ if __name__ == "__main__":
 ####
 
     rec_custom_cluster_order_mev_15 = [
-    "Imm.M0Like.1", 
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.PVM.0"]
+    "MeV.Endothelial.1", 
+    "MeV.Endothelial.2"]
 
     send_custom_cluster_order_mev_15 = [
-    "Imm.M0Like.1", 
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.PVM.0"]
+    "MeV.Endothelial.2", "MeV.FibCollagen.1", 
+    "MeV.FibCollagen.2", "MeV.FibCollagen.3"]
 
-    rec_custom_cluster_order_mev_60 = [
-    "Imm.M0Like.1", 
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.DAM.1"]
+    rec_custom_cluster_order_mev_60 = []
 
     send_custom_cluster_order_mev_60 = [
-    "Imm.M0Like.1", 
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.DAM.1"]
+    "MeV.FibCollagen.1", 
+    "MeV.FibCollagen.3"]
 
 ####
 
-    rec_custom_cluster_order_neu_15 = [
-    "Imm.M0Like.1", 
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.PVM.0"]
+    custom_cluster_order_neu = [
+    "Neu.Epend.0"]
 
-    send_custom_cluster_order_neu_15 = [
-    "Imm.M0Like.1", 
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.PVM.0"]
+    ##rever os epend genes
 
-    rec_custom_cluster_order_neu_60 = [
-    "Imm.M0Like.1", 
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.DAM.1"]
-
-    send_custom_cluster_order_neu_60 = [
-    "Imm.M0Like.1", 
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.DAM.1"]
 
 
     # Check for mismatches before reordering
