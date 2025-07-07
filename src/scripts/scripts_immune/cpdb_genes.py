@@ -136,58 +136,16 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
             return_fig=True
         )
 
-        # (2) Scaled expression (Greys) with dendrogram
-        dotplot_scaled_dendro = sc.pl.dotplot(
-            adata,
-            var_names=top_genes_names,
-            groupby='leiden_fusion',
-            cmap='Greys',
-            colorbar_title='Scaled expression',
-            use_raw=False,
-            standard_scale='var',
-            dendrogram='dendrogram_leiden_fusion',
-            return_fig=True
-        )
-
-        # (3) Raw expression (Reds) without dendrogram
-        dotplot_normal_no_dendro = sc.pl.dotplot(
-            adata,
-            var_names=top_genes_names,
-            groupby='leiden_fusion',
-            cmap='Reds',
-            use_raw=False,
-            dendrogram=False,
-            return_fig=True
-        )
-
-        # (4) Raw expression (Reds) with dendrogram
-        dotplot_normal_dendro = sc.pl.dotplot(
-            adata,
-            var_names=top_genes_names,
-            groupby='leiden_fusion',
-            cmap='Reds',
-            use_raw=False,
-            dendrogram='dendrogram_leiden_fusion',
-            return_fig=True
-        )
-
         # Save dotplots with appropriate filenames
         output_scaled_no_dendro = os.path.join(output_dir, f"dotplot_scaled_no_dendro_{threshold}.png")
-        output_scaled_dendro = os.path.join(output_dir, f"dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"dotplot_normal_no_dendro_{threshold}.png")
-        output_normal_dendro = os.path.join(output_dir, f"dotplot_normal_dendro_{threshold}.png")
+        
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
-        dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
-        dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
-        dotplot_normal_dendro.savefig(output_normal_dendro, bbox_inches="tight")
+        
 
         plt.close()
         print(f"Saved dotplots for threshold {threshold}:")
         print(f"  - {output_scaled_no_dendro}")
-        print(f"  - {output_scaled_dendro}")
-        print(f"  - {output_normal_no_dendro}")
-        print(f"  - {output_normal_dendro}")
 
 
 def extract_dge_data(adata):
@@ -270,22 +228,6 @@ def compare_canonical(genes, cluster_dfs):
     return new_dic
 
 
-def dendogram_sc(adata):
-    
-    """
-    
-    """
-    # Compute the dendrogram
-    print(f"Computing dendrogram for leiden_fusion...")
-    sc.tl.dendrogram(
-        adata,
-        groupby='leiden_fusion',
-        use_rep= 'X_pca',
-        cor_method= 'spearman',
-        linkage_method='ward',
-        use_raw=False
-    )
-
 
 def top_gene_names(filtered_genes, original_gene_dict):
     """
@@ -349,13 +291,6 @@ def check_cluster_order(adata, cluster_order):
 
     if not missing_in_data and not missing_in_order:
         print("\n All categories match! Reordering should work.")
-
-
-
-
-
-
-
 
 
 
@@ -492,12 +427,72 @@ if __name__ == "__main__":
 
 ####
 
-    custom_cluster_order_neu = [
+    rec_custom_cluster_order_neu_15 = [
     "Neu.Epend.0"]
 
-    ##rever os epend genes
+    rec_custom_cluster_order_neu_60 = [
+    "Neu.Epend.0"]
+
+#### Customs orders
+
+    send_collagen_order_15 = [
+        "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3"
+    ]
+
+    send_collagen_order_60 = [
+        "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3"
+    ]
 
 
+    #### Name of the list of genes txts
+
+    immune_genes_rec_15_all = ["rec|Interferon", "rec|M0.1", "rec|PVM"]
+
+    immune_genes_rec_15_seperate = ["FibColl.2|Interferon", "FibColl.2|M0.1", "FibColl.3|PVM"]
+    
+    immune_genes_rec_60_all = ["rec|DAM.1", "rec|Intreferon", "rec|M0.1"]
+
+    immune_genes_rec_60_seperate = ["FibColl.3|DAM.1", "FibColl.3|Intreferon", "FibColl.3|M0.1"]
+##
+    immune_genes_send_15_all = ["DAM.0|send", "Intreferon|send", "PVM|send"]
+
+    immune_genes_send_15_seperate = ["DAM.0|Endo.2", "DAM.0|Epend", "Intreferon|Endo.1", "PVM|Epend"]
+    
+    immune_genes_send_60_all = ["DAM|send", "Intreferon|send", "M0.1|send"]
+
+    immune_genes_send_60_seperate = ["DAM.0|Epend", "DAM.1|Epend", "Intreferon|Epend", "M0.1|Epend"]
+###
+    meningeal_genes_rec_15_all = ["rec|Endo.1", "rec|Endo.2"]
+
+    meningeal_genes_rec_15_seperate = ["DAM.0|Endo.2", "Interferon|Endo.1"]
+    
+    meningeal_genes_rec_60_all = []
+
+    meningeal_genes_rec_60_seperate = []
+##
+    meningeal_genes_send_15_all = ["Endo.2|send", "FibColl.1|send", "FibColl.2|send", "FibColl.3|send"]
+
+    meningeal_genes_send_15_seperate = ["FibColl.3|send", "FibColl.1|Endo.0", "FibColl.1|Pericytes", "FibColl.2|Interferon", "FibColl.2|M0.1", "FibColl.3|Endo.2", "FibColl.3|PVM"]
+    
+    meningeal_genes_send_60_all = ["FibColl.1|send", "FibColl.3|send"]
+
+    meningeal_genes_send_60_seperate = ["FibColl.1|Pericytes", "FibColl.3|DAM.1", "FibColl.3|Endo.0", "FibColl.3|Epend", "FibColl.3|Interferon", "FibColl.3|M0.1"]
+###
+    neu_genes_rec_15_all = ["rec|Epend"]
+
+    neu_genes_rec_15_seperate = ["DAM.0|Epend", "PVM|Epend"]
+    
+    neu_genes_rec_60_all = ["rec|Epend"]
+
+    neu_genes_rec_60_seperate = ["DAM.0|Epend", "DAM.1|Epend", "FibColl.3|Epend", "Interferon|Epend", "M0.1|Epend"]
+##
+    neu_genes_send_15_all = []
+
+    neu_genes_send_15_seperate = []
+    
+    neu_genes_send_60_all = []
+
+    neu_genes_send_60_seperate = []
 
     # Check for mismatches before reordering
     check_cluster_order(filtered_adata, custom_cluster_order)
