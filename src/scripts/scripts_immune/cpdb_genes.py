@@ -115,7 +115,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Example user-defined gene group order
-        user_gene_group_order = ["Homeostatic", "MHCII", "Interferon", "DAM", "PVM", "Proliferative"]
+        user_gene_group_order = []#use the order that is down
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -493,6 +493,11 @@ if __name__ == "__main__":
     neu_genes_send_60_all = []
 
     neu_genes_send_60_seperate = []
+
+    output_dir_immune = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_immune/cpdb_genes"
+    output_dir_meningeal = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_meningeal/cpdb_genes"
+    output_dir_neu = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_neuron/cpdb_genes"
+
 
     # Check for mismatches before reordering
     check_cluster_order(filtered_adata, custom_cluster_order)
