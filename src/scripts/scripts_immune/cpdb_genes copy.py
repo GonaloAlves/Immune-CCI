@@ -24,30 +24,13 @@ def load_data(file_path):
     return sc.read_h5ad(file_path)
 
 
-def imm_remove_NA_cat(adata: sc.AnnData):
+def remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
     
     mask_NA = adata.obs['leiden_fusion'] != 'Imm.NA' #creates mask for remove NA cells 
     adata2 = adata[mask_NA] #apply mask
     return adata2
-
-def mev_remove_NA_cat(adata: sc.AnnData):
-    
-    print("Removing NA cells category")
-    
-    mask_NA = adata.obs['leiden_fusion'] != 'MeV.NA' #creates mask for remove NA cells 
-    adata2 = adata[mask_NA] #apply mask
-    return adata2
-
-def neu_remove_NA_cat(adata: sc.AnnData):
-    
-    print("Removing NA cells category")
-    
-    mask_NA = adata.obs['leiden_fusion'] != 'Neu.NA' #creates mask for remove NA cells 
-    adata2 = adata[mask_NA] #apply mask
-    return adata2
-
 
 # Step 4: Remove any cluster
 def remove_clusters_by_suffix(cluster_dfs, suffix):
@@ -94,7 +77,7 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir, user_order, remove_clusters):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -112,17 +95,6 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         
     # Ensure leiden_fusion is categorical and reorder it
     #adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
-    #adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
-
-    # Ensure leiden_fusion is categorical
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
-
-    # Remove clusters NOT in cluster_order
-    mask_keep = adata.obs['leiden_fusion'].isin(cluster_order)
-    adata = adata[mask_keep].copy()
-
-    # Remove unused categories, then reorder
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.remove_unused_categories()
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
 
     for threshold in thresholds:
@@ -144,7 +116,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Example user-defined gene group order
-        user_gene_group_order = user_order#use the order that is down
+        user_gene_group_order = []#use the order that is down
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -168,8 +140,10 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         # Save dotplots with appropriate filenames
         output_scaled_no_dendro = os.path.join(output_dir, f"dotplot_scaled_no_dendro_{threshold}.png")
         
+
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
         
+
         plt.close()
         print(f"Saved dotplots for threshold {threshold}:")
         print(f"  - {output_scaled_no_dendro}")
@@ -282,21 +256,182 @@ def top_gene_names(filtered_genes, original_gene_dict):
 
     return top_genes_names
 
+def check_cluster_order(adata, cluster_order):
+    """
+    Check for mismatches between existing clusters and the user-defined cluster order.
+
+    Parameters:
+    adata (AnnData): The AnnData object.
+    cluster_order (list): The user-defined list of clusters to reorder.
+
+    Returns:
+    None
+    """
+    # Extract existing categories in 'leiden_fusion'
+    existing_categories = list(adata.obs['leiden_fusion'].cat.categories)
+
+    print("\n--- Existing Categories in 'leiden_fusion' ---")
+    print(existing_categories)
+
+    print("\n--- User-Defined Cluster Order ---")
+    print(cluster_order)
+
+    # Check for clusters in custom order that don't exist in the data
+    missing_in_data = [cluster for cluster in cluster_order if cluster not in existing_categories]
+    
+    # Check for clusters in the data that aren't in the custom order
+    missing_in_order = [cluster for cluster in existing_categories if cluster not in cluster_order]
+
+    if missing_in_data:
+        print("\n Clusters in custom order but NOT in 'leiden_fusion':")
+        print(missing_in_data)
+    
+    if missing_in_order:
+        print("\n Clusters in 'leiden_fusion' but NOT in custom order:")
+        print(missing_in_order)
+
+    if not missing_in_data and not missing_in_order:
+        print("\n All categories match! Reordering should work.")
+
+
+
+
 
 # Main execution block
 if __name__ == "__main__":
     # Load data
     adataimm = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
-    #adatamev = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
-    #adataneu = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad")
+    adatamev = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
+    adataneu = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad")
 
 
     
-    filtered_adataimm = imm_remove_NA_cat(adataimm)
-    # filtered_adatamev = mev_remove_NA_cat(adatamev)
-    # filtered_adataneu = neu_remove_NA_cat(adataneu)
+    filtered_adataimm = remove_NA_cat(adataimm)
+    filtered_adatamev = remove_NA_cat(adatamev)
+    filtered_adataneu = remove_NA_cat(adataneu)
+
+    "canonical/canonical_immune/cpdb_genes"
+    "canonical/canonical_meningeal/cpdb_genes"
+    "canonical/canonical_neuron/cpdb_genes"
+    
+    # Base directory to save dotplots
+    base_output_dir = "/home/makowlg/Documents/Immune-CCI/dotplots_output"
+
+    # Thresholds you want to try
+    thresholds = [0.1, 0.2, 0.3]  # or whatever you use
+
+    # AnnData objects by tissue
+    adata_by_tissue = {
+        "Immune": filtered_adataimm,
+        "MeV": filtered_adatamev,
+        "Neu": filtered_adataneu
+    }
+
 
     # Load canonical gene lists from a directory
+
+    cases = []
+
+    # You have these options:
+    tissues = ["Immune", "MeV", "Neu"]
+    directions = ["send", "rec"]
+    days = ["15", "60"]
+    all_or_sep = ["all", "seperate"]
+
+    # Build each case dynamically
+    for tissue in tissues:
+        for direction in directions:
+            for day in days:
+                for mode in all_or_sep:
+                    canonical_dir = f"/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/{'Meningeal' if tissue=='MeV' else 'Neuron' if tissue=='Neu' else 'Immune'}/{tissue}_genes/{tissue}_genes_{direction}/{day}days_{mode}"
+                    
+                    case = {
+                        "tissue": tissue,
+                        "direction": direction,
+                        "day": day,
+                        "mode": mode,
+                        "canonical_dir": canonical_dir,
+                        "adata": adata_by_tissue[tissue]
+                    }
+                    cases.append(case)
+
+
+    for case in cases:
+        print(f"\n=== Processing case: {case['tissue']} | {case['direction']} | {case['day']}days | {case['mode']} ===")
+        
+        # Load canonical genes dynamically
+        canonical_genes = load_canonical_from_dir(case["canonical_dir"])
+
+        # Define output dir
+        output_dir = os.path.join(
+            base_output_dir,
+            case["tissue"],
+            case["direction"],
+            f"{case['day']}days",
+            case["mode"]
+        )
+        
+        # Optionally create a custom cluster order per tissue
+        # Here just use the default categories
+        cluster_order = list(case["adata"].obs["leiden_fusion"].cat.categories)
+        
+        # Check cluster order (optional, good for debugging)
+        check_cluster_order(case["adata"], cluster_order)
+        
+        # Run your dotplot function
+        create_dotplots_with_thresholds(
+            adata=case["adata"],
+            genes=canonical_genes,
+            thresholds=thresholds,
+            cluster_order=cluster_order,
+            output_dir=output_dir
+        )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # IMM receive(receptors) genes
     can_dir_imm_rec_15_all = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Immune/Immune_genes/Immune_genes_rec/15days_all"
@@ -379,60 +514,47 @@ if __name__ == "__main__":
 
 ####
 
-    imm_custom_cluster_order = [
-    "Imm.M0Like.0", "Imm.M0Like.1", 
-    "Imm.M0Like.2", "Imm.MHCII.0" ,
-    "Imm.Interferon.0", "Imm.DAM.0", 
-    "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0"]
-
-    mev_custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
-                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
-                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
-    
-    neu_custom_cluster_order = ["Neu.CSFcN.0", "Neu.Epend.0"]
-    
-
-    rec_cluster_remove_imm_15 = [
+    rec_custom_cluster_order_imm_15 = [
     "Imm.M0Like.1", 
     "Imm.Interferon.0",
     "Imm.PVM.0"]
 
-    send_cluster_remove_imm_15 = [ 
+    send_custom_cluster_order_imm_15 = [ 
     "Imm.Interferon.0", "Imm.DAM.0", 
     "Imm.PVM.0"]
 
-    rec_cluster_remove_imm_60 = [
+    rec_custom_cluster_order_imm_60 = [
     "Imm.M0Like.1", 
     "Imm.Interferon.0", 
     "Imm.DAM.1"]
 
-    send_cluster_remove_imm_60 = [
+    send_custom_cluster_order_imm_60 = [
     "Imm.M0Like.1", 
     "Imm.Interferon.0", "Imm.DAM.0", 
     "Imm.DAM.1"]
 
 ####
 
-    rec_cluster_remove_mev_15 = [
+    rec_custom_cluster_order_mev_15 = [
     "MeV.Endothelial.1", 
     "MeV.Endothelial.2"]
 
-    send_cluster_remove_mev_15 = [
+    send_custom_cluster_order_mev_15 = [
     "MeV.Endothelial.2", "MeV.FibCollagen.1", 
     "MeV.FibCollagen.2", "MeV.FibCollagen.3"]
 
-    rec_cluster_remove_mev_60 = []
+    rec_custom_cluster_order_mev_60 = []
 
-    send_cluster_remove_mev_60 = [
+    send_custom_cluster_order_mev_60 = [
     "MeV.FibCollagen.1", 
     "MeV.FibCollagen.3"]
 
 ####
 
-    rec_cluster_remove_neu_15 = [
+    rec_custom_cluster_order_neu_15 = [
     "Neu.Epend.0"]
 
-    rec_cluster_remove_neu_60 = [
+    rec_custom_cluster_order_neu_60 = [
     "Neu.Epend.0"]
 
 #### Customs orders
@@ -501,5 +623,10 @@ if __name__ == "__main__":
     output_dir_neu = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_neuron/cpdb_genes"
 
 
-    # Case1 (imm_rec_15_all)
-    create_dotplots_with_thresholds(filtered_adataimm, immune_genes_rec_15_all, pts_thresholds, imm_custom_cluster_order, output_dir_immune, rec_cluster_remove_imm_15)
+
+    # Check for mismatches before reordering
+    check_cluster_order(filtered_adata, custom_cluster_order)
+    
+
+    # Generate dotplots for each threshold
+    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order)
