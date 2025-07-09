@@ -73,7 +73,7 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_order, order_txt):
+def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_order, order_txt, name):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -89,6 +89,8 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_o
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         
+    adata = imm_keep_only_selected_clusters(adata=adata, clusters_to_keep=user_order)
+
     # Ensure leiden_fusion is categorical and reorder it
     #adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(user_order, ordered=True)
@@ -133,10 +135,24 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_o
             return_fig=True
         )
 
+        # (3) Raw expression (Reds) without dendrogram
+        dotplot_normal_no_dendro = sc.pl.dotplot(
+            adata,
+            var_names=top_genes_names,
+            groupby='leiden_fusion',
+            cmap='Reds',
+            use_raw=False,
+            dendrogram=False,
+            return_fig=True
+        )
+
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"dotplot_scaled_no_dendro_{threshold}.png")
-        
+        output_scaled_no_dendro = os.path.join(output_dir, f"{name}_dotplot_scaled_{threshold}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"{name}_dotplot_normal_{threshold}.png")
+
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
+        dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
+
         
         plt.close()
         print(f"Saved dotplots for threshold {threshold}:")
@@ -360,7 +376,7 @@ if __name__ == "__main__":
     # dendogram_sc(filtered_adata)
 
     # Define thresholds
-    pts_thresholds = [0, 0.2, 0.3]
+    pts_thresholds = [0, 0.2]
 
 ####
 
@@ -449,9 +465,9 @@ if __name__ == "__main__":
 
     immune_genes_send_60_seperate = ["DAM.0|Epend", "DAM.1|Epend", "Intreferon|Epend", "M0.1|Epend"]
 ###
-    meningeal_genes_rec_15_all = ["rec|Endo.1", "rec|Endo.2"]
+    meningeal_genes_rec_15_all = ["rec|Endo.0", "rec|Endo.1", "rec|Endo.2"]
 
-    meningeal_genes_rec_15_seperate = ["DAM.0|Endo.2", "Interferon|Endo.1"]
+    meningeal_genes_rec_15_seperate = ["FibColl.3|Endo.2", "FibColl.3|Endo.0", "DAM.0|Endo.2", "Interferon|Endo.1"]
     
     meningeal_genes_rec_60_all = []
 
@@ -459,7 +475,7 @@ if __name__ == "__main__":
 ##
     meningeal_genes_send_15_all = ["Endo.2|send", "FibColl.1|send", "FibColl.2|send", "FibColl.3|send"]
 
-    meningeal_genes_send_15_seperate = ["FibColl.3|send", "FibColl.1|Endo.0", "FibColl.1|Pericytes", "FibColl.2|Interferon", "FibColl.2|M0.1", "FibColl.3|Endo.2", "FibColl.3|PVM"]
+    meningeal_genes_send_15_seperate = ["FibColl.1|Endo.0", "FibColl.1|Pericytes", "FibColl.2|Interferon", "FibColl.2|M0.1", "FibColl.3|Endo.2", "FibColl.3|PVM"]
     
     meningeal_genes_send_60_all = ["FibColl.1|send", "FibColl.3|send"]
 
@@ -471,7 +487,7 @@ if __name__ == "__main__":
     
     neu_genes_rec_60_all = ["rec|Epend"]
 
-    neu_genes_rec_60_seperate = ["DAM.0|Epend", "DAM.1|Epend", "FibColl.3|Epend", "Interferon|Epend", "M0.1|Epend"]
+    neu_genes_rec_60_seperate = ("DAM.0|Epend", "DAM.1|Epend", "FibColl.3|Epend", "Interferon|Epend", "M0.1|Epend")
 ##
     neu_genes_send_15_all = []
 
@@ -485,15 +501,43 @@ if __name__ == "__main__":
     output_dir_meningeal = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_meningeal/cpdb_genes"
     output_dir_neu = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_neuron/cpdb_genes"
 
+    name1= "imm_rec_15_all"
+    name2= "imm_rec_15_sep"
+    name3= "imm_rec_60_all"
+    name4= "imm_rec_60_sep"
+    name5= "imm_send_15_all"
+    name6= "imm_send_15_sep"
+    name7= "imm_send_60_all"
+    name8= "imm_send_60_sep"
+    
+    name9= "mev_rec_15_all"
+    name10= "mev_rec_15_sep"
+    name11= "mev_rec_60_all"
+    name12= "mev_rec_60_sep"
+    name13= "mev_send_15_all"
+    name14= "mev_send_15_sep"
+    name15= "mev_send_60_all"
+    name16= "mev_send_60_sep"
 
-    filtered_adataimm2 = imm_keep_only_selected_clusters(adata=filtered_adataimm, clusters_to_keep=rec_cluster_remove_imm_15)
+    name17= "neu_rec_15_all"
+    name18= "neu_rec_15_sep"
+    name19= "neu_rec_60_all"
+    name20= "neu_rec_60_sep"
+    name21= "neu_send_15_all"
+    name22= "neu_send_15_sep"
+    name23= "neu_send_60_all"
+    name24= "neu_send_60_sep"
 
-    print(filtered_adataimm2.obs['leiden_fusion'])
+
+   
+
+    #print(filtered_adataimm2.obs['leiden_fusion'])
 
     # Case1 (imm_rec_15_all)
-    create_dotplots_with_thresholds(adata=filtered_adataimm2, 
+    create_dotplots_with_thresholds(adata=filtered_adataimm, 
                                     genes=recgenesimm15all, 
                                     thresholds=pts_thresholds, 
                                     user_order=rec_cluster_remove_imm_15, 
                                     output_dir=output_dir_immune,
-                                    order_txt=immune_genes_rec_15_all)
+                                    order_txt=immune_genes_rec_15_all,
+                                    name=name1)
