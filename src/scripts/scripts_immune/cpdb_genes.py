@@ -49,27 +49,6 @@ def neu_remove_NA_cat(adata: sc.AnnData):
     return adata2
 
 
-# Step 4: Remove any cluster
-def remove_clusters_by_suffix(cluster_dfs, suffix):
-    """
-    Remove clusters whose names end with a specific suffix corresponding to the resolution number, or if the case is the NA cluster, all are integrated in the dictionary with every cluster.
-
-    Parameters:
-    cluster_dfs (dict): Dictionary of clusters and their data.
-    suffix (str): The suffix that determines which clusters to remove (e.g., 'NA', '8.0.2').
-
-    Returns:
-    dict: Updated dictionary with specified clusters removed.
-    """
-    print(f"\nRemoving {suffix} clusters")
-    clusters_to_delete = [cluster for cluster in cluster_dfs if cluster.endswith(suffix)]
-
-    for cluster in clusters_to_delete: # Searches the specific cluster in the dic
-        del cluster_dfs[cluster]
-
-    return cluster_dfs
-
-
 # Load canonical genes
 def load_canonical_from_dir(directory):
     """
@@ -94,7 +73,7 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir, user_order, remove_clusters):
+def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_order, order_txt):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -112,18 +91,8 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         
     # Ensure leiden_fusion is categorical and reorder it
     #adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
-    #adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(user_order, ordered=True)
 
-    # Ensure leiden_fusion is categorical
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
-
-    # Remove clusters NOT in cluster_order
-    mask_keep = adata.obs['leiden_fusion'].isin(cluster_order)
-    adata = adata[mask_keep].copy()
-
-    # Remove unused categories, then reorder
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.remove_unused_categories()
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
 
     for threshold in thresholds:
         print(f"\nProcessing pts threshold: {threshold}")
@@ -134,9 +103,6 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         # Create cluster DataFrames with the current threshold
         cluster_dfs = create_cluster_dfs(gene_names, pts, pts_threshold=threshold)
 
-        # Remove NA clusters
-        cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
-
         # Compare canonical genes with cluster-specific genes
         filtered_genes = compare_canonical(genes, cluster_dfs)
 
@@ -144,10 +110,12 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Example user-defined gene group order
-        user_gene_group_order = user_order#use the order that is down
+        user_gene_group_order = order_txt#use the order that is down
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
+
+        print(top_genes_names)
 
         # Generate four different dotplots per threshold
         print(f"Generating dotplots for pts threshold: {threshold}")
@@ -282,6 +250,23 @@ def top_gene_names(filtered_genes, original_gene_dict):
 
     return top_genes_names
 
+def imm_keep_only_selected_clusters(adata: sc.AnnData, clusters_to_keep: list):
+    """
+    Keep only cells whose 'leiden_fusion' is in the clusters_to_keep list.
+
+    Parameters:
+    adata (AnnData): The AnnData object.
+    clusters_to_keep (list): List of cluster names to keep.
+
+    Returns:
+    AnnData: Filtered AnnData object containing only the selected clusters.
+    """
+    print("Keeping only selected clusters")
+    
+    mask = adata.obs['leiden_fusion'].isin(clusters_to_keep)
+    filtered_adata = adata[mask].copy()
+    
+    return filtered_adata
 
 # Main execution block
 if __name__ == "__main__":
@@ -501,5 +486,14 @@ if __name__ == "__main__":
     output_dir_neu = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_neuron/cpdb_genes"
 
 
+    filtered_adataimm2 = imm_keep_only_selected_clusters(adata=filtered_adataimm, clusters_to_keep=rec_cluster_remove_imm_15)
+
+    print(filtered_adataimm2.obs['leiden_fusion'])
+
     # Case1 (imm_rec_15_all)
-    create_dotplots_with_thresholds(filtered_adataimm, immune_genes_rec_15_all, pts_thresholds, imm_custom_cluster_order, output_dir_immune, rec_cluster_remove_imm_15)
+    create_dotplots_with_thresholds(adata=filtered_adataimm2, 
+                                    genes=recgenesimm15all, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=rec_cluster_remove_imm_15, 
+                                    output_dir=output_dir_immune,
+                                    order_txt=immune_genes_rec_15_all)
