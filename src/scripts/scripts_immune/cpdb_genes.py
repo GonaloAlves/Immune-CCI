@@ -95,6 +95,10 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_o
     #adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(user_order, ordered=True)
 
+    # ✅ Format gene names right away
+    genes = format_gene_names(genes)
+    
+    print(genes)
 
     for threshold in thresholds:
         print(f"\nProcessing pts threshold: {threshold}")
@@ -116,8 +120,6 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_o
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
-
-        print(top_genes_names)
 
         # Generate four different dotplots per threshold
         print(f"Generating dotplots for pts threshold: {threshold}")
@@ -283,6 +285,22 @@ def imm_keep_only_selected_clusters(adata: sc.AnnData, clusters_to_keep: list):
     filtered_adata = adata[mask].copy()
     
     return filtered_adata
+
+def format_gene_names(genes_dict):
+    """
+    Format all gene names in the given dictionary so only the first letter is uppercase, rest lowercase.
+    
+    Parameters:
+    genes_dict (dict): Dictionary like {'group1': ['CADM1', 'IL6R', ...], ...}
+    
+    Returns:
+    dict: Same structure, but with gene names formatted.
+    """
+    formatted_genes = {}
+    for group, gene_list in genes_dict.items():
+        formatted_genes[group] = [gene.capitalize() for gene in gene_list]
+    return formatted_genes
+
 
 # Main execution block
 if __name__ == "__main__":
@@ -541,3 +559,31 @@ if __name__ == "__main__":
                                     output_dir=output_dir_immune,
                                     order_txt=immune_genes_rec_15_all,
                                     name=name1)
+    
+    # Case2 (imm_rec_15_sep)
+    create_dotplots_with_thresholds(adata=filtered_adataimm, 
+                                    genes=recgenesimm15sep, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=rec_cluster_remove_imm_15, 
+                                    output_dir=output_dir_immune,
+                                    order_txt=immune_genes_rec_15_seperate,
+                                    name=name2)
+    
+    # Case3 (imm_rec_60_all)
+    create_dotplots_with_thresholds(adata=filtered_adataimm, 
+                                    genes=recgenesimm60all, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=rec_cluster_remove_imm_60, 
+                                    output_dir=output_dir_immune,
+                                    order_txt=immune_genes_rec_60_all,
+                                    name=name3)
+    
+    # Case3 (imm_rec_60_sep)
+    create_dotplots_with_thresholds(adata=filtered_adataimm, 
+                                    genes=recgenesimm60spe, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=rec_cluster_remove_imm_60, 
+                                    output_dir=output_dir_immune,
+                                    order_txt=immune_genes_rec_60_seperate,
+                                    name=name4)
+
