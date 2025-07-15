@@ -447,13 +447,14 @@ if __name__ == "__main__":
     rec_cluster_remove_mev_15 = [
     "MeV.Endothelial.0",
     "MeV.Endothelial.1", 
-    "MeV.Endothelial.2"]
+    "MeV.Endothelial.2",
+    "MeV.Pericytes.0"]
 
     send_cluster_remove_mev_15 = [
     "MeV.Endothelial.2", "MeV.FibCollagen.1", 
     "MeV.FibCollagen.2", "MeV.FibCollagen.3"]
 
-    rec_cluster_remove_mev_60 = []
+    rec_cluster_remove_mev_60 = ["MeV.Endothelial.0", "MeV.Pericytes.0"]
 
     send_cluster_remove_mev_60 = [
     "MeV.FibCollagen.1", 
@@ -504,13 +505,13 @@ if __name__ == "__main__":
 
     immune_genes_send_60_seperate = ["DAM.0|Epend", "DAM.1|Epend", "Intreferon|Epend", "M0.1|Epend"]
 ###
-    meningeal_genes_rec_15_all = ["receptors|Endo.0", "receptors|Endo.1", "receptors|Endo.2"]
+    meningeal_genes_rec_15_all = ["receptors|Endo.0", "receptors|Endo.1", "receptors|Endo.2", "receptors|Pericytes"]
 
-    meningeal_genes_rec_15_seperate = ["FibColl.3|Endo.2", "FibColl.3|Endo.0", "DAM.0|Endo.2", "Interferon|Endo.1"]
+    meningeal_genes_rec_15_seperate = ["FibColl.3|Endo.2", "FibColl.1|Endo.0", "DAM.0|Endo.2", "Interferon|Endo.1", "FibColl.1|Pericytes"]
     
-    meningeal_genes_rec_60_all_none = []
+    meningeal_genes_rec_60_all_none = ["receptors|Endo.0", "receptors|Pericytes"]
 
-    meningeal_genes_rec_60_seperate_none = []
+    meningeal_genes_rec_60_seperate_none = ["FibColl.3|Endo.0", "FibColl.1|Pericytes"]
 ##
     meningeal_genes_send_15_all = ["Endo.2|ligands", "FibColl.1|ligands", "FibColl.2|ligands", "FibColl.3|ligands"]
 
@@ -518,7 +519,7 @@ if __name__ == "__main__":
     
     meningeal_genes_send_60_all = ["FibColl.1|ligands", "FibColl.3|ligands"]
 
-    meningeal_genes_send_60_seperate = ["FibColl.1|Pericytes", "FibColl.3|DAM.1", "FibColl.3|Endo.0", "FibColl.3|Epend", "FibColl.3|Interferon", "FibColl.3|M0.1"]
+    meningeal_genes_send_60_seperate = ["FibColl.1|Pericytes", "FibColl.3|DAM.1", "FibColl.1|Endo.0", "FibColl.3|Epend", "FibColl.3|Interferon", "FibColl.3|M0.1"]
 ###
     neu_genes_rec_15_all = ["receptors|Epend"]
 
