@@ -1,5 +1,6 @@
 # Import necessary packages
 import os
+import gc
 import shutil
 import scanpy as sc
 import pandas as pd
@@ -157,6 +158,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_o
 
         
         plt.close()
+        gc.collect()
         print(f"Saved dotplots for threshold {threshold}:")
         print(f"  - {output_scaled_no_dendro}")
 
@@ -509,9 +511,9 @@ if __name__ == "__main__":
 
     meningeal_genes_rec_15_seperate = ["FibColl.3|Endo.2", "FibColl.1|Endo.0", "DAM.0|Endo.2", "Interferon|Endo.1", "FibColl.1|Pericytes"]
     
-    meningeal_genes_rec_60_all_none = ["receptors|Endo.0", "receptors|Pericytes"]
+    meningeal_genes_rec_60_all = ["receptors|Endo.0", "receptors|Pericytes"]
 
-    meningeal_genes_rec_60_seperate_none = ["FibColl.3|Endo.0", "FibColl.1|Pericytes"]
+    meningeal_genes_rec_60_seperate = ["FibColl.3|Endo.0", "FibColl.1|Pericytes"]
 ##
     meningeal_genes_send_15_all = ["Endo.2|ligands", "FibColl.1|ligands", "FibColl.2|ligands", "FibColl.3|ligands"]
 
@@ -576,6 +578,7 @@ if __name__ == "__main__":
     name24= "neu_send_60_sep"
 
     name25= "custom_colls"
+    name26
 
     name999= "full"
 
@@ -687,17 +690,23 @@ if __name__ == "__main__":
     
     # Case11 (mev_rec_60_all)
     print(name11)
-    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
-    #                                 genes=recgenesmev60all, 
-    #                                 thresholds=pts_thresholds, 
-    #                                 user_order=rec_cluster_remove_mev_60, 
-    #                                 output_dir=output_dir_meningeal,
-    #                                 order_txt=meningeal_genes_rec_60_all,
-    #                                 name=name11)
+    create_dotplots_with_thresholds(adata=filtered_adatamev, 
+                                    genes=recgenesmev60all, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=rec_cluster_remove_mev_60, 
+                                    output_dir=output_dir_meningeal,
+                                    order_txt=meningeal_genes_rec_60_all,
+                                    name=name11)
     
     # Case12 (mev_rec_60_sep)
     print(name12)
-    #  
+    create_dotplots_with_thresholds(adata=filtered_adatamev, 
+                                    genes=recgenesmev60all, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=rec_cluster_remove_mev_60, 
+                                    output_dir=output_dir_meningeal,
+                                    order_txt=meningeal_genes_rec_60_seperate,
+                                    name=name12)
 
 
     # Case13 (mev_send_15_all)
@@ -948,17 +957,25 @@ if __name__ == "__main__":
     
     # Case11 (mev_rec_60_all)
     print(name11)
-    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
-    #                                 genes=recgenesmev60all, 
-    #                                 thresholds=pts_thresholds, 
-    #                                 user_order=rec_cluster_remove_mev_60, 
-    #                                 output_dir=output_dir_meningeal,
-    #                                 order_txt=meningeal_genes_rec_60_all,
-    #                                 name=name11)
+    create_dotplots_with_thresholds(adata=filtered_adatamev, 
+                                    genes=recgenesmev60all, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=mev_cluster_order_sigs, 
+                                    output_dir=output_dir_meningeal,
+                                    order_txt=meningeal_genes_rec_60_all,
+                                    name=name11,
+                                    order_name=name999)
     
     # Case12 (mev_rec_60_sep)
     print(name12)
-    #  
+    create_dotplots_with_thresholds(adata=filtered_adatamev, 
+                                    genes=recgenesmev60all, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=mev_cluster_order_sigs, 
+                                    output_dir=output_dir_meningeal,
+                                    order_txt=meningeal_genes_rec_60_seperate,
+                                    name=name12,
+                                    order_name=name999) 
 
 
     # Case13 (mev_send_15_all)
