@@ -14,7 +14,7 @@ from collections import defaultdict
 import os
 
 
-checkpoint_dir = "/home/makowlg/Documents/Immune-CCI/h5ad_files"
+
 cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/heatmaps/cutted"
 
 

@@ -310,6 +310,7 @@ if __name__ == "__main__":
     adataimm = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
     adatamev = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
     adataneu = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad")
+    adatamerged = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_merged_raw_norm_annot_nona_copy.h5ad")
 
 
     
@@ -359,6 +360,12 @@ if __name__ == "__main__":
 
     can_dir_mev_send_custom = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt"
 
+    can_dir_custom_15d_coll = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/15d_coll"
+    can_dir_custom_60d_coll = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/60d_coll"
+    can_dir_custom_15d_endo = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/15d_endo"
+    can_dir_custom_15d_epend = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/15d_epend"
+    can_dir_custom_60d_epend = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/60d_epend"
+
     
     recgenesimm15all = load_canonical_from_dir(can_dir_imm_rec_15_all)
     recgenesimm15sep = load_canonical_from_dir(can_dir_imm_rec_15_seperate)
@@ -394,6 +401,13 @@ if __name__ == "__main__":
 
     sendgenesneucustom = load_canonical_from_dir(can_dir_mev_send_custom)
 
+    custom15d_coll = load_canonical_from_dir(can_dir_custom_15d_coll)
+    custom60d_coll = load_canonical_from_dir(can_dir_custom_60d_coll)
+    custom15d_endo = load_canonical_from_dir(can_dir_custom_15d_endo)
+    custom15d_epend = load_canonical_from_dir(can_dir_custom_15d_epend)
+    custom60d_epend= load_canonical_from_dir(can_dir_custom_60d_epend)
+
+
 
     # # Create dendogram ot the top genes
     # dendogram_sc(filtered_adata)
@@ -424,6 +438,15 @@ if __name__ == "__main__":
                               "MeV.Fib.4", "MeV.Fib.5"]
     
     neu_cluster_order_sigs = ["Neu.CSFcN.0", "Neu.Epend.0"]
+
+    merged_custom_cluster_order = ["Imm.M0Like.1", 
+    "Imm.Interferon.0", "Imm.DAM.0", "Imm.DAM.1", "Imm.PVM.0",
+    
+    "MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2",
+    "MeV.Pericytes.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+    "MeV.Fib.4", "MeV.Fib.5",
+    
+    "Neu.Epend.0"]
 
     rec_cluster_remove_imm_15 = [
     "Imm.M0Like.1", 
@@ -521,7 +544,7 @@ if __name__ == "__main__":
     
     meningeal_genes_send_60_all = ["FibColl.1|ligands", "FibColl.3|ligands"]
 
-    meningeal_genes_send_60_seperate = ["FibColl.1|Pericytes", "FibColl.3|DAM.1", "FibColl.1|Endo.0", "FibColl.3|Epend", "FibColl.3|Interferon", "FibColl.3|M0.1"]
+    meningeal_genes_send_60_seperate = ["FibColl.1|Pericytes", "FibColl.3|DAM.1", "FibColl.3|Endo.0", "FibColl.3|Epend", "FibColl.3|Interferon", "FibColl.3|M0.1"]
 ###
     neu_genes_rec_15_all = ["receptors|Epend"]
 
@@ -542,12 +565,44 @@ if __name__ == "__main__":
 
     mev_custome_genes_coll = ["Fibroblasts", "ECM_Laminin", "ECM_Collagen", "CPDB_BMP", "CPDB_Glutamate", "CPDB_Collagen"]
 
+    d15_coll = ["FibColl.1|Endo.0_ligands", "FibColl.1|Endo.0_receptors", 
+                "FibColl.1|Pericytes_ligands", "FibColl.1|Pericytes_receptors",
+                "FibColl.2|Interferon_ligands", "FibColl.2|Interferon_receptors", 
+                "FibColl.2|M0.1_ligands", "FibColl.2|M0.1_receptors",
+                "FibColl.3|Endo.2_ligands", "FibColl.3|Endo.2_receptor",
+                "FibColl.3|PVM_ligands", "FibColl.3|PVM_receptors"]
+    
+    d60_coll = ["FibColl.1|Pericytes_ligands", "FibColl.1|Pericytes_receptors",
+                "FibColl.3|DAM.1_ligands", "FibColl.3|DAM.1_receptors",
+                "FibColl.3|Endo.0_ligands", "FibColl.3|Endo.0_receptors",
+                "FibColl.3|Epend_ligands", "FibColl.3|Epend_receptors",
+                "FibColl.3|Interferon_ligands", "FibColl.3|Intreferon_receptors",
+                "FibColl.3|M0.1_ligands", "FibColl.3|M0.1_receptors"]
+    
+    d15_endo = ["DAM.0|Endo.2_ligands", "DAM.0|Endo.2_receptor",
+                "FibColl.1|Endo.0_ligands", "FibColl.1|Endo.0_receptor",
+                "FibColl.3|Endo.2_ligands", "FibColl.3|Endo.2_receptor",
+                "Intreferon|Endo.1_ligands", "Interferon|Endo.1_receptor"]
+    
+    d15_epend = ["DAM.0|Epend_ligands", "DAM.0|Epend_receptors", 
+                 "PVM|Epend_ligands", "PVM|Epend_receptors"]
+    
+    d60_epend = ["DAM.0|Epend_ligands", "DAM.0|Epend_receptors",
+                 "DAM.1|Epend_ligands", "DAM.1|Epend_receptors",
+                 "Intreferon|Epend_ligands", "Intreferon|Epend_receptors", 
+                 "M0.1|Epend_ligands", "M0.1|Epend_receptors"]
 
     output_dir_immune = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_immune/cpdb_genes"
     output_dir_meningeal = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_meningeal/cpdb_genes"
     output_dir_neu = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_neuron/cpdb_genes"
 
     output_dir_costum = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output"
+
+    output_15d_coll = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/15d_coll"
+    output_60d_coll = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/60d_coll"
+    output_15d_endo = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/15d_endo"
+    output_15d_epend = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/15d_epend"
+    output_60d_epend = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/60d_epend"
 
 
     name1= "imm_rec_15_all"
@@ -578,7 +633,12 @@ if __name__ == "__main__":
     name24= "neu_send_60_sep"
 
     name25= "custom_colls"
-    name26
+
+    name26= "15days_collagen"
+    name27= "60days_collagen"
+    name28= "15days_endothelial"
+    name29= "15days_ependymal"
+    name30= "60days_ependymal"
 
     name999= "full"
 
@@ -587,527 +647,527 @@ if __name__ == "__main__":
 
     #print(filtered_adataimm2.obs['leiden_fusion'])
 
-    # Case1 (imm_rec_15_all)
-    print(name1)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=recgenesimm15all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_imm_15, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_rec_15_all,
-                                    name=name1)
-    
-    # Case2 (imm_rec_15_sep)
-    print(name2)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=recgenesimm15sep, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_imm_15, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_rec_15_seperate,
-                                    name=name2)
-    
-    # Case3 (imm_rec_60_all)
-    print(name3)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=recgenesimm60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_imm_60, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_rec_60_all,
-                                    name=name3)
-    
-    # Case4 (imm_rec_60_sep)
-    print(name4)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=recgenesimm60spe, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_imm_60, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_rec_60_seperate,
-                                    name=name4)
-
-
-    # Case5 (imm_send_15_all)
-    print(name5)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=sendgenesimm15all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=send_cluster_remove_imm_15, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_send_15_all,
-                                    name=name5)
-    
-    # Case6 (imm_send_15_sep)
-    print(name6)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=sendgenesimm15sep, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=send_cluster_remove_imm_15, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_send_15_seperate,
-                                    name=name6)
-    
-    # Case7 (imm_send_60_all)
-    print(name7)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=sendgenesimm60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=send_cluster_remove_imm_60, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_send_60_all,
-                                    name=name7)
-    
-    # Case8 (imm_send_60_sep)
-    print(name8)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=sendgenesimm60spe, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=send_cluster_remove_imm_60, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_send_60_seperate,
-                                    name=name8)
-
-    # Case9 (mev_rec_15_all)
-    print(name9)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=recgenesmev15all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_mev_15, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_rec_15_all,
-                                    name=name9)
-    
-    # Case10 (mev_rec_15_sep)
-    print(name10)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=recgenesmev15sep, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_mev_15, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_rec_15_seperate,
-                                    name=name10)
-    
-    # Case11 (mev_rec_60_all)
-    print(name11)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=recgenesmev60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_mev_60, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_rec_60_all,
-                                    name=name11)
-    
-    # Case12 (mev_rec_60_sep)
-    print(name12)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=recgenesmev60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_mev_60, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_rec_60_seperate,
-                                    name=name12)
-
-
-    # Case13 (mev_send_15_all)
-    print(name13)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=sendgenesmev15all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=send_cluster_remove_mev_15, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_send_15_all,
-                                    name=name13)
-    
-    # Case14 (mev_send_15_sep)
-    print(name14)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=sendgenesmev15sep, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=send_cluster_remove_mev_15, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_send_15_seperate,
-                                    name=name14)
-    
-    # Case15 (mev_send_60_all)
-    print(name15)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=sendgenesmev60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=send_cluster_remove_mev_60, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_send_60_all,
-                                    name=name15)
-    
-    # Case16 (mev_send_60_sep)
-    print(name16)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=sendgenesmev60spe, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=send_cluster_remove_mev_60, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_send_60_seperate,
-                                    name=name16)
-    
-    # Case17 (neu_rec_15_all)
-    print(name17)
-    create_dotplots_with_thresholds(adata=filtered_adataneu, 
-                                    genes=recgenesneu15all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_neu_15, 
-                                    output_dir=output_dir_neu,
-                                    order_txt=neu_genes_rec_15_all,
-                                    name=name17)
-    
-    # Case18 (neu_rec_15_sep)
-    print(name18)
-    create_dotplots_with_thresholds(adata=filtered_adataneu, 
-                                    genes=recgenesneu15sep, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_neu_15, 
-                                    output_dir=output_dir_neu,
-                                    order_txt=neu_genes_rec_15_seperate,
-                                    name=name18)
-    
-    # Case19 (neu_rec_60_all)
-    print(name19)
-    create_dotplots_with_thresholds(adata=filtered_adataneu, 
-                                    genes=recgenesneu60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_neu_60, 
-                                    output_dir=output_dir_neu,
-                                    order_txt=neu_genes_rec_60_all,
-                                    name=name19)
-    
-    # Case20 (neu_rec_60_sep)
-    print(name20)
-    create_dotplots_with_thresholds(adata=filtered_adataneu, 
-                                    genes=recgenesneu60spe, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=rec_cluster_remove_neu_60, 
-                                    output_dir=output_dir_neu,
-                                    order_txt=neu_genes_rec_60_seperate,
-                                    name=name20)
-
-
-    # # Case21 (neu_send_15_all)
-    print(name21)
-    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
-    #                                 genes=sendgenesneu15all, 
+    # # Case1 (imm_rec_15_all)
+    # print(name1)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=recgenesimm15all, 
     #                                 thresholds=pts_thresholds, 
-    #                                 user_order=send_cluster_remove_neu_15, 
-    #                                 output_dir=output_dir_neu,
-    #                                 order_txt=neu_genes_send_15_all,
-    #                                 name=name21)
+    #                                 user_order=rec_cluster_remove_imm_15, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_rec_15_all,
+    #                                 name=name1)
     
-    # # Case22 (neu_send_15_sep)
-    print(name22)
-    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
-    #                                 genes=sendgenesneu15sep, 
+    # # Case2 (imm_rec_15_sep)
+    # print(name2)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=recgenesimm15sep, 
     #                                 thresholds=pts_thresholds, 
-    #                                 user_order=send_cluster_remove_neu_15, 
-    #                                 output_dir=output_dir_neu,
-    #                                 order_txt=neu_genes_send_15_seperate,
-    #                                 name=name22)
+    #                                 user_order=rec_cluster_remove_imm_15, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_rec_15_seperate,
+    #                                 name=name2)
     
-    # # Case23 (neu_send_60_all)
-    print(name23)
-    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
-    #                                 genes=sendgenesneu60all, 
+    # # Case3 (imm_rec_60_all)
+    # print(name3)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=recgenesimm60all, 
     #                                 thresholds=pts_thresholds, 
-    #                                 user_order=send_cluster_remove_neu_60, 
+    #                                 user_order=rec_cluster_remove_imm_60, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_rec_60_all,
+    #                                 name=name3)
+    
+    # # Case4 (imm_rec_60_sep)
+    # print(name4)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=recgenesimm60spe, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=rec_cluster_remove_imm_60, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_rec_60_seperate,
+    #                                 name=name4)
+
+
+    # # Case5 (imm_send_15_all)
+    # print(name5)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=sendgenesimm15all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=send_cluster_remove_imm_15, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_send_15_all,
+    #                                 name=name5)
+    
+    # # Case6 (imm_send_15_sep)
+    # print(name6)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=sendgenesimm15sep, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=send_cluster_remove_imm_15, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_send_15_seperate,
+    #                                 name=name6)
+    
+    # # Case7 (imm_send_60_all)
+    # print(name7)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=sendgenesimm60all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=send_cluster_remove_imm_60, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_send_60_all,
+    #                                 name=name7)
+    
+    # # Case8 (imm_send_60_sep)
+    # print(name8)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=sendgenesimm60spe, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=send_cluster_remove_imm_60, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_send_60_seperate,
+    #                                 name=name8)
+
+    # # Case9 (mev_rec_15_all)
+    # print(name9)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=recgenesmev15all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=rec_cluster_remove_mev_15, 
     #                                 output_dir=output_dir_meningeal,
-    #                                 order_txt=neu_genes_send_60_all,
-    #                                 name=name23)
+    #                                 order_txt=meningeal_genes_rec_15_all,
+    #                                 name=name9)
     
-    # # Case24 (neu_send_60_sep)
-    print(name24)
-    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
-    #                                 genes=sendgenesneu60spe, 
+    # # Case10 (mev_rec_15_sep)
+    # print(name10)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=recgenesmev15sep, 
     #                                 thresholds=pts_thresholds, 
-    #                                 user_order=send_cluster_remove_neu_60, 
-    #                                 output_dir=output_dir_neu,
-    #                                 order_txt=neu_genes_send_60_seperate,
-    #                                 name=name24)
-
-    # Case24 (costum collagen)
-    print(name25)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=sendgenesneucustom, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=send_custom_collagen_order, 
-                                    output_dir=output_dir_costum,
-                                    order_txt=mev_custome_genes_coll,
-                                    name=name25)
-    
-
-    ##################################################
-
-
-    # Case1 (imm_rec_15_all)
-    print(name1)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=recgenesimm15all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=imm_cluster_order_sigs, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_rec_15_all,
-                                    name=name1,
-                                    order_name=name999)
-    
-    # Case2 (imm_rec_15_sep)
-    print(name2)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=recgenesimm15sep, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=imm_cluster_order_sigs, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_rec_15_seperate,
-                                    name=name2,
-                                    order_name=name999)
-    
-    # Case3 (imm_rec_60_all)
-    print(name3)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=recgenesimm60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=imm_cluster_order_sigs, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_rec_60_all,
-                                    name=name3,
-                                    order_name=name999)
-    
-    # Case4 (imm_rec_60_sep)
-    print(name4)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=recgenesimm60spe, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=imm_cluster_order_sigs, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_rec_60_seperate,
-                                    name=name4,
-                                    order_name=name999)
-
-
-    # Case5 (imm_send_15_all)
-    print(name5)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=sendgenesimm15all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=imm_cluster_order_sigs, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_send_15_all,
-                                    name=name5,
-                                    order_name=name999)
-    
-    # Case6 (imm_send_15_sep)
-    print(name6)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=sendgenesimm15sep, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=imm_cluster_order_sigs, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_send_15_seperate,
-                                    name=name6,
-                                    order_name=name999)
-    
-    # Case7 (imm_send_60_all)
-    print(name7)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=sendgenesimm60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=imm_cluster_order_sigs, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_send_60_all,
-                                    name=name7,
-                                    order_name=name999)
-    
-    # Case8 (imm_send_60_sep)
-    print(name8)
-    create_dotplots_with_thresholds(adata=filtered_adataimm, 
-                                    genes=sendgenesimm60spe, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=imm_cluster_order_sigs, 
-                                    output_dir=output_dir_immune,
-                                    order_txt=immune_genes_send_60_seperate,
-                                    name=name8,
-                                    order_name=name999)
-
-    # Case9 (mev_rec_15_all)
-    print(name9)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=recgenesmev15all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=mev_cluster_order_sigs, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_rec_15_all,
-                                    name=name9,
-                                    order_name=name999)
-    
-    # Case10 (mev_rec_15_sep)
-    print(name10)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=recgenesmev15sep, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=mev_cluster_order_sigs, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_rec_15_seperate,
-                                    name=name10,
-                                    order_name=name999)
-    
-    # Case11 (mev_rec_60_all)
-    print(name11)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=recgenesmev60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=mev_cluster_order_sigs, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_rec_60_all,
-                                    name=name11,
-                                    order_name=name999)
-    
-    # Case12 (mev_rec_60_sep)
-    print(name12)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=recgenesmev60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=mev_cluster_order_sigs, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_rec_60_seperate,
-                                    name=name12,
-                                    order_name=name999) 
-
-
-    # Case13 (mev_send_15_all)
-    print(name13)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=sendgenesmev15all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=mev_cluster_order_sigs, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_send_15_all,
-                                    name=name13,
-                                    order_name=name999)
-    
-    # Case14 (mev_send_15_sep)
-    print(name14)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=sendgenesmev15sep, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=mev_cluster_order_sigs, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_send_15_seperate,
-                                    name=name14,
-                                    order_name=name999)
-    
-    # Case15 (mev_send_60_all)
-    print(name15)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=sendgenesmev60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=mev_cluster_order_sigs, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_send_60_all,
-                                    name=name15,
-                                    order_name=name999)
-    
-    # Case16 (mev_send_60_sep)
-    print(name16)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=sendgenesmev60spe, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=mev_cluster_order_sigs, 
-                                    output_dir=output_dir_meningeal,
-                                    order_txt=meningeal_genes_send_60_seperate,
-                                    name=name16,
-                                    order_name=name999)
-    
-    # Case17 (neu_rec_15_all)
-    print(name17)
-    create_dotplots_with_thresholds(adata=filtered_adataneu, 
-                                    genes=recgenesneu15all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=neu_cluster_order_sigs, 
-                                    output_dir=output_dir_neu,
-                                    order_txt=neu_genes_rec_15_all,
-                                    name=name17,
-                                    order_name=name999)
-    
-    # Case18 (neu_rec_15_sep)
-    print(name18)
-    create_dotplots_with_thresholds(adata=filtered_adataneu, 
-                                    genes=recgenesneu15sep, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=neu_cluster_order_sigs, 
-                                    output_dir=output_dir_neu,
-                                    order_txt=neu_genes_rec_15_seperate,
-                                    name=name18,
-                                    order_name=name999)
-    
-    # Case19 (neu_rec_60_all)
-    print(name19)
-    create_dotplots_with_thresholds(adata=filtered_adataneu, 
-                                    genes=recgenesneu60all, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=neu_cluster_order_sigs, 
-                                    output_dir=output_dir_neu,
-                                    order_txt=neu_genes_rec_60_all,
-                                    name=name19,
-                                    order_name=name999)
-    
-    # Case20 (neu_rec_60_sep)
-    print(name20)
-    create_dotplots_with_thresholds(adata=filtered_adataneu, 
-                                    genes=recgenesneu60spe, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=neu_cluster_order_sigs, 
-                                    output_dir=output_dir_neu,
-                                    order_txt=neu_genes_rec_60_seperate,
-                                    name=name20,
-                                    order_name=name999)
-
-
-    # # Case21 (neu_send_15_all)
-    print(name21)
-    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
-    #                                 genes=sendgenesneu15all, 
-    #                                 thresholds=pts_thresholds, 
-    #                                 user_order=send_cluster_remove_neu_15, 
-    #                                 output_dir=output_dir_neu,
-    #                                 order_txt=neu_genes_send_15_all,
-    #                                 name=name21)
-    
-    # # Case22 (neu_send_15_sep)
-    print(name22)
-    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
-    #                                 genes=sendgenesneu15sep, 
-    #                                 thresholds=pts_thresholds, 
-    #                                 user_order=send_cluster_remove_neu_15, 
-    #                                 output_dir=output_dir_neu,
-    #                                 order_txt=neu_genes_send_15_seperate,
-    #                                 name=name22)
-    
-    # # Case23 (neu_send_60_all)
-    print(name23)
-    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
-    #                                 genes=sendgenesneu60all, 
-    #                                 thresholds=pts_thresholds, 
-    #                                 user_order=send_cluster_remove_neu_60, 
+    #                                 user_order=rec_cluster_remove_mev_15, 
     #                                 output_dir=output_dir_meningeal,
-    #                                 order_txt=neu_genes_send_60_all,
-    #                                 name=name23)
+    #                                 order_txt=meningeal_genes_rec_15_seperate,
+    #                                 name=name10)
     
-    # # Case24 (neu_send_60_sep)
-    print(name24)
-    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
-    #                                 genes=sendgenesneu60spe, 
+    # # Case11 (mev_rec_60_all)
+    # print(name11)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=recgenesmev60all, 
     #                                 thresholds=pts_thresholds, 
-    #                                 user_order=send_cluster_remove_neu_60, 
-    #                                 output_dir=output_dir_neu,
-    #                                 order_txt=neu_genes_send_60_seperate,
-    #                                 name=name24)
+    #                                 user_order=rec_cluster_remove_mev_60, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_rec_60_all,
+    #                                 name=name11)
+    
+    # # Case12 (mev_rec_60_sep)
+    # print(name12)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=recgenesmev60spe, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=rec_cluster_remove_mev_60, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_rec_60_seperate,
+    #                                 name=name12)
 
-    # Case24 (costum collagen)
+
+    # # Case13 (mev_send_15_all)
+    # print(name13)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=sendgenesmev15all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=send_cluster_remove_mev_15, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_send_15_all,
+    #                                 name=name13)
+    
+    # # Case14 (mev_send_15_sep)
+    # print(name14)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=sendgenesmev15sep, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=send_cluster_remove_mev_15, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_send_15_seperate,
+    #                                 name=name14)
+    
+    # # Case15 (mev_send_60_all)
+    # print(name15)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=sendgenesmev60all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=send_cluster_remove_mev_60, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_send_60_all,
+    #                                 name=name15)
+    
+    # # Case16 (mev_send_60_sep)
+    # print(name16)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=sendgenesmev60spe, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=send_cluster_remove_mev_60, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_send_60_seperate,
+    #                                 name=name16)
+    
+    # # Case17 (neu_rec_15_all)
+    # print(name17)
+    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    #                                 genes=recgenesneu15all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=rec_cluster_remove_neu_15, 
+    #                                 output_dir=output_dir_neu,
+    #                                 order_txt=neu_genes_rec_15_all,
+    #                                 name=name17)
+    
+    # # Case18 (neu_rec_15_sep)
+    # print(name18)
+    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    #                                 genes=recgenesneu15sep, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=rec_cluster_remove_neu_15, 
+    #                                 output_dir=output_dir_neu,
+    #                                 order_txt=neu_genes_rec_15_seperate,
+    #                                 name=name18)
+    
+    # # Case19 (neu_rec_60_all)
+    # print(name19)
+    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    #                                 genes=recgenesneu60all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=rec_cluster_remove_neu_60, 
+    #                                 output_dir=output_dir_neu,
+    #                                 order_txt=neu_genes_rec_60_all,
+    #                                 name=name19)
+    
+    # # Case20 (neu_rec_60_sep)
+    # print(name20)
+    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    #                                 genes=recgenesneu60spe, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=rec_cluster_remove_neu_60, 
+    #                                 output_dir=output_dir_neu,
+    #                                 order_txt=neu_genes_rec_60_seperate,
+    #                                 name=name20)
+
+
+    # # # Case21 (neu_send_15_all)
+    # print(name21)
+    # # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    # #                                 genes=sendgenesneu15all, 
+    # #                                 thresholds=pts_thresholds, 
+    # #                                 user_order=send_cluster_remove_neu_15, 
+    # #                                 output_dir=output_dir_neu,
+    # #                                 order_txt=neu_genes_send_15_all,
+    # #                                 name=name21)
+    
+    # # # Case22 (neu_send_15_sep)
+    # print(name22)
+    # # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    # #                                 genes=sendgenesneu15sep, 
+    # #                                 thresholds=pts_thresholds, 
+    # #                                 user_order=send_cluster_remove_neu_15, 
+    # #                                 output_dir=output_dir_neu,
+    # #                                 order_txt=neu_genes_send_15_seperate,
+    # #                                 name=name22)
+    
+    # # # Case23 (neu_send_60_all)
+    # print(name23)
+    # # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    # #                                 genes=sendgenesneu60all, 
+    # #                                 thresholds=pts_thresholds, 
+    # #                                 user_order=send_cluster_remove_neu_60, 
+    # #                                 output_dir=output_dir_meningeal,
+    # #                                 order_txt=neu_genes_send_60_all,
+    # #                                 name=name23)
+    
+    # # # Case24 (neu_send_60_sep)
+    # print(name24)
+    # # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    # #                                 genes=sendgenesneu60spe, 
+    # #                                 thresholds=pts_thresholds, 
+    # #                                 user_order=send_cluster_remove_neu_60, 
+    # #                                 output_dir=output_dir_neu,
+    # #                                 order_txt=neu_genes_send_60_seperate,
+    # #                                 name=name24)
+
+    # # Case24 (costum collagen)
+    # print(name25)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=sendgenesneucustom, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=send_custom_collagen_order, 
+    #                                 output_dir=output_dir_costum,
+    #                                 order_txt=mev_custome_genes_coll,
+    #                                 name=name25)
+    
+
+    # ##################################################
+
+
+    # # Case1 (imm_rec_15_all)
+    # print(name1)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=recgenesimm15all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=imm_cluster_order_sigs, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_rec_15_all,
+    #                                 name=name1,
+    #                                 order_name=name999)
+    
+    # # Case2 (imm_rec_15_sep)
+    # print(name2)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=recgenesimm15sep, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=imm_cluster_order_sigs, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_rec_15_seperate,
+    #                                 name=name2,
+    #                                 order_name=name999)
+    
+    # # Case3 (imm_rec_60_all)
+    # print(name3)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=recgenesimm60all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=imm_cluster_order_sigs, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_rec_60_all,
+    #                                 name=name3,
+    #                                 order_name=name999)
+    
+    # # Case4 (imm_rec_60_sep)
+    # print(name4)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=recgenesimm60spe, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=imm_cluster_order_sigs, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_rec_60_seperate,
+    #                                 name=name4,
+    #                                 order_name=name999)
+
+
+    # # Case5 (imm_send_15_all)
+    # print(name5)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=sendgenesimm15all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=imm_cluster_order_sigs, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_send_15_all,
+    #                                 name=name5,
+    #                                 order_name=name999)
+    
+    # # Case6 (imm_send_15_sep)
+    # print(name6)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=sendgenesimm15sep, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=imm_cluster_order_sigs, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_send_15_seperate,
+    #                                 name=name6,
+    #                                 order_name=name999)
+    
+    # # Case7 (imm_send_60_all)
+    # print(name7)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=sendgenesimm60all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=imm_cluster_order_sigs, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_send_60_all,
+    #                                 name=name7,
+    #                                 order_name=name999)
+    
+    # # Case8 (imm_send_60_sep)
+    # print(name8)
+    # create_dotplots_with_thresholds(adata=filtered_adataimm, 
+    #                                 genes=sendgenesimm60spe, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=imm_cluster_order_sigs, 
+    #                                 output_dir=output_dir_immune,
+    #                                 order_txt=immune_genes_send_60_seperate,
+    #                                 name=name8,
+    #                                 order_name=name999)
+
+    # # Case9 (mev_rec_15_all)
+    # print(name9)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=recgenesmev15all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=mev_cluster_order_sigs, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_rec_15_all,
+    #                                 name=name9,
+    #                                 order_name=name999)
+    
+    # # Case10 (mev_rec_15_sep)
+    # print(name10)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=recgenesmev15sep, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=mev_cluster_order_sigs, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_rec_15_seperate,
+    #                                 name=name10,
+    #                                 order_name=name999)
+    
+    # # Case11 (mev_rec_60_all)
+    # print(name11)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=recgenesmev60all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=mev_cluster_order_sigs, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_rec_60_all,
+    #                                 name=name11,
+    #                                 order_name=name999)
+    
+    # # Case12 (mev_rec_60_sep)
+    # print(name12)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=recgenesmev60spe, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=mev_cluster_order_sigs, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_rec_60_seperate,
+    #                                 name=name12,
+    #                                 order_name=name999) 
+
+
+    # # Case13 (mev_send_15_all)
+    # print(name13)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=sendgenesmev15all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=mev_cluster_order_sigs, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_send_15_all,
+    #                                 name=name13,
+    #                                 order_name=name999)
+    
+    # # Case14 (mev_send_15_sep)
+    # print(name14)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=sendgenesmev15sep, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=mev_cluster_order_sigs, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_send_15_seperate,
+    #                                 name=name14,
+    #                                 order_name=name999)
+    
+    # # Case15 (mev_send_60_all)
+    # print(name15)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=sendgenesmev60all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=mev_cluster_order_sigs, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_send_60_all,
+    #                                 name=name15,
+    #                                 order_name=name999)
+    
+    # # Case16 (mev_send_60_sep)
+    # print(name16)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=sendgenesmev60spe, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=mev_cluster_order_sigs, 
+    #                                 output_dir=output_dir_meningeal,
+    #                                 order_txt=meningeal_genes_send_60_seperate,
+    #                                 name=name16,
+    #                                 order_name=name999)
+    
+    # # Case17 (neu_rec_15_all)
+    # print(name17)
+    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    #                                 genes=recgenesneu15all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=neu_cluster_order_sigs, 
+    #                                 output_dir=output_dir_neu,
+    #                                 order_txt=neu_genes_rec_15_all,
+    #                                 name=name17,
+    #                                 order_name=name999)
+    
+    # # Case18 (neu_rec_15_sep)
+    # print(name18)
+    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    #                                 genes=recgenesneu15sep, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=neu_cluster_order_sigs, 
+    #                                 output_dir=output_dir_neu,
+    #                                 order_txt=neu_genes_rec_15_seperate,
+    #                                 name=name18,
+    #                                 order_name=name999)
+    
+    # # Case19 (neu_rec_60_all)
+    # print(name19)
+    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    #                                 genes=recgenesneu60all, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=neu_cluster_order_sigs, 
+    #                                 output_dir=output_dir_neu,
+    #                                 order_txt=neu_genes_rec_60_all,
+    #                                 name=name19,
+    #                                 order_name=name999)
+    
+    # # Case20 (neu_rec_60_sep)
+    # print(name20)
+    # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    #                                 genes=recgenesneu60spe, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=neu_cluster_order_sigs, 
+    #                                 output_dir=output_dir_neu,
+    #                                 order_txt=neu_genes_rec_60_seperate,
+    #                                 name=name20,
+    #                                 order_name=name999)
+
+
+    # # # Case21 (neu_send_15_all)
+    # print(name21)
+    # # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    # #                                 genes=sendgenesneu15all, 
+    # #                                 thresholds=pts_thresholds, 
+    # #                                 user_order=send_cluster_remove_neu_15, 
+    # #                                 output_dir=output_dir_neu,
+    # #                                 order_txt=neu_genes_send_15_all,
+    # #                                 name=name21)
+    
+    # # # Case22 (neu_send_15_sep)
+    # print(name22)
+    # # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    # #                                 genes=sendgenesneu15sep, 
+    # #                                 thresholds=pts_thresholds, 
+    # #                                 user_order=send_cluster_remove_neu_15, 
+    # #                                 output_dir=output_dir_neu,
+    # #                                 order_txt=neu_genes_send_15_seperate,
+    # #                                 name=name22)
+    
+    # # # Case23 (neu_send_60_all)
+    # print(name23)
+    # # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    # #                                 genes=sendgenesneu60all, 
+    # #                                 thresholds=pts_thresholds, 
+    # #                                 user_order=send_cluster_remove_neu_60, 
+    # #                                 output_dir=output_dir_meningeal,
+    # #                                 order_txt=neu_genes_send_60_all,
+    # #                                 name=name23)
+    
+    # # # Case24 (neu_send_60_sep)
+    # print(name24)
+    # # create_dotplots_with_thresholds(adata=filtered_adataneu, 
+    # #                                 genes=sendgenesneu60spe, 
+    # #                                 thresholds=pts_thresholds, 
+    # #                                 user_order=send_cluster_remove_neu_60, 
+    # #                                 output_dir=output_dir_neu,
+    # #                                 order_txt=neu_genes_send_60_seperate,
+    # #                                 name=name24)
+
+    # Case25 (costum collagen)
     print(name25)
     create_dotplots_with_thresholds(adata=filtered_adatamev, 
                                     genes=sendgenesneucustom, 
@@ -1117,3 +1177,53 @@ if __name__ == "__main__":
                                     order_txt=mev_custome_genes_coll,
                                     name=name25,
                                     order_name=name999)
+    
+    # Case26 (costum 15_collagen)
+    print(name26)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom15d_coll, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_15d_coll,
+                                    order_txt=d15_coll,
+                                    name=name26)
+    
+    # Case27 (costum 60_collagen)
+    print(name27)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom60d_coll, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_60d_coll,
+                                    order_txt=d60_coll,
+                                    name=name27)
+    
+    # Case28 (costum 15_endo)
+    print(name28)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom15d_endo, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_15d_endo,
+                                    order_txt=d15_endo,
+                                    name=name28)
+    
+    # Case29 (costum 15_epend)
+    print(name29)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom15d_epend, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_15d_epend,
+                                    order_txt=d15_epend,
+                                    name=name29)
+    
+    # Case30 (costum 60_epend)
+    print(name30)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom60d_epend, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_60d_epend,
+                                    order_txt=d60_epend,
+                                    name=name30)
