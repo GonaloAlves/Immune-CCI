@@ -366,6 +366,11 @@ if __name__ == "__main__":
     can_dir_custom_15d_epend = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/15d_epend"
     can_dir_custom_60d_epend = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/60d_epend"
 
+    can_dir_custom_bmp = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/signaling_BMP"
+    can_dir_custom_collagen = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/signaling_Collagen"
+    can_dir_custom_glutamate = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/signaling_Glutamate"
+    
+
     
     recgenesimm15all = load_canonical_from_dir(can_dir_imm_rec_15_all)
     recgenesimm15sep = load_canonical_from_dir(can_dir_imm_rec_15_seperate)
@@ -406,6 +411,10 @@ if __name__ == "__main__":
     custom15d_endo = load_canonical_from_dir(can_dir_custom_15d_endo)
     custom15d_epend = load_canonical_from_dir(can_dir_custom_15d_epend)
     custom60d_epend= load_canonical_from_dir(can_dir_custom_60d_epend)
+
+    custom_bmp = load_canonical_from_dir(can_dir_custom_bmp)
+    custom_collagen = load_canonical_from_dir(can_dir_custom_collagen)
+    custom_glutamate= load_canonical_from_dir(can_dir_custom_glutamate)
 
 
 
@@ -591,6 +600,26 @@ if __name__ == "__main__":
                  "DAM.1|Epend_ligands", "DAM.1|Epend_receptors",
                  "Intreferon|Epend_ligands", "Intreferon|Epend_receptors", 
                  "M0.1|Epend_ligands", "M0.1|Epend_receptors"]
+    
+    bmp = ["Fibroblasts",
+           "15_Coll.3_Ligs", 
+           "15_Coll.3|Endo.2_Recept", "15_Coll.3|PVM_Recept",
+           "60_Coll.3_Ligs", 
+           "60_Coll.3|DAM.1_Recept", "60_Coll.3|Endo.0_Recept", "60_Coll.3|Epend_Recept", "60_Coll.3|Interferon_Recept", "60_Coll.3|M0.1_Recept"]
+
+    collagen = ["Fibroblasts", "ECM_Collagen",
+                "15_Coll.1|Endo.0_Ligs", "15_Coll.1|Endo.0_Recept",
+                "15_Coll.1|Pericytes_Ligs", "15_Coll.1|Pericytes_Recept",
+                "60_Coll.1|Endo.2_Ligs", "60_Coll.1|Endo.2_Recept", 
+                "60_Coll.1|Pericytes_Ligs", "60_Coll.1|Pericytes_Recept",
+                "60_Coll.3|Endo.0_Ligs", "60_Coll.3|Endo.0_Recept"]
+
+    glutamate = ["Fibroblasts",
+                 "15_PVM|Epend_Ligs", "15_PVM|Epend_Recept", 
+                 "60_Coll.3_Ligs", 
+                 "60_Coll.3|DAM.1_Recept", "60_Coll.3|Epend_Recept", "60_Coll.3|Interferon_Recept", "60_Coll.3|M0.1_Recept"]
+    
+
 
     output_dir_immune = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_immune/cpdb_genes"
     output_dir_meningeal = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_meningeal/cpdb_genes"
@@ -603,6 +632,11 @@ if __name__ == "__main__":
     output_15d_endo = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/15d_endo"
     output_15d_epend = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/15d_epend"
     output_60d_epend = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/60d_epend"
+
+    output_bmp = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/signaling_BMP"
+    output_collagen = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/signaling_Collagen"
+    output_glutamate = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/signaling_Glutamate"
+
 
 
     name1= "imm_rec_15_all"
@@ -639,6 +673,10 @@ if __name__ == "__main__":
     name28= "15days_endothelial"
     name29= "15days_ependymal"
     name30= "60days_ependymal"
+
+    name31= "bmp"
+    name32= "collagen"
+    name33= "glutamate"
 
     name999= "full"
 
@@ -1167,63 +1205,93 @@ if __name__ == "__main__":
     # #                                 order_txt=neu_genes_send_60_seperate,
     # #                                 name=name24)
 
-    # Case25 (costum collagen)
-    print(name25)
-    create_dotplots_with_thresholds(adata=filtered_adatamev, 
-                                    genes=sendgenesneucustom, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=mev_cluster_order_sigs, 
-                                    output_dir=output_dir_costum,
-                                    order_txt=mev_custome_genes_coll,
-                                    name=name25,
-                                    order_name=name999)
+    # # Case25 (costum collagen)
+    # print(name25)
+    # create_dotplots_with_thresholds(adata=filtered_adatamev, 
+    #                                 genes=sendgenesneucustom, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=mev_cluster_order_sigs, 
+    #                                 output_dir=output_dir_costum,
+    #                                 order_txt=mev_custome_genes_coll,
+    #                                 name=name25,
+    #                                 order_name=name999)
     
-    # Case26 (costum 15_collagen)
-    print(name26)
+    # # Case26 (costum 15_collagen)
+    # print(name26)
+    # create_dotplots_with_thresholds(adata=adatamerged, 
+    #                                 genes=custom15d_coll, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=merged_custom_cluster_order, 
+    #                                 output_dir=output_15d_coll,
+    #                                 order_txt=d15_coll,
+    #                                 name=name26)
+    
+    # # Case27 (costum 60_collagen)
+    # print(name27)
+    # create_dotplots_with_thresholds(adata=adatamerged, 
+    #                                 genes=custom60d_coll, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=merged_custom_cluster_order, 
+    #                                 output_dir=output_60d_coll,
+    #                                 order_txt=d60_coll,
+    #                                 name=name27)
+    
+    # # Case28 (costum 15_endo)
+    # print(name28)
+    # create_dotplots_with_thresholds(adata=adatamerged, 
+    #                                 genes=custom15d_endo, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=merged_custom_cluster_order, 
+    #                                 output_dir=output_15d_endo,
+    #                                 order_txt=d15_endo,
+    #                                 name=name28)
+    
+    # # Case29 (costum 15_epend)
+    # print(name29)
+    # create_dotplots_with_thresholds(adata=adatamerged, 
+    #                                 genes=custom15d_epend, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=merged_custom_cluster_order, 
+    #                                 output_dir=output_15d_epend,
+    #                                 order_txt=d15_epend,
+    #                                 name=name29)
+    
+    # # Case30 (costum 60_epend)
+    # print(name30)
+    # create_dotplots_with_thresholds(adata=adatamerged, 
+    #                                 genes=custom60d_epend, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=merged_custom_cluster_order, 
+    #                                 output_dir=output_60d_epend,
+    #                                 order_txt=d60_epend,
+    #                                 name=name30)
+    
+    # Case31 (bmp)
+    print(name31)
     create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom15d_coll, 
+                                    genes=custom_bmp, 
                                     thresholds=pts_thresholds, 
                                     user_order=merged_custom_cluster_order, 
-                                    output_dir=output_15d_coll,
-                                    order_txt=d15_coll,
-                                    name=name26)
+                                    output_dir=output_bmp,
+                                    order_txt=bmp,
+                                    name=name31)
     
-    # Case27 (costum 60_collagen)
-    print(name27)
+    # Case32 (collagen)
+    print(name32)
     create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom60d_coll, 
+                                    genes=custom_collagen, 
                                     thresholds=pts_thresholds, 
                                     user_order=merged_custom_cluster_order, 
-                                    output_dir=output_60d_coll,
-                                    order_txt=d60_coll,
-                                    name=name27)
+                                    output_dir=output_collagen,
+                                    order_txt=collagen,
+                                    name=name32)
     
-    # Case28 (costum 15_endo)
-    print(name28)
+    # Case33 (glutamate)
+    print(name33)
     create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom15d_endo, 
+                                    genes=custom_glutamate, 
                                     thresholds=pts_thresholds, 
                                     user_order=merged_custom_cluster_order, 
-                                    output_dir=output_15d_endo,
-                                    order_txt=d15_endo,
-                                    name=name28)
-    
-    # Case29 (costum 15_epend)
-    print(name29)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom15d_epend, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_15d_epend,
-                                    order_txt=d15_epend,
-                                    name=name29)
-    
-    # Case30 (costum 60_epend)
-    print(name30)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom60d_epend, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_60d_epend,
-                                    order_txt=d60_epend,
-                                    name=name30)
+                                    output_dir=output_glutamate,
+                                    order_txt=glutamate,
+                                    name=name33)
