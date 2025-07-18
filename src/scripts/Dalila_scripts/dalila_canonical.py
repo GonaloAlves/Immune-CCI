@@ -495,40 +495,42 @@ if __name__ == "__main__":
     # Split into injury_day groups
     adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60 = split_adata_by_injury_day(filtered_adata)
 
-    # Group into a dictionary for looping
-    adata_groups = {
-        "uninjured_0": adata_uninjured_0,
-        "sham_15": adata_sham_15,
-        "injured_15": adata_injured_15,
-        "injured_60": adata_injured_60
-    }
+    print(adata_injured_15.obs["leiden_fusion"])
 
-    # Load canonical gene lists from a directory
-    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Dalila"
-    genes = load_canonical_from_dir(canonical_genes_dir)
+    # # Group into a dictionary for looping
+    # adata_groups = {
+    #     "uninjured_0": adata_uninjured_0,
+    #     "sham_15": adata_sham_15,
+    #     "injured_15": adata_injured_15,
+    #     "injured_60": adata_injured_60
+    # }
 
-    # Thresholds and cluster order
-    pts_thresholds = [0, 0.2, 0.3]
-    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
-                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
-                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
+    # # Load canonical gene lists from a directory
+    # canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Dalila"
+    # genes = load_canonical_from_dir(canonical_genes_dir)
 
-    # Process each subset
-    for label, ad in adata_groups.items():
-        print(f"\n--- Processing condition: {label} ---")
+    # # Thresholds and cluster order
+    # pts_thresholds = [0, 0.2, 0.3]
+    # custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
+    #                         "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+    #                         "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
 
-        # Filter cells by gene expression
-        gene_filtered_adata = filter_cells_by_gene_expression(ad, "Mylip")
+    # # Process each subset
+    # for label, ad in adata_groups.items():
+    #     print(f"\n--- Processing condition: {label} ---")
 
-        # Remove unwanted clusters
-        clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', "MeV.FibUnknown.6", "MeV.EndoUnknow.4"]
-        adata_filtered = remove_clusters(ad, clusters_to_remove)
+    #     # Filter cells by gene expression
+    #     gene_filtered_adata = filter_cells_by_gene_expression(ad, "Mylip")
 
-        # Create dendrogram
-        dendogram_sc(adata_filtered)
+    #     # Remove unwanted clusters
+    #     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', "MeV.FibUnknown.6", "MeV.EndoUnknow.4"]
+    #     adata_filtered = remove_clusters(ad, clusters_to_remove)
 
-        # Check cluster order
-        check_cluster_order(adata_filtered, custom_cluster_order)
+    #     # Create dendrogram
+    #     dendogram_sc(adata_filtered)
 
-        # Generate dotplots
-        create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order, gene="", prefix=label)
+    #     # Check cluster order
+    #     check_cluster_order(adata_filtered, custom_cluster_order)
+
+    #     # Generate dotplots
+    #     create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order, gene="", prefix=label)

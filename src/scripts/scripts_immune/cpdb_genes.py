@@ -33,8 +33,8 @@ def split_adata_by_injury_day(adata: sc.AnnData):
         tuple: (adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60)
     """
     print("Splitting AnnData by injury_day...")
-    adata_injured_15  = adata[adata.obs['injury_day'] == "injured_15"].copy()
-    adata_injured_60  = adata[adata.obs['injury_day'] == "injured_60"].copy()
+    adata_injured_15  = adata[adata.obs['injury_day'] == "injured.15"].copy()
+    adata_injured_60  = adata[adata.obs['injury_day'] == "injured.60"].copy()
 
     return adata_injured_15, adata_injured_60
 
@@ -321,22 +321,23 @@ def format_gene_names(genes_dict):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    adataimm = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
-    adatamev = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
-    adataneu = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad")
+    # adataimm = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Immune_raw_norm_ranked_copy_copy.h5ad")
+    # adatamev = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
+    # adataneu = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad")
     adatamerged = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_merged_raw_norm_annot_nona_copy.h5ad")
 
 
     
-    filtered_adataimm = imm_remove_NA_cat(adataimm)
-    filtered_adatamev = mev_remove_NA_cat(adatamev)
-    filtered_adataneu = neu_remove_NA_cat(adataneu)
+    # filtered_adataimm = imm_remove_NA_cat(adataimm)
+    # filtered_adatamev = mev_remove_NA_cat(adatamev)
+    # filtered_adataneu = neu_remove_NA_cat(adataneu)
 
     # Split into injury_day groups
-    adata_imm_15, adata_imm_60 = split_adata_by_injury_day(filtered_adataimm)
-    adata_mev_15, adata_mev_60 = split_adata_by_injury_day(filtered_adatamev)
-    adata_neu_15, adata_neu_60 = split_adata_by_injury_day(filtered_adataneu)
+    # adata_imm_15, adata_imm_60 = split_adata_by_injury_day(filtered_adataimm)
+    # adata_mev_15, adata_mev_60 = split_adata_by_injury_day(filtered_adatamev)
+    # adata_neu_15, adata_neu_60 = split_adata_by_injury_day(filtered_adataneu)
     adata_merged_15, adata_merged_60 = split_adata_by_injury_day(adatamerged)
+
 
     # Load canonical gene lists from a directory
 
@@ -391,6 +392,11 @@ if __name__ == "__main__":
     can_dir_custom_glutamate = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/signaling_Glutamate"
     can_dir_custom_wnt = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/signaling_WNT"
 
+    can_dir_custom_bmp_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/tryhard/BMP"
+    can_dir_custom_collagen_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/tryhard/Collagen"
+    can_dir_custom_glutamate_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/tryhard/Glutamate"
+    can_dir_custom_wnt_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/tryhard/WNT"
+
     
 
     
@@ -438,6 +444,11 @@ if __name__ == "__main__":
     custom_collagen = load_canonical_from_dir(can_dir_custom_collagen)
     custom_glutamate= load_canonical_from_dir(can_dir_custom_glutamate)
     custom_wnt= load_canonical_from_dir(can_dir_custom_wnt)
+
+    custom_bmp_th = load_canonical_from_dir(can_dir_custom_bmp_th)
+    custom_collagen_th = load_canonical_from_dir(can_dir_custom_collagen_th)
+    custom_glutamate_th = load_canonical_from_dir(can_dir_custom_glutamate_th)
+    custom_wnt_th = load_canonical_from_dir(can_dir_custom_wnt_th)
 
 
 
@@ -646,7 +657,16 @@ if __name__ == "__main__":
     wnt = ["60_Coll.3|Endo.0_Ligs", "60_Coll.3|Endo.0_Recept", 
             "60_Coll.3|Epend_Ligs", "60_Coll.3|Epend_Recept"]
     
+    bmp_th = ["Ligands", "Receptors"]
 
+    collagen_th = ["Collagen_I", "Collagen_III", "Collagen_IV", "Collagen_V", "Collagen_VI", "Collagen_VIII", "Collagen_XI", "Collagen_XV", "Collagen_XVIII", "Collagen_XXVII",
+                "Receptors"]
+    
+    glutamate_th = ["Ligands", "GRIA_Recept", "GRIK_Recept", "GRM_Recept", "SLC_Recept"]
+
+    wnt_th = ["Ligands", "Receptors"]
+
+    
 
     output_dir_immune = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_immune/cpdb_genes"
     output_dir_meningeal = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_meningeal/cpdb_genes"
@@ -664,6 +684,11 @@ if __name__ == "__main__":
     output_collagen = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/signaling_Collagen"
     output_glutamate = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/signaling_Glutamate"
     output_wnt = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/signaling_WNT"
+
+    output_bmp_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/tryhard/BMP"
+    output_collagen_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/tryhard/Collagen"
+    output_glutamate_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/tryhard/Glutamate"
+    output_wnt_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/tryhard/WNT"
 
 
 
@@ -706,6 +731,23 @@ if __name__ == "__main__":
     name32= "collagen"
     name33= "glutamate"
     name34= "wnt"
+
+    name35= "bmp_15"
+    name36= "bmp_60"
+    name37= "collagen_15"
+    name38= "collagen_60"
+    name39= "glutamate_15"
+    name40= "glutamate_60"
+    name41= "wnt_60"
+
+    name42= "bmp_15_th"
+    name43= "bmp_60_th"
+    name44= "collagen_15_th"
+    name45= "collagen_60_th"
+    name46= "glutamate_15_th"
+    name47= "glutamate_60_th"
+    name48= "wnt_60_th"
+
 
     name999= "full"
 
@@ -1334,3 +1376,145 @@ if __name__ == "__main__":
                                     output_dir=output_wnt,
                                     order_txt=wnt,
                                     name=name34)
+    
+    # Case35 (bmp_15)
+    print(name35)
+    create_dotplots_with_thresholds(adata=adata_merged_15, 
+                                    genes=custom_bmp, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_bmp,
+                                    order_txt=bmp,
+                                    name=name35)
+    
+    # Case36 (bmp_60)
+    print(name36)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_bmp, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_bmp,
+                                    order_txt=bmp,
+                                    name=name36)
+    
+    # Case37 (collagen_15)
+    print(name37)
+    create_dotplots_with_thresholds(adata=adata_merged_15, 
+                                    genes=custom_collagen, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_collagen,
+                                    order_txt=collagen,
+                                    name=name37)
+    
+    # Case38 (collagen_60)
+    print(name38)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_collagen, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_collagen,
+                                    order_txt=collagen,
+                                    name=name38)
+    
+    # Case39 (glutamate_15)
+    print(name39)
+    create_dotplots_with_thresholds(adata=adata_merged_15, 
+                                    genes=custom_glutamate, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_glutamate,
+                                    order_txt=glutamate,
+                                    name=name39)
+    
+    # Case40 (glutamate_60)
+    print(name40)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_glutamate, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_glutamate,
+                                    order_txt=glutamate,
+                                    name=name40)
+    
+    # Case41 (wnt_60)
+    print(name41)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_wnt, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_wnt,
+                                    order_txt=wnt,
+                                    name=name41)
+    
+    # Case42 (bmp_15_th)
+    print(name42)
+    create_dotplots_with_thresholds(adata=adata_merged_15, 
+                                    genes=custom_bmp_th, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_bmp_th,
+                                    order_txt=bmp_th,
+                                    name=name42)
+    
+    # Case43 (bmp_60_th)
+    print(name43)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_bmp_th, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_bmp_th,
+                                    order_txt=bmp_th,
+                                    name=name43)
+    
+    # Case44 (collagen_15_th)
+    print(name44)
+    create_dotplots_with_thresholds(adata=adata_merged_15, 
+                                    genes=custom_collagen_th, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_collagen_th,
+                                    order_txt=collagen_th,
+                                    name=name44)
+    
+    # Case45 (collagen_60_th)
+    print(name45)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_collagen_th, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_collagen_th,
+                                    order_txt=collagen_th,
+                                    name=name45)
+    
+    # Case46 (glutamate_15_th)
+    print(name46)
+    create_dotplots_with_thresholds(adata=adata_merged_15, 
+                                    genes=custom_glutamate_th, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_glutamate_th,
+                                    order_txt=glutamate_th,
+                                    name=name46)
+    
+    # Case47 (glutamate_60_th)
+    print(name47)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_glutamate_th, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_glutamate_th,
+                                    order_txt=glutamate_th,
+                                    name=name47)
+    
+    # Case48 (wnt_60_th)
+    print(name48)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_wnt_th, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_wnt_th,
+                                    order_txt=wnt_th,
+                                    name=name48)
+    
+    
