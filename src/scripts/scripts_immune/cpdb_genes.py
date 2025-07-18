@@ -25,6 +25,20 @@ def load_data(file_path):
     return sc.read_h5ad(file_path)
 
 
+def split_adata_by_injury_day(adata: sc.AnnData):
+    """
+    Split an AnnData object into four sub-objects based on the 'injury_day' column in obs.
+
+    Returns:
+        tuple: (adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60)
+    """
+    print("Splitting AnnData by injury_day...")
+    adata_injured_15  = adata[adata.obs['injury_day'] == "injured_15"].copy()
+    adata_injured_60  = adata[adata.obs['injury_day'] == "injured_60"].copy()
+
+    return adata_injured_15, adata_injured_60
+
+
 def imm_remove_NA_cat(adata: sc.AnnData):
     
     print("Removing NA cells category")
@@ -318,6 +332,12 @@ if __name__ == "__main__":
     filtered_adatamev = mev_remove_NA_cat(adatamev)
     filtered_adataneu = neu_remove_NA_cat(adataneu)
 
+    # Split into injury_day groups
+    adata_imm_15, adata_imm_60 = split_adata_by_injury_day(filtered_adataimm)
+    adata_mev_15, adata_mev_60 = split_adata_by_injury_day(filtered_adatamev)
+    adata_neu_15, adata_neu_60 = split_adata_by_injury_day(filtered_adataneu)
+    adata_merged_15, adata_merged_60 = split_adata_by_injury_day(adatamerged)
+
     # Load canonical gene lists from a directory
 
     # IMM receive(receptors) genes
@@ -369,6 +389,8 @@ if __name__ == "__main__":
     can_dir_custom_bmp = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/signaling_BMP"
     can_dir_custom_collagen = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/signaling_Collagen"
     can_dir_custom_glutamate = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/signaling_Glutamate"
+    can_dir_custom_wnt = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/signaling_WNT"
+
     
 
     
@@ -415,6 +437,8 @@ if __name__ == "__main__":
     custom_bmp = load_canonical_from_dir(can_dir_custom_bmp)
     custom_collagen = load_canonical_from_dir(can_dir_custom_collagen)
     custom_glutamate= load_canonical_from_dir(can_dir_custom_glutamate)
+    custom_wnt= load_canonical_from_dir(can_dir_custom_wnt)
+
 
 
 
@@ -601,23 +625,26 @@ if __name__ == "__main__":
                  "Intreferon|Epend_ligands", "Intreferon|Epend_receptors", 
                  "M0.1|Epend_ligands", "M0.1|Epend_receptors"]
     
-    bmp = ["Fibroblasts",
+    bmp = [
            "15_Coll.3_Ligs", 
            "15_Coll.3|Endo.2_Recept", "15_Coll.3|PVM_Recept",
            "60_Coll.3_Ligs", 
            "60_Coll.3|DAM.1_Recept", "60_Coll.3|Endo.0_Recept", "60_Coll.3|Epend_Recept", "60_Coll.3|Interferon_Recept", "60_Coll.3|M0.1_Recept"]
 
-    collagen = ["Fibroblasts", "ECM_Collagen",
+    collagen = [
                 "15_Coll.1|Endo.0_Ligs", "15_Coll.1|Endo.0_Recept",
                 "15_Coll.1|Pericytes_Ligs", "15_Coll.1|Pericytes_Recept",
                 "60_Coll.1|Endo.2_Ligs", "60_Coll.1|Endo.2_Recept", 
                 "60_Coll.1|Pericytes_Ligs", "60_Coll.1|Pericytes_Recept",
                 "60_Coll.3|Endo.0_Ligs", "60_Coll.3|Endo.0_Recept"]
 
-    glutamate = ["Fibroblasts",
+    glutamate = [
                  "15_PVM|Epend_Ligs", "15_PVM|Epend_Recept", 
                  "60_Coll.3_Ligs", 
                  "60_Coll.3|DAM.1_Recept", "60_Coll.3|Epend_Recept", "60_Coll.3|Interferon_Recept", "60_Coll.3|M0.1_Recept"]
+    
+    wnt = ["60_Coll.3|Endo.0_Ligs", "60_Coll.3|Endo.0_Recept", 
+            "60_Coll.3|Epend_Ligs", "60_Coll.3|Epend_Recept"]
     
 
 
@@ -636,6 +663,7 @@ if __name__ == "__main__":
     output_bmp = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/signaling_BMP"
     output_collagen = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/signaling_Collagen"
     output_glutamate = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/signaling_Glutamate"
+    output_wnt = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/signaling_WNT"
 
 
 
@@ -677,6 +705,7 @@ if __name__ == "__main__":
     name31= "bmp"
     name32= "collagen"
     name33= "glutamate"
+    name34= "wnt"
 
     name999= "full"
 
@@ -1295,3 +1324,13 @@ if __name__ == "__main__":
                                     output_dir=output_glutamate,
                                     order_txt=glutamate,
                                     name=name33)
+    
+    # Case34 (wnt)
+    print(name34)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom_wnt, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_wnt,
+                                    order_txt=wnt,
+                                    name=name34)
