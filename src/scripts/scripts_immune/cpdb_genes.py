@@ -680,7 +680,8 @@ if __name__ == "__main__":
     epend60 = ["APLP2_PLXNA4", "APP_SORL1", "BMP", "CDH2", "DDC_HTR2C", "DKK2_LRP6", "EFNA5_EPHA5", "EFNB2_EPHB1", "FLRT2_ADGRL3", "IGF1_IGF1R",
                "NRG_ERBB4", "NRXN_LRRTM4", "NTN1", "PTN_ALK", "PTPRD", "PTPRS", "SIRPA_CD47", "SLIT1_ROBO1", "TENM_ADGRL", "WNT"]
 
-    endo15 = ["ANGPT1_TEK", "BMP", "CADM1", "IGF1_IGF1R", "LAMC1_integrin", "LGALS3_MERTK", "NRG1_ERBB4", "NRXN3_LRRTM4", "PTPRD_IL1RAPL1", "SIRPA_CD47", "TENM_ADGRL"]
+    endo15 = ["ANGPT1_TEK", "APLP2_PLXNA4", "APP_PLXNA4", "BMP", "CADM1", "COL4_ADGRG6", "EFNB2_EPHA4", "IGF1_IGF1R", "LAMC1_integrin", "LGALS3_MERTK", 
+              "NRG1_ERBB4", "NRXN3_LRRTM4", "PTPRD_IL1RAPL1", "SIRPA_CD47", "TENM_ADGRL"]
     
 
     output_dir_immune = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_immune/cpdb_genes"
@@ -769,7 +770,8 @@ if __name__ == "__main__":
 
     name49= "Epend_15"
     name50= "Epend_60"
-    name51= "Endo_60"
+    name51= "Endo_15"
+    name52= "Endo_60"
 
 
     name999= "full"
@@ -1569,5 +1571,16 @@ if __name__ == "__main__":
                                     output_dir=output_endo15_th,
                                     order_txt=endo15,
                                     name=name51)
+    
+    # Case51 (endo_15)
+    print(name51)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_endo15, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_endo15_th,
+                                    order_txt=endo15,
+                                    name=name52)
+    
     
     
