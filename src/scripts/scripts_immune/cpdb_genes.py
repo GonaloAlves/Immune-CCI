@@ -782,7 +782,7 @@ if __name__ == "__main__":
     name60= "Epend_60-full" #
     name61= "Endo_15"
     name62= "Endo_15-60"
-    name63= "Endo_full"
+    name63= "Endo_full" ###########
     name64= "Epend_full"
     name65= "bmp_full"
     name66= "endo_full_15_th"
@@ -1575,7 +1575,7 @@ if __name__ == "__main__":
                                     order_txt=glutamate_th,
                                     name=name50)
     
-    # Case50 (glutamate_full_th)
+    # Case51 (glutamate_full_th)
     print(name51)
     create_dotplots_with_thresholds(adata=adatamerged, 
                                     genes=custom_glutamate_th, 
@@ -1585,7 +1585,7 @@ if __name__ == "__main__":
                                     order_txt=glutamate_th,
                                     name=name51)
     
-    # Case50 (wnt_15_th)
+    # Case52 (wnt_15_th)
     print(name52)
     create_dotplots_with_thresholds(adata=adata_merged_15, 
                                     genes=custom_wnt_th, 
@@ -1597,114 +1597,114 @@ if __name__ == "__main__":
     
     
     ##########
-    # Case51 (endo_15)
-    print(name51)
-    create_dotplots_with_thresholds(adata=adata_merged_15, 
-                                    genes=custom_endo15, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_endo15_th,
-                                    order_txt=endo15,
-                                    name=name51)
-    
-    # Case52 (endo_60)
-    print(name52)
-    create_dotplots_with_thresholds(adata=adata_merged_60, 
-                                    genes=custom_endo15, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_endo15_th,
-                                    order_txt=endo15,
-                                    name=name52)
-    
-    # Case53 (Endo_full)
+    # Case53 (wnt_60_th)
     print(name53)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_endo15, 
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_wnt_th, 
                                     thresholds=pts_thresholds, 
                                     user_order=merged_custom_cluster_order, 
-                                    output_dir=output_endo15_th,
-                                    order_txt=endo15,
+                                    output_dir=output_wnt_th,
+                                    order_txt=wnt_th,
                                     name=name53)
     
-    # Case54 (Epend_full)
+    # Case54 (wnt_full_th)
     print(name54)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_epend60, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_epend15_th,
-                                    order_txt=epend60,
-                                    name=name54)
-    
-    # Case61 (Epend_15_full)
-    print(name61)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_epend15, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_epend15_th,
-                                    order_txt=epend15,
-                                    name=name61)
-    
-    
-    # Case55 (bmp_full)
-    print(name55)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_bmp_th, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_bmp_th,
-                                    order_txt=bmp_th,
-                                    name=name55)
-    
-    # Case57 (bmp_full_th)
-    print(name57)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_bmp_th, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_bmp_th,
-                                    order_txt=bmp_th,
-                                    name=name57)
-    # Case58 (collagen_full_th)
-    print(name58)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_collagen_th, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_collagen_th,
-                                    order_txt=collagen_th,
-                                    name=name58)
-    
-    # Case59 (glutamate_full_th)
-    print(name59)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_glutamate_th, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_glutamate_th,
-                                    order_txt=glutamate_th,
-                                    name=name59)
-    
-    # Case60 (wnt_full_th)
-    print(name61)
     create_dotplots_with_thresholds(adata=adatamerged, 
                                     genes=custom_wnt_th, 
                                     thresholds=pts_thresholds, 
                                     user_order=merged_custom_cluster_order, 
                                     output_dir=output_wnt_th,
                                     order_txt=wnt_th,
-                                    name=name61)
+                                    name=name54)
     
-    # Case60 (Epend_15-60)
-    print(name63)
+    # Case55 (Epend_15)
+    print(name55)
+    create_dotplots_with_thresholds(adata=adata_merged_15, 
+                                    genes=custom_epend15, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_epend15_th,
+                                    order_txt=epend15,
+                                    name=name55)
+    
+    # Case56 (Epend_15-60)
+    print(name56)
     create_dotplots_with_thresholds(adata=adata_merged_60, 
                                     genes=custom_epend15, 
                                     thresholds=pts_thresholds, 
                                     user_order=merged_custom_cluster_order, 
                                     output_dir=output_epend15_th,
                                     order_txt=epend15,
+                                    name=name56)
+    
+    # Case57 (Epend_15_full)
+    print(name57)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom_epend15, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_epend15_th,
+                                    order_txt=epend15,
+                                    name=name57)
+    
+    
+    # Case58 (Epend_60)
+    print(name58)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_epend60, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_epend60_th,
+                                    order_txt=epend60,
+                                    name=name58)
+    
+    # Case59 (Epend_60-15)
+    print(name59)
+    create_dotplots_with_thresholds(adata=adata_merged_15, 
+                                    genes=custom_epend60, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_epend60_th,
+                                    order_txt=epend60,
+                                    name=name59)
+    # Case60 (Epend_60-full)
+    print(name60)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom_epend60, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_epend60_th,
+                                    order_txt=epend60,
+                                    name=name60)
+    
+    # Case61 (Endo_15)
+    print(name61)
+    create_dotplots_with_thresholds(adata=adata_merged_15, 
+                                    genes=custom_endo15, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_endo15_th,
+                                    order_txt=endo15,
+                                    name=name61)
+    
+    # Case62 (Endo_15-60)
+    print(name62)
+    create_dotplots_with_thresholds(adata=adata_merged_60, 
+                                    genes=custom_endo15, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_endo15_th,
+                                    order_txt=endo15,
+                                    name=name62)
+    
+    # Case60 (Endo_full)
+    print(name63)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom_endo15, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_endo15_th,
+                                    order_txt=endo15,
                                     name=name63)
     
     # Case60 (Epend_15-full)
