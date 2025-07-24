@@ -783,10 +783,6 @@ if __name__ == "__main__":
     name61= "Endo_15"
     name62= "Endo_15-60"
     name63= "Endo_full" ###########
-    name64= "Epend_full"
-    name65= "bmp_full"
-    name66= "endo_full_15_th"
-
 
     name999= "full"
 
@@ -1707,33 +1703,7 @@ if __name__ == "__main__":
                                     order_txt=endo15,
                                     name=name63)
     
-    # Case60 (Epend_15-full)
-    print(name64)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_epend15, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_epend15_th,
-                                    order_txt=epend15,
-                                    name=name64)
+   
     
-    # Case60 (Epend_60-15)
-    print(name65)
-    create_dotplots_with_thresholds(adata=adata_merged_15, 
-                                    genes=custom_epend60, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_epend60_th,
-                                    order_txt=epend60,
-                                    name=name65)
-    
-    # Case60 (Epend_60-full)
-    print(name66)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_epend60, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_epend60_th,
-                                    order_txt=epend60,
-                                    name=name66)
+
     
