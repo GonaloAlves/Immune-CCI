@@ -110,7 +110,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_o
     #adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(user_order, ordered=True)
 
-    # ✅ Format gene names right away
+    # Format gene names right away
     genes = format_gene_names(genes)
     
     print(genes)

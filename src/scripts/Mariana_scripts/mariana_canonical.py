@@ -30,12 +30,12 @@ def split_adata_by_injury_day(adata: sc.AnnData):
         tuple: (adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60)
     """
     print("Splitting AnnData by injury_day...")
-    adata_uninjured_0 = adata[adata.obs['injury_day'] == "uninjured_0"].copy()
-    adata_sham_15     = adata[adata.obs['injury_day'] == "sham_15"].copy()
+    adata_control = adata[adata.obs['injury_day'].isin(["uninjured_0", "sham_15"])].copy()
+    # adata_sham_15     = adata[adata.obs['injury_day'] == "sham_15"].copy()
     adata_injured_15  = adata[adata.obs['injury_day'] == "injured_15"].copy()
     adata_injured_60  = adata[adata.obs['injury_day'] == "injured_60"].copy()
 
-    adata_control = adata_uninjured_0 + adata_sham_15   #############
+    
 
     return adata_control, adata_injured_15, adata_injured_60
 
@@ -117,8 +117,26 @@ def load_canonical_from_dir(directory):
     return gene_dict
 
 
+def imm_keep_only_selected_clusters(adata: sc.AnnData, clusters_to_keep: list):
+    """
+    Keep only cells whose 'leiden_fusion' is in the clusters_to_keep list.
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gene, prefix ,output_dir="canonical/canonical_dalila"):
+    Parameters:
+    adata (AnnData): The AnnData object.
+    clusters_to_keep (list): List of cluster names to keep.
+
+    Returns:
+    AnnData: Filtered AnnData object containing only the selected clusters.
+    """
+    print("Keeping only selected clusters")
+    
+    mask = adata.obs['leiden_fusion'].isin(clusters_to_keep)
+    filtered_adata = adata[mask].copy()
+    
+    return filtered_adata
+
+
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, name, prefix ,output_dir="canonical/canonical_mariana"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -134,23 +152,24 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+
+    adata = imm_keep_only_selected_clusters(adata=adata, clusters_to_keep=cluster_order)
+
     #print(adata['leiden_fusion'].cat.categories.to_list())
     
     # Convert to categorical and reorder only existing categories
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
 
-    # Find actual categories present in this subset
-    present_categories = [cat for cat in cluster_order if cat in adata.obs['leiden_fusion'].cat.categories]
+    # # Find actual categories present in this subset
+    # present_categories = [cat for cat in cluster_order if cat in adata.obs['leiden_fusion'].cat.categories]
 
-    # Inform if some clusters are missing
-    missing_clusters = [cat for cat in cluster_order if cat not in present_categories]
-    if missing_clusters:
-        print(f"Skipping missing clusters in dotplot: {missing_clusters}")
+    # # Inform if some clusters are missing
+    # missing_clusters = [cat for cat in cluster_order if cat not in present_categories]
+    # if missing_clusters:
+    #     print(f"Skipping missing clusters in dotplot: {missing_clusters}")
 
     # Reorder with only present ones
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(present_categories, ordered=True)
-
-
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
 
 
     for threshold in thresholds:
@@ -168,17 +187,14 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         # Compare canonical genes with cluster-specific genes
         filtered_genes = compare_canonical(genes, cluster_dfs)
 
-        # Export filtered genes to Excel
-        export_to_excel(filtered_genes, pts_threshold=threshold, prefix=prefix)
+        # # Export filtered genes to Excel
+        # export_to_excel(filtered_genes, pts_threshold=threshold, prefix=prefix)
 
         # Aggregate filtered genes by gene group
         top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Example user-defined gene group order
-        user_gene_group_order = []
-
-        # Example user-defined gene group order
-        user_gene_group_order = ["Epithelial_state", "Mesenchymal_state"]
+        user_gene_group_order = ["Genes"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -214,8 +230,8 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
 
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"{prefix}_{gene}_dotplot_scaled_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"{prefix}_{gene}_dotplot_normal_{threshold}.png")
+        output_scaled_no_dendro = os.path.join(output_dir, f"{prefix}_dotplot_scaled_{threshold}_{name}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"{prefix}_dotplot_normal_{threshold}_{name}.png")
 
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
@@ -367,6 +383,7 @@ def check_cluster_order(adata, cluster_order):
     if not missing_in_data and not missing_in_order:
         print("\n All categories match! Reordering should work.")
 
+
 def export_to_excel(filtered_genes, pts_threshold, prefix, output_dir="excels/dalila"):
     """
     Export filtered genes into separate Excel files, one for each gene group and condition.
@@ -452,9 +469,11 @@ if __name__ == "__main__":
     adata_groups = {
         "control": adata_control,
         "injured_15": adata_injured_15,
-        "injured_60": adata_injured_60
+        "injured_60": adata_injured_60,
+        "fulldays": filtered_adata
     }
 
+    
     # Load canonical gene lists from a directory
     canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Mariana"
     genes = load_canonical_from_dir(canonical_genes_dir)
@@ -466,6 +485,10 @@ if __name__ == "__main__":
                             "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
     
     custom_cluster_order_endo = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3"]
+
+    name1 = "all"
+    name2 = "endo"
+    
 
     # Process each subset
     for label, ad in adata_groups.items():
@@ -482,4 +505,6 @@ if __name__ == "__main__":
         check_cluster_order(adata_filtered, custom_cluster_order_all)
 
         # Generate dotplots
-        create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_all, gene="", prefix=label)
+        create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_all, name1, prefix=label)
+
+        create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_endo, name2, prefix=label)

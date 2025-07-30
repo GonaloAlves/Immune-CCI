@@ -26,6 +26,8 @@ conda activate mkpy
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_cellphonedb/summary_cellphonedb.py
 
-python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_immune/cpdb_genes.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_immune/cpdb_genes.py
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/Dalila_scripts/dalila_canonical.py
+
+python /home/makowlg/Documents/Immune-CCI/src/scripts/Mariana_scripts/mariana_canonical.py
