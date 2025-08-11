@@ -2,7 +2,9 @@
 import os
 import scanpy as sc
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # This script will display the gene expression values of Mariana's canonical genes from Meningeal dataset
 
@@ -31,11 +33,10 @@ def split_adata_by_injury_day(adata: sc.AnnData):
     """
     print("Splitting AnnData by injury_day...")
     adata_control = adata[adata.obs['injury_day'].isin(["uninjured_0", "sham_15"])].copy()
-    # adata_sham_15     = adata[adata.obs['injury_day'] == "sham_15"].copy()
+    # adata_sham_15 = adata[adata.obs['injury_day'] == "sham_15"].copy()
     adata_injured_15  = adata[adata.obs['injury_day'] == "injured_15"].copy()
     adata_injured_60  = adata[adata.obs['injury_day'] == "injured_60"].copy()
 
-    
 
     return adata_control, adata_injured_15, adata_injured_60
 
@@ -255,6 +256,30 @@ def extract_dge_data(adata):
 
     return gene_names, logfoldchanges, pvals_adj, pts
 
+def extract_dge_data_c(adata):
+    dge_fusion = adata.uns.get('rank_genes_groups_leiden_fusion_control', None)
+    
+    gene_names = pd.DataFrame(dge_fusion.get('names', []))
+    logfoldchanges = pd.DataFrame(dge_fusion.get('logfoldchanges', []))
+
+    return gene_names, logfoldchanges
+
+def extract_dge_data_15(adata):
+    dge_fusion = adata.uns.get('rank_genes_groups_leiden_fusion_inj15', None)
+    
+    gene_names = pd.DataFrame(dge_fusion.get('names', []))
+    logfoldchanges = pd.DataFrame(dge_fusion.get('logfoldchanges', []))
+
+    return gene_names, logfoldchanges
+
+def extract_dge_data_60(adata):
+    dge_fusion = adata.uns.get('rank_genes_groups_leiden_fusion_inj60', None)
+    
+    gene_names = pd.DataFrame(dge_fusion.get('names', []))
+    logfoldchanges = pd.DataFrame(dge_fusion.get('logfoldchanges', []))
+
+    return gene_names, logfoldchanges
+
 
 
 # Step 3: Create cluster dataframes with filtered data
@@ -451,11 +476,148 @@ def filter_cells_by_gene_expression(adata: sc.AnnData, gene_name: str):
 
     return filtered_adata
 
+def run_rank_genes_per_condition(
+    adata,
+    cond,
+    uns_key, 
+    save_dir,
+    base_filename="adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_together"):
 
+    
+    print(f"\nProcessing condition: {uns_key}")
+    print(f"Running rank_genes_groups for {uns_key}...")
+
+    sc.tl.rank_genes_groups(adata, groupby='leiden_fusion', method='wilcoxon', use_raw=False, pts=True)
+
+    # Save rank_genes_groups result under custom uns_key
+    adata.uns[uns_key] = adata.uns['rank_genes_groups']
+    
+    os.makedirs(save_dir, exist_ok=True)
+    filename = f"{base_filename}_{cond}.h5ad"
+    out_path = os.path.join(save_dir, filename)
+    print(f"Saving AnnData with results to {out_path}")
+    adata.write(out_path)
+
+
+
+def plot_normalized_logfc_per_cluster(
+    gene_names_c, logfc_c,
+    gene_names_15, logfc_15,
+    gene_names_60, logfc_60,
+    clusters_to_keep,
+    gene_list,
+    output_dir="normalized_logfc_per_cluster"):
+
+    """
+    Create normalized logFC barplots per cluster for selected genes.
+
+    Parameters:
+    - gene_names_X, logfc_X: outputs from extract_dge_data() for each condition (control, injured15, injured60)
+    - clusters_to_keep: list of cluster names (must match columns in logfc DataFrames)
+    - gene_list: list of genes to plot
+    - output_dir: folder to save PNGs
+    """
+    os.makedirs(output_dir, exist_ok=True)
+
+    for cluster in clusters_to_keep:
+        if cluster not in logfc_c.columns:
+            print(f"⚠ Cluster {cluster} not found in DGE results — skipping.")
+            continue
+
+        # Extract relevant columns for this cluster
+        df_c = pd.DataFrame({'gene': gene_names_c[cluster], 'logFC_control': logfc_c[cluster]})
+        df_15 = pd.DataFrame({'gene': gene_names_15[cluster], 'logFC_15': logfc_15[cluster]})
+        df_60 = pd.DataFrame({'gene': gene_names_60[cluster], 'logFC_60': logfc_60[cluster]})
+
+        # print(df_c)
+        # print(df_15)
+        # print(df_60)
+
+        # Merge
+        merged = df_c.merge(df_15, on="gene").merge(df_60, on="gene")
+
+        print(merged)
+
+        # Keep only selected genes
+        merged = merged[merged['gene'].isin(gene_list)]
+
+        # Compute normalized logFC (injured - control)
+        merged['norm_15'] = merged['logFC_15'] - merged['logFC_control']
+        merged['norm_60'] = merged['logFC_60'] - merged['logFC_control']
+
+        # Fix gene order
+        merged['gene'] = pd.Categorical(merged['gene'], categories=gene_list, ordered=True)
+        merged = merged.sort_values('gene')
+
+        # Prepare data for manual grouped barplot
+        genes = merged['gene'].values
+        norm_15_vals = merged['norm_15'].values
+        norm_60_vals = merged['norm_60'].values
+
+        x = np.arange(len(genes))  # the label locations
+        width = 0.35  # the width of the bars
+
+        fig, ax = plt.subplots(figsize=(8, 5))
+
+        rects1 = ax.bar(x - width/2, norm_15_vals, width, label='norm_15')
+        rects2 = ax.bar(x + width/2, norm_60_vals, width, label='norm_60')
+
+        ax.axhline(0, color='black', linestyle='--', linewidth=0.8)
+        ax.set_ylim(-1.6, 0.7)
+        ax.set_xticks(x)
+        ax.set_xticklabels(genes, rotation=45, ha='right')
+        ax.set_ylabel('Normalized LogFC')
+        ax.set_title(f"Normalized LogFC — {cluster}")
+        ax.legend()
+
+        plt.tight_layout()
+
+        out_path = os.path.join(output_dir, f"{cluster}_normalized_logfc.png")
+        plt.savefig(out_path, dpi=300)
+        plt.close()
+        print(f"✅ Saved: {out_path}")
+        
+
+def rename_clusters(adata, rename_pairs, resolution="leiden_fusion"):
+    """
+    Rename multiple clusters in the provided resolution column.
+
+    Parameters:
+    adata (AnnData): The AnnData object containing the data.
+    rename_pairs (list of tuples): A list of (current_cluster_name, new_cluster_name) pairs.
+    resolution (str): The resolution column in `adata.obs` to modify (default: "leiden_fusion").
+
+    Returns:
+    AnnData: The modified AnnData object with renamed clusters.
+    """
+
+    # Rename clusters
+    for current_name, new_name in rename_pairs:
+        if current_name not in adata.obs[resolution].unique():
+            print(f"Warning: Cluster '{current_name}' not found in resolution '{resolution}'. Skipping...")
+            continue
+
+        print(f"Renaming cluster '{current_name}' to '{new_name}' in resolution '{resolution}'...")
+        adata.obs[resolution] = adata.obs[resolution].replace({current_name: new_name})
+
+        # Confirm the rename
+        print(f"Cluster '{current_name}' has been renamed to '{new_name}'.")
+        print(adata.obs[resolution].value_counts())
+
+    return adata
 
 if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
+
+    rename_pairs= [
+            ('MeV.Endothelial.0', 'MeV.Endothelial.0'),
+            ('MeV.Endothelial.1', 'MeV.Endothelial.0'),
+            ('MeV.Endothelial.2', 'MeV.Endothelial.0'),
+            ('MeV.Endothelial.3', 'MeV.Endothelial.0')]
+    
+    # Rename the clusters
+    adata = rename_clusters(adata, rename_pairs)
 
     # Remove NA categories
     filtered_adata = remove_NA_cat(adata)
@@ -463,14 +625,15 @@ if __name__ == "__main__":
     # Split into injury_day groups
     adata_control, adata_injured_15, adata_injured_60 = split_adata_by_injury_day(filtered_adata)
 
-    print(adata_injured_15.obs["leiden_fusion"])
+
+    #print(adata_injured_15.obs["leiden_fusion"])
 
     # Group into a dictionary for looping
     adata_groups = {
         "control": adata_control,
         "injured_15": adata_injured_15,
-        "injured_60": adata_injured_60,
-        "fulldays": filtered_adata
+        "injured_60": adata_injured_60
+        #"fulldays": filtered_adata
     }
 
     
@@ -486,31 +649,83 @@ if __name__ == "__main__":
     
     custom_cluster_order_endo = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3"]
 
+    custom_cluster_order = ["MeV.Endothelial.0"]
+
     name1 = "all"
     name2 = "endo"
     name3 = "all-endo"
     name4 = "endo-endo"
-    
 
-    # Process each subset
-    for label, ad in adata_groups.items():
-        print(f"\n--- Processing condition: {label} ---")
+    cond1= "control"
+    cond2= "injured15"
+    cond3= "injured60"
 
-        # Filter cells by gene expression
-        #gene_filtered_adata = filter_cells_by_gene_expression(ad, "Mylip")
+    # # Process each subset
+    # for label, ad in adata_groups.items():
+    #     print(f"\n--- Processing condition: {label} ---")
 
-        # Remove unwanted clusters
-        clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', "MeV.FibUnknown.6", "MeV.EndoUnknow.4"]
-        adata_filtered = remove_clusters(ad, clusters_to_remove)
+    #     # Filter cells by gene expression
+    #     #gene_filtered_adata = filter_cells_by_gene_expression(ad, "Mylip")
 
-        # Check cluster order
-        check_cluster_order(adata_filtered, custom_cluster_order_all)
+    #     # Remove unwanted clusters
+    #     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', "MeV.FibUnknown.6", "MeV.EndoUnknow.4"]
+    #     adata_filtered = remove_clusters(ad, clusters_to_remove)
 
-        # Generate dotplots
-        # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_all, name1, prefix=label)
+    #     # Check cluster order
+    #     check_cluster_order(adata_filtered, custom_cluster_order_all)
 
-        # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_endo, name2, prefix=label)
+    #     # Generate dotplots
+    #     # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_all, name1, prefix=label)
 
-        create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_all, name3, prefix=label)
+    #     # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_endo, name2, prefix=label)
 
-        create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_endo, name4, prefix=label)
+    #     # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_all, name3, prefix=label)
+
+    #     # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_endo, name4, prefix=label)
+
+    processed_adatas = run_rank_genes_per_condition(
+        adata_control,
+        cond=cond1,
+        uns_key="rank_genes_groups_leiden_fusion_control",
+        save_dir="/home/makowlg/Documents/Immune-CCI/h5ad_files"
+    )
+
+    processed_adatas = run_rank_genes_per_condition(
+        adata_injured_15,
+        cond=cond2,
+        uns_key="rank_genes_groups_leiden_fusion_inj15",
+        save_dir="/home/makowlg/Documents/Immune-CCI/h5ad_files"
+    )
+
+    processed_adatas = run_rank_genes_per_condition(
+        adata_injured_60,
+        cond=cond3,
+        uns_key="rank_genes_groups_leiden_fusion_inj60",
+        save_dir="/home/makowlg/Documents/Immune-CCI/h5ad_files"
+    )
+
+    adata_c = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_together_control.h5ad")
+    adata_15 = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_together_injured15.h5ad")
+    adata_60 = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_together_injured60.h5ad")
+
+    print(adata_c)
+    print(adata_15)
+    print(adata_60)
+
+    gene_names_c, logfc_c = extract_dge_data_c(adata_c)
+    gene_names_15, logfc_15 = extract_dge_data_15(adata_15)
+    gene_names_60, logfc_60 = extract_dge_data_60(adata_60)
+
+    genes_to_check = ["Tjp1", "Cldn5", "Cdh5", "Slc2a1"]  
+
+    print(logfc_c)
+    print(logfc_15)
+    print(logfc_60)
+
+    plot_normalized_logfc_per_cluster(
+        gene_names_c, logfc_c,
+        gene_names_15, logfc_15,
+        gene_names_60, logfc_60,
+        clusters_to_keep=custom_cluster_order,
+        gene_list=genes_to_check
+    )
