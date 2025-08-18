@@ -616,8 +616,8 @@ if __name__ == "__main__":
             ('MeV.Endothelial.2', 'MeV.Endothelial.0'),
             ('MeV.Endothelial.3', 'MeV.Endothelial.0')]
     
-    # Rename the clusters
-    adata = rename_clusters(adata, rename_pairs)
+    # # Rename the clusters
+    # adata = rename_clusters(adata, rename_pairs)
 
     # Remove NA categories
     filtered_adata = remove_NA_cat(adata)
@@ -660,28 +660,6 @@ if __name__ == "__main__":
     cond2= "injured15"
     cond3= "injured60"
 
-    # # Process each subset
-    # for label, ad in adata_groups.items():
-    #     print(f"\n--- Processing condition: {label} ---")
-
-    #     # Filter cells by gene expression
-    #     #gene_filtered_adata = filter_cells_by_gene_expression(ad, "Mylip")
-
-    #     # Remove unwanted clusters
-    #     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', "MeV.FibUnknown.6", "MeV.EndoUnknow.4"]
-    #     adata_filtered = remove_clusters(ad, clusters_to_remove)
-
-    #     # Check cluster order
-    #     check_cluster_order(adata_filtered, custom_cluster_order_all)
-
-    #     # Generate dotplots
-    #     # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_all, name1, prefix=label)
-
-    #     # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_endo, name2, prefix=label)
-
-    #     # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_all, name3, prefix=label)
-
-    #     # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_endo, name4, prefix=label)
 
     processed_adatas = run_rank_genes_per_condition(
         adata_control,
@@ -708,24 +686,56 @@ if __name__ == "__main__":
     adata_15 = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_together_injured15.h5ad")
     adata_60 = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_together_injured60.h5ad")
 
-    print(adata_c)
-    print(adata_15)
-    print(adata_60)
+    create_dotplots_with_thresholds(adata_c, genes, pts_thresholds, custom_cluster_order_endo, name4, prefix=cond1)
 
-    gene_names_c, logfc_c = extract_dge_data_c(adata_c)
-    gene_names_15, logfc_15 = extract_dge_data_15(adata_15)
-    gene_names_60, logfc_60 = extract_dge_data_60(adata_60)
+    create_dotplots_with_thresholds(adata_15, genes, pts_thresholds, custom_cluster_order_endo, name2, prefix=cond2)
 
-    genes_to_check = ["Tjp1", "Cldn5", "Cdh5", "Slc2a1"]  
+    create_dotplots_with_thresholds(adata_60, genes, pts_thresholds, custom_cluster_order_endo, name2, prefix=cond3)
 
-    print(logfc_c)
-    print(logfc_15)
-    print(logfc_60)
 
-    plot_normalized_logfc_per_cluster(
-        gene_names_c, logfc_c,
-        gene_names_15, logfc_15,
-        gene_names_60, logfc_60,
-        clusters_to_keep=custom_cluster_order,
-        gene_list=genes_to_check
-    )
+    # # Process each subset
+    # for label, ad in adata_groups.items():
+    #     print(f"\n--- Processing condition: {label} ---")
+
+    #     # Filter cells by gene expression
+    #     #gene_filtered_adata = filter_cells_by_gene_expression(ad, "Mylip")
+
+    #     # Remove unwanted clusters
+    #     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', "MeV.FibUnknown.6", "MeV.EndoUnknow.4"]
+    #     adata_filtered = remove_clusters(ad, clusters_to_remove)
+
+    #     # Check cluster order
+    #     check_cluster_order(adata_filtered, custom_cluster_order_all)
+
+    #     # Generate dotplots
+    #     # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_all, name1, prefix=label)
+
+    #     create_dotplots_with_thresholds(ad, genes, pts_thresholds, custom_cluster_order_endo, name2, prefix=label)
+
+    #     # create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_all, name3, prefix=label)
+
+    #     create_dotplots_with_thresholds(ad, genes, pts_thresholds, custom_cluster_order_endo, name4, prefix=label)
+
+    
+
+    # print(adata_c)
+    # print(adata_15)
+    # print(adata_60)
+
+    # gene_names_c, logfc_c = extract_dge_data_c(adata_c)
+    # gene_names_15, logfc_15 = extract_dge_data_15(adata_15)
+    # gene_names_60, logfc_60 = extract_dge_data_60(adata_60)
+
+    # genes_to_check = ["Tjp1", "Cldn5", "Cdh5", "Slc2a1"]  
+
+    # print(logfc_c)
+    # print(logfc_15)
+    # print(logfc_60)
+
+    # plot_normalized_logfc_per_cluster(
+    #     gene_names_c, logfc_c,
+    #     gene_names_15, logfc_15,
+    #     gene_names_60, logfc_60,
+    #     clusters_to_keep=custom_cluster_order,
+    #     gene_list=genes_to_check
+    # )
