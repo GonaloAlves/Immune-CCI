@@ -404,6 +404,8 @@ if __name__ == "__main__":
     can_dir_custom_dom_bmp = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/tryhard/Domingos/BMP"
     can_dir_custom_dom_wnt = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/tryhard/Domingos/WNT"
     can_dir_custom_dom_coll = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/tryhard/Domingos/Collagen"
+    can_dir_custom_dom_endo = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/tryhard/Domingos/Endo"
+    can_dir_custom_dom_epend = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/txt/tryhard/Domingos/Epend"
 
 
     
@@ -466,6 +468,8 @@ if __name__ == "__main__":
     custom_dom_bmp = load_canonical_from_dir(can_dir_custom_dom_bmp)
     custom_dom_wnt = load_canonical_from_dir(can_dir_custom_dom_wnt)
     custom_dom_coll = load_canonical_from_dir(can_dir_custom_dom_coll)
+    custom_dom_endo = load_canonical_from_dir(can_dir_custom_dom_endo)
+    custom_dom_epend = load_canonical_from_dir(can_dir_custom_dom_epend)
 
 
 
@@ -691,11 +695,15 @@ if __name__ == "__main__":
     endo15 = ["ANGPT1_TEK", "APLP2_PLXNA4", "APP_PLXNA4", "BMP", "CADM1", "COL4_ADGRG6", "EFNB2_EPHA4", "IGF1_IGF1R", "LAMC1_integrin", "LGALS3_MERTK", 
               "NRG1_ERBB4", "NRXN3_LRRTM4", "PTPRD_IL1RAPL1", "SIRPA_CD47", "TENM_ADGRL"]
     
-    dom_bmp = ["BMP"]
+    dom_bmp = ["BMP", "Ligands", "Receptors"]
 
-    dom_wnt = ["WNT"]
+    dom_wnt = ["WNT", "Ligands" ,"Receptors"]
 
-    dom_coll = ["Collagen"]
+    dom_coll = ["Collagen", "Receptors"]
+
+    dom_endo = ["ANGPT1_TEK", "LAMC1_integrin", "LGALS3_MERTK", "SIRPA_CD47"]
+
+    dom_epend = ["APP_SORL1", "DDC_HTR2C"]
 
 
     output_dir_immune = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_immune/cpdb_genes"
@@ -727,6 +735,8 @@ if __name__ == "__main__":
     output_dom_bmp_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/tryhard/Domingos/BMP"
     output_dom_wnt_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/tryhard/Domingos/WNT"
     output_dom_coll_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/tryhard/Domingos/Collagen"
+    output_dom_endo_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/tryhard/Domingos/Endo"
+    output_dom_epend_th = "/home/makowlg/Documents/Immune-CCI/src/canonical/custom_cpdb/output/tryhard/Domingos/Epend"
 
 
     name1= "imm_rec_15_all"
@@ -804,6 +814,8 @@ if __name__ == "__main__":
     name64 = "Dom_BMP"
     name65 = "Dom_WNT"
     name66 = "Dom_Coll"
+    name67 = "Dom_Endo"
+    name68 = "Dom_Epend"
 
     name999= "full"
     
@@ -1755,6 +1767,25 @@ if __name__ == "__main__":
                                     order_txt=dom_coll,
                                     name=name66)
     
+    # Case67 (Domingos_Endo)
+    print(name67)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom_dom_endo, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_dom_endo_th,
+                                    order_txt=dom_endo,
+                                    name=name67)
+    
+    # Case68 (Domingos_Epend)
+    print(name68)
+    create_dotplots_with_thresholds(adata=adatamerged, 
+                                    genes=custom_dom_epend, 
+                                    thresholds=pts_thresholds, 
+                                    user_order=merged_custom_cluster_order, 
+                                    output_dir=output_dom_epend_th,
+                                    order_txt=dom_epend,
+                                    name=name68)
     
     
    
