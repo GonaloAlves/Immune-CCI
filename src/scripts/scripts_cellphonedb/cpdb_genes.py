@@ -513,6 +513,16 @@ if __name__ == "__main__":
     
     "Neu.Epend.0"]
 
+    full_merged_custom_cluster_order = ["Imm.M0Like.0", "Imm.M0Like.1", 
+    "Imm.M0Like.2", "Imm.MHCII.0" ,
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0",
+    "MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
+                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0",
+    
+    "Neu.CSFcN.0", "Neu.Epend.0"]
+
     rec_cluster_remove_imm_15 = [
     "Imm.M0Like.1", 
     "Imm.Interferon.0",
