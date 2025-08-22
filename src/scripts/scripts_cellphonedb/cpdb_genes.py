@@ -88,6 +88,43 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
+def export_cluster_pts_to_excel(cluster_dfs, output_file, sort_genes=True):
+    """
+    Export cluster_dfs (dict of DataFrames) to an Excel file.
+    Each sheet corresponds to a cluster, showing gene names and their 'pts' values.
+
+    Parameters
+    ----------
+    cluster_dfs : dict
+        Dictionary of DataFrames per cluster (must include 'pts' column).
+    output_file : str
+        Path to the Excel file (e.g., "results/cluster_pts.xlsx").
+    sort_genes : bool, default=True
+        Whether to sort genes alphabetically in each sheet.
+
+    Returns
+    -------
+    None
+    """
+    # Ensure directory exists
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
+    with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
+        for cluster_name, df in cluster_dfs.items():
+            if "pts" not in df.columns:
+                print(f"⚠️ Skipping {cluster_name}, no 'pts' column found")
+                continue
+            if sort_genes:
+                df = df.sort_index()
+            # Only keep gene names and pts
+            export_df = df[["pts"]]
+            # Excel sheet names are max 31 chars
+            sheet_name = str(cluster_name)[:31]
+            export_df.to_excel(writer, sheet_name=sheet_name)
+
+    print(f"✅ Exported cluster 'pts' values to {output_file}")
+
+
 def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_order, order_txt, name, order_name=None):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
@@ -123,6 +160,13 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_o
 
         # Create cluster DataFrames with the current threshold
         cluster_dfs = create_cluster_dfs(gene_names, pts, pts_threshold=threshold)
+
+        #cluster_dfs = {cl: df for cl, df in cluster_dfs.items() if cl in user_order}
+
+        export_cluster_pts_to_excel(
+            cluster_dfs, 
+            output_file=f"results/cluster_pts_threshold_{threshold}.xlsx"
+        )
 
         # Compare canonical genes with cluster-specific genes
         filtered_genes = compare_canonical(genes, cluster_dfs)
@@ -705,11 +749,11 @@ if __name__ == "__main__":
     endo15 = ["ANGPT1_TEK", "APLP2_PLXNA4", "APP_PLXNA4", "BMP", "CADM1", "COL4_ADGRG6", "EFNB2_EPHA4", "IGF1_IGF1R", "LAMC1_integrin", "LGALS3_MERTK", 
               "NRG1_ERBB4", "NRXN3_LRRTM4", "PTPRD_IL1RAPL1", "SIRPA_CD47", "TENM_ADGRL"]
     
-    dom_bmp = ["BMP", "Ligands", "Receptors"]
+    dom_bmp = ["Ligands", "Receptors", "BMP"]
 
-    dom_wnt = ["WNT", "Ligands" ,"Receptors"]
+    dom_wnt = ["Ligands" ,"Receptors", "WNT"]
 
-    dom_coll = ["Collagen", "Receptors"]
+    dom_coll = ["Receptors", "Collagen_I", "Collagen_III", "Collagen_IV", "Collagen_V", "Collagen"]
 
     dom_endo = ["ANGPT1_TEK", "LAMC1_integrin", "LGALS3_MERTK", "SIRPA_CD47"]
 
@@ -1747,35 +1791,35 @@ if __name__ == "__main__":
     #                                 order_txt=endo15,
     #                                 name=name63)
     
-    # Case64 (Domingos_BMP)
-    print(name64)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_dom_bmp, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_dom_bmp_th,
-                                    order_txt=dom_bmp,
-                                    name=name64)
+    # # Case64 (Domingos_BMP)
+    # print(name64)
+    # create_dotplots_with_thresholds(adata=adatamerged, 
+    #                                 genes=custom_dom_bmp, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=merged_custom_cluster_order, 
+    #                                 output_dir=output_dom_bmp_th,
+    #                                 order_txt=dom_bmp,
+    #                                 name=name64)
     
-    # Case65 (Domingos_WNT)
-    print(name65)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_dom_wnt, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_dom_wnt_th,
-                                    order_txt=dom_wnt,
-                                    name=name65)
+    # # Case65 (Domingos_WNT)
+    # print(name65)
+    # create_dotplots_with_thresholds(adata=adatamerged, 
+    #                                 genes=custom_dom_wnt, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=merged_custom_cluster_order, 
+    #                                 output_dir=output_dom_wnt_th,
+    #                                 order_txt=dom_wnt,
+    #                                 name=name65)
     
-    # Case66 (Domingos_Collagen)
-    print(name66)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_dom_coll, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_dom_coll_th,
-                                    order_txt=dom_coll,
-                                    name=name66)
+    # # Case66 (Domingos_Collagen)
+    # print(name66)
+    # create_dotplots_with_thresholds(adata=adatamerged, 
+    #                                 genes=custom_dom_coll, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=merged_custom_cluster_order, 
+    #                                 output_dir=output_dom_coll_th,
+    #                                 order_txt=dom_coll,
+    #                                 name=name66)
     
     # Case67 (Domingos_Endo)
     print(name67)
@@ -1787,15 +1831,15 @@ if __name__ == "__main__":
                                     order_txt=dom_endo,
                                     name=name67)
     
-    # Case68 (Domingos_Epend)
-    print(name68)
-    create_dotplots_with_thresholds(adata=adatamerged, 
-                                    genes=custom_dom_epend, 
-                                    thresholds=pts_thresholds, 
-                                    user_order=merged_custom_cluster_order, 
-                                    output_dir=output_dom_epend_th,
-                                    order_txt=dom_epend,
-                                    name=name68)
+    # # Case68 (Domingos_Epend)
+    # print(name68)
+    # create_dotplots_with_thresholds(adata=adatamerged, 
+    #                                 genes=custom_dom_epend, 
+    #                                 thresholds=pts_thresholds, 
+    #                                 user_order=merged_custom_cluster_order, 
+    #                                 output_dir=output_dom_epend_th,
+    #                                 order_txt=dom_epend,
+    #                                 name=name68)
     
     
    
