@@ -31,12 +31,12 @@ def split_adata_by_injury_day(adata: sc.AnnData):
         tuple: (adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60)
     """
     print("Splitting AnnData by injury_day...")
-    adata_uninjured_0 = adata[adata.obs['injury_day'] == "uninjured_0"].copy()
-    adata_sham_15     = adata[adata.obs['injury_day'] == "sham_15"].copy()
+    adata_control = adata[adata.obs['injury_day'].isin(["uninjured_0", "sham_15"])].copy()
     adata_injured_15  = adata[adata.obs['injury_day'] == "injured_15"].copy()
     adata_injured_60  = adata[adata.obs['injury_day'] == "injured_60"].copy()
+    adata_injured = adata[adata.obs['injury_day'].isin(["injured_15", "injured_60"])].copy()
 
-    return adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60
+    return adata_control, adata_injured_15, adata_injured_60, adata_injured
 
 
 def remove_NA_cat(adata: sc.AnnData):
@@ -115,31 +115,25 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def dendogram_sc(adata):
+def imm_keep_only_selected_clusters(adata: sc.AnnData, clusters_to_keep: list):
     """
-    Compute and save the dendrogram for a specific group and store it in a specified key.
+    Keep only cells whose 'leiden_fusion' is in the clusters_to_keep list.
 
     Parameters:
-    adata (AnnData): The AnnData object containing the data.
-    dendrogram_key (str): The key to save the dendrogram in `adata.uns`.
+    adata (AnnData): The AnnData object.
+    clusters_to_keep (list): List of cluster names to keep.
 
     Returns:
-    None
+    AnnData: Filtered AnnData object containing only the selected clusters.
     """
+    print("Keeping only selected clusters")
+    
+    mask = adata.obs['leiden_fusion'].isin(clusters_to_keep)
+    filtered_adata = adata[mask].copy()
+    
+    return filtered_adata
 
-    # Compute the dendrogram
-    print(f"Computing dendrogram for leiden_fusion...")
-    sc.tl.dendrogram(
-        adata,
-        groupby='leiden_fusion',
-        use_rep='X_pca',
-        cor_method='spearman',
-        linkage_method='ward',
-        use_raw=False
-    )
-
-
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gene, prefix ,output_dir="canonical/canonical_dalila"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, name, prefix ,output_dir="canonical/canonical_mariana"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -155,23 +149,24 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+
+    adata = imm_keep_only_selected_clusters(adata=adata, clusters_to_keep=cluster_order)
+
     #print(adata['leiden_fusion'].cat.categories.to_list())
     
     # Convert to categorical and reorder only existing categories
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
 
-    # Find actual categories present in this subset
-    present_categories = [cat for cat in cluster_order if cat in adata.obs['leiden_fusion'].cat.categories]
+    # # Find actual categories present in this subset
+    # present_categories = [cat for cat in cluster_order if cat in adata.obs['leiden_fusion'].cat.categories]
 
-    # Inform if some clusters are missing
-    missing_clusters = [cat for cat in cluster_order if cat not in present_categories]
-    if missing_clusters:
-        print(f"Skipping missing clusters in dotplot: {missing_clusters}")
+    # # Inform if some clusters are missing
+    # missing_clusters = [cat for cat in cluster_order if cat not in present_categories]
+    # if missing_clusters:
+    #     print(f"Skipping missing clusters in dotplot: {missing_clusters}")
 
     # Reorder with only present ones
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(present_categories, ordered=True)
-
-
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
 
 
     for threshold in thresholds:
@@ -189,17 +184,14 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         # Compare canonical genes with cluster-specific genes
         filtered_genes = compare_canonical(genes, cluster_dfs)
 
-        # Export filtered genes to Excel
-        export_to_excel(filtered_genes, pts_threshold=threshold, prefix=prefix)
+        # # Export filtered genes to Excel
+        # export_to_excel(filtered_genes, pts_threshold=threshold, prefix=prefix)
 
         # Aggregate filtered genes by gene group
         top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Example user-defined gene group order
-        user_gene_group_order = []
-
-        # Example user-defined gene group order
-        user_gene_group_order = ["Epithelial_state", "Mesenchymal_state"]
+        user_gene_group_order = ["Mylip_Idol", "Mesenchymal_state"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -221,18 +213,6 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
             return_fig=True
         )
 
-        # (2) Scaled expression (Greys) with dendrogram
-        dotplot_scaled_dendro = sc.pl.dotplot(
-            adata,
-            var_names=top_genes_names,
-            groupby='leiden_fusion',
-            cmap='Greys',
-            colorbar_title='Scaled expression',
-            use_raw=False,
-            standard_scale='var',
-            dendrogram='dendrogram_leiden_fusion',
-            return_fig=True
-        )
 
         # (3) Raw expression (Reds) without dendrogram
         dotplot_normal_no_dendro = sc.pl.dotplot(
@@ -245,37 +225,20 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
             return_fig=True
         )
 
-        # (4) Raw expression (Reds) with dendrogram
-        dotplot_normal_dendro = sc.pl.dotplot(
-            adata,
-            var_names=top_genes_names,
-            groupby='leiden_fusion',
-            cmap='Reds',
-            use_raw=False,
-            dendrogram='dendrogram_leiden_fusion',
-            return_fig=True
-        )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"{prefix}_{gene}_dotplot_scaled_{threshold}.png")
-        output_scaled_dendro = os.path.join(output_dir, f"{prefix}_{gene}_dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"{prefix}_{gene}_dotplot_normal_{threshold}.png")
-        output_normal_dendro = os.path.join(output_dir, f"{prefix}_{gene}_dotplot_normal_dendro_{threshold}.png")
+        output_scaled_no_dendro = os.path.join(output_dir, f"{prefix}_dotplot_scaled_{threshold}_{name}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"{prefix}_dotplot_normal_{threshold}_{name}.png")
 
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
-        dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
         dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
-        dotplot_normal_dendro.savefig(output_normal_dendro, bbox_inches="tight")
 
         plt.close()
         print(f"Saved dotplots for threshold {threshold}:")
         print(f"  - {output_scaled_no_dendro}")
-        print(f"  - {output_scaled_dendro}")
         print(f"  - {output_normal_no_dendro}")
-        print(f"  - {output_normal_dendro}")
         
-
 
 
 def extract_dge_data(adata):
@@ -493,27 +456,51 @@ if __name__ == "__main__":
     filtered_adata = remove_NA_cat(adata)
 
     # Split into injury_day groups
-    adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60 = split_adata_by_injury_day(filtered_adata)
-
+    adata_control, adata_injured_15, adata_injured_60, adata_injured = split_adata_by_injury_day(filtered_adata)
     print(adata_injured_15.obs["leiden_fusion"])
 
-    # # Group into a dictionary for looping
-    # adata_groups = {
-    #     "uninjured_0": adata_uninjured_0,
-    #     "sham_15": adata_sham_15,
-    #     "injured_15": adata_injured_15,
-    #     "injured_60": adata_injured_60
-    # }
+    # Group into a dictionary for looping
+    adata_groups = {
+        "control": adata_control,
+        "injured_15": adata_injured_15,
+        "injured_60": adata_injured_60,
+        "injured": adata_injured
+        # "fulldays": filtered_adata
+    }
 
-    # # Load canonical gene lists from a directory
-    # canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Dalila"
-    # genes = load_canonical_from_dir(canonical_genes_dir)
+    # Load canonical gene lists from a directory
+    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Dalila"
+    genes = load_canonical_from_dir(canonical_genes_dir)
 
-    # # Thresholds and cluster order
-    # pts_thresholds = [0, 0.2, 0.3]
-    # custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
-    #                         "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
-    #                         "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
+    # Thresholds and cluster order
+    pts_thresholds = [0]
+    custom_cluster_order_all = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
+                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
+
+    custom_cluster_order_mylip = ["MeV.Pericytes.0", "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3", "MeV.FibLaminin.0", 
+                                 "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.3", "MeV.Fib.4", "MeV.Fib.5", "MeV.FibProlif.0"]
+
+    name1 = "all"
+
+    cond = "all"
+    cond1= "control"
+    cond2= "injured15"
+    cond3= "injured60"
+    cond4= "injured"
+
+    
+    # Generate dotplots
+    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond)
+
+    create_dotplots_with_thresholds(adata_control, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond1)
+
+    create_dotplots_with_thresholds(adata_injured_15, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond2)
+
+    create_dotplots_with_thresholds(adata_injured_60, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond3)
+
+    create_dotplots_with_thresholds(adata_injured, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond4)
+
 
     # # Process each subset
     # for label, ad in adata_groups.items():
@@ -526,11 +513,17 @@ if __name__ == "__main__":
     #     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', "MeV.FibUnknown.6", "MeV.EndoUnknow.4"]
     #     adata_filtered = remove_clusters(ad, clusters_to_remove)
 
-    #     # Create dendrogram
-    #     dendogram_sc(adata_filtered)
 
     #     # Check cluster order
-    #     check_cluster_order(adata_filtered, custom_cluster_order)
+    #     check_cluster_order(adata_filtered, custom_cluster_order_mylip)
 
     #     # Generate dotplots
-    #     create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order, gene="", prefix=label)
+    #     create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=label)
+
+    #     create_dotplots_with_thresholds(adata_control, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond1)
+
+    #     create_dotplots_with_thresholds(adata_injured_15, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond2)
+
+    #     create_dotplots_with_thresholds(adata_injured_60, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond3)
+
+    #     create_dotplots_with_thresholds(adata_injured, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond4)

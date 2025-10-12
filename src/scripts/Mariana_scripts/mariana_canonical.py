@@ -686,7 +686,7 @@ if __name__ == "__main__":
     adata_15 = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_together_injured15.h5ad")
     adata_60 = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy_together_injured60.h5ad")
 
-    create_dotplots_with_thresholds(adata_c, genes, pts_thresholds, custom_cluster_order_endo, name4, prefix=cond1)
+    create_dotplots_with_thresholds(adata_fil, genes, pts_thresholds, custom_cluster_order_endo, name4, prefix=cond1)
 
     create_dotplots_with_thresholds(adata_15, genes, pts_thresholds, custom_cluster_order_endo, name2, prefix=cond2)
 
