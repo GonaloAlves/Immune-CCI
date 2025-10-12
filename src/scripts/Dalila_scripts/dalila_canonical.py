@@ -133,7 +133,7 @@ def imm_keep_only_selected_clusters(adata: sc.AnnData, clusters_to_keep: list):
     
     return filtered_adata
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, name, prefix ,output_dir="canonical/canonical_mariana"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, name, prefix ,output_dir="canonical/canonical_dalila/new_sep"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -228,16 +228,16 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, nam
 
         # Save dotplots with appropriate filenames
         output_scaled_no_dendro = os.path.join(output_dir, f"{prefix}_dotplot_scaled_{threshold}_{name}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"{prefix}_dotplot_normal_{threshold}_{name}.png")
+        #output_normal_no_dendro = os.path.join(output_dir, f"{prefix}_dotplot_normal_{threshold}_{name}.png")
 
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
-        dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
+        #dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
 
         plt.close()
         print(f"Saved dotplots for threshold {threshold}:")
         print(f"  - {output_scaled_no_dendro}")
-        print(f"  - {output_normal_no_dendro}")
+        #print(f"  - {output_normal_no_dendro}")
         
 
 
