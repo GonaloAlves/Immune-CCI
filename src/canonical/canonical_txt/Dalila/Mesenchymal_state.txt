@@ -13,3 +13,10 @@ Srebf2
 Slc1a3
 Pdgfrb
 Anpep
+Mir142
+Mir-142 
+Pik3ca
+Rps6
+Cdh2
+Cdh13
+Akt1
