@@ -191,7 +191,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, nam
         top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Example user-defined gene group order
-        user_gene_group_order = ["Mylip_Idol", "Mesenchymal_state"]
+        user_gene_group_order = ["Mylip_Idol", "Isa_genes"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -487,41 +487,39 @@ if __name__ == "__main__":
     cond3= "injured60"
     cond4= "injured"
 
+    name1 = "Mylip"
+
     
-    # Generate dotplots
-    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order_mylip, None ,prefix=cond)
+    # # Generate dotplots
+    # create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order_mylip, None ,prefix=cond)
 
-    create_dotplots_with_thresholds(adata_control, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond1)
+    # create_dotplots_with_thresholds(adata_control, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond1)
 
-    create_dotplots_with_thresholds(adata_injured_15, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond2)
+    # create_dotplots_with_thresholds(adata_injured_15, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond2)
 
-    create_dotplots_with_thresholds(adata_injured_60, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond3)
+    # create_dotplots_with_thresholds(adata_injured_60, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond3)
 
-    create_dotplots_with_thresholds(adata_injured, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond4)
-
-
-    # # Process each subset
-    # for label, ad in adata_groups.items():
-    #     print(f"\n--- Processing condition: {label} ---")
-
-    #     # Filter cells by gene expression
-    #     gene_filtered_adata = filter_cells_by_gene_expression(ad, "Mylip")
-
-    #     # Remove unwanted clusters
-    #     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', "MeV.FibUnknown.6", "MeV.EndoUnknow.4"]
-    #     adata_filtered = remove_clusters(ad, clusters_to_remove)
+    # create_dotplots_with_thresholds(adata_injured, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond4)
 
 
-    #     # Check cluster order
-    #     check_cluster_order(adata_filtered, custom_cluster_order_mylip)
+    # Process each subset
+    
+    print(f"\n--- Processing condition with: Mylip ---")
 
-    #     # Generate dotplots
-    #     create_dotplots_with_thresholds(adata_filtered, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=label)
+    # Filter cells by gene expression
+    gene_filtered_adata_all = filter_cells_by_gene_expression(filtered_adata, "Mylip")
+    gene_filtered_adata_control = filter_cells_by_gene_expression(adata_control, "Mylip")
+    gene_filtered_adata_injured15 = filter_cells_by_gene_expression(adata_injured_15, "Mylip")
+    gene_filtered_adata_injured60 = filter_cells_by_gene_expression(adata_injured_60, "Mylip")
+    gene_filtered_adata_injured = filter_cells_by_gene_expression(adata_injured, "Mylip")
 
-    #     create_dotplots_with_thresholds(adata_control, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond1)
+    # Generate dotplots with gene
+    create_dotplots_with_thresholds(gene_filtered_adata_all, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond)
 
-    #     create_dotplots_with_thresholds(adata_injured_15, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond2)
+    create_dotplots_with_thresholds(gene_filtered_adata_control, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond1)
 
-    #     create_dotplots_with_thresholds(adata_injured_60, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond3)
+    create_dotplots_with_thresholds(gene_filtered_adata_injured15, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond2)
 
-    #     create_dotplots_with_thresholds(adata_injured, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond4)
+    create_dotplots_with_thresholds(gene_filtered_adata_injured60, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond3)
+
+    create_dotplots_with_thresholds(gene_filtered_adata_injured, genes, pts_thresholds, custom_cluster_order_mylip, name1, prefix=cond4)
