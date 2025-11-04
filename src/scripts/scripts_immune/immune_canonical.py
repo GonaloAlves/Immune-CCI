@@ -76,7 +76,7 @@ def load_canonical_from_dir(directory):
     print(f"Loaded gene lists: {list(gene_dict.keys())}")
     return gene_dict
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_immune/updated_pts2"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, output_dir="canonical/canonical_immune/updated_pts3"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -172,22 +172,22 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"dotplot_scaled_no_dendro_{threshold}.png")
-        output_scaled_dendro = os.path.join(output_dir, f"dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"dotplot_normal_no_dendro_{threshold}.png")
-        output_normal_dendro = os.path.join(output_dir, f"dotplot_normal_dendro_{threshold}.png")
+        output_scaled_no_dendro = os.path.join(output_dir, f"dotplot_scaled_no_dendro_{threshold}.pdf")
+        #output_scaled_dendro = os.path.join(output_dir, f"dotplot_scaled_dendro_{threshold}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"dotplot_normal_no_dendro_{threshold}.pdf")
+        #output_normal_dendro = os.path.join(output_dir, f"dotplot_normal_dendro_{threshold}.png")
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
-        dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
+        #dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
         dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
-        dotplot_normal_dendro.savefig(output_normal_dendro, bbox_inches="tight")
+        #dotplot_normal_dendro.savefig(output_normal_dendro, bbox_inches="tight")
 
         plt.close()
         print(f"Saved dotplots for threshold {threshold}:")
         print(f"  - {output_scaled_no_dendro}")
-        print(f"  - {output_scaled_dendro}")
+        #print(f"  - {output_scaled_dendro}")
         print(f"  - {output_normal_no_dendro}")
-        print(f"  - {output_normal_dendro}")
+        #print(f"  - {output_normal_dendro}")
 
 
 def extract_dge_data(adata):
