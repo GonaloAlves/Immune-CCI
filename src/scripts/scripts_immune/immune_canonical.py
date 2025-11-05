@@ -120,6 +120,18 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
 
+        excel_order = { 
+            "Homeostatic": ["Imm.M0Like.0", "Imm.M0Like.1", "Imm.M0Like.2"],
+            "MHCII": ["Imm.MHCII.0"],
+            "Interferon": ["Imm.Interferon.0"],
+            "DAM": ["Imm.DAM.0", "Imm.DAM.1"],
+            "PVM": ["Imm.PVM.0"],
+            "Proliferative": ["Imm.Proliferative.0"]
+        }
+
+        # Export only the genes that match these clusters per group
+        export_canonical_to_excel(filtered_genes, excel_order, threshold)
+
         # Generate four different dotplots per threshold
         print(f"Generating dotplots for pts threshold: {threshold}")
 
@@ -351,6 +363,55 @@ def check_cluster_order(adata, cluster_order):
         print("\n All categories match! Reordering should work.")
 
 
+def export_canonical_to_excel(filtered_genes, excel_order, threshold, output_dir="excels/immune/new_tese/canonical"):
+    """
+    Export canonical gene expression results to an Excel file,
+    showing only the clusters defined in 'excel_order' for each gene group.
+
+    Parameters:
+    filtered_genes (dict): Dictionary with canonical gene groups -> clusters -> DataFrames.
+    excel_order (dict): Dictionary defining which clusters to include for each gene group.
+    threshold (float): The pts threshold used for filtering.
+    output_dir (str): Directory where the Excel file will be saved.
+
+    Returns:
+    None
+    """
+    # Ensure output directory exists
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    output_file = os.path.join(output_dir, f"canonical_genes_filtered_{threshold}.xlsx")
+    print(f"\nExporting canonical genes to Excel (filtered): {output_file}")
+
+    with pd.ExcelWriter(output_file) as writer:
+        for group_name, allowed_clusters in excel_order.items():
+            if group_name not in filtered_genes:
+                print(f"Skipping {group_name}: not found in filtered_genes")
+                continue
+
+            group_clusters = filtered_genes[group_name]
+            combined_data = []
+
+            for cluster_name in allowed_clusters:
+                if cluster_name in group_clusters:
+                    df = group_clusters[cluster_name].copy()
+                    df["Cluster"] = cluster_name
+                    combined_data.append(df)
+                else:
+                    print(f"   (No data for {cluster_name} in {group_name})")
+
+            if combined_data:
+                group_df = pd.concat(combined_data)
+                cols = ["Cluster"] + [col for col in group_df.columns if col != "Cluster"]
+                group_df = group_df[cols]
+                group_df.to_excel(writer, sheet_name=group_name)
+            else:
+                pd.DataFrame({"Info": [f"No genes found for these clusters at threshold {threshold}"]}).to_excel(writer, sheet_name=group_name)
+
+    print(f"✅ Excel file saved successfully: {output_file}")
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
@@ -377,7 +438,6 @@ if __name__ == "__main__":
     # Check for mismatches before reordering
     check_cluster_order(filtered_adata, custom_cluster_order)
     
-
     # Generate dotplots for each threshold
     create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order)
 
