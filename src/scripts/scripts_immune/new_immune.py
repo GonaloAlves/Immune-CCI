@@ -397,7 +397,8 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immu
         print(f" Saved: {output_no_dendro}")
 
 
-        # export_to_excel(top_genes_cluster, threshold)
+        export_to_excel(top_genes_cluster, threshold)
+
 
 
 
@@ -449,12 +450,12 @@ def addasterix(top_genes_cluster):
 
     return updated_cluster
 
-def export_to_excel(top_genes_cluster, threshold, output_dir="excels/immune/updates"):
+def export_to_excel(top_genes_cluster, threshold, output_dir="excels/immune/new_tese"):
     """
-    Export the top_genes_cluster dictionary to an Excel file, using the threshold in the filename.
+    Export all genes per cluster to an Excel file, using the threshold in the filename.
 
     Parameters:
-    top_genes_cluster (dict): Dictionary containing DataFrames of top genes for each cluster.
+    top_genes_cluster (dict): Dictionary containing DataFrames of genes for each cluster.
     threshold (float): The threshold value used for filtering.
     output_dir (str): Directory where the Excel file will be saved.
 
@@ -468,7 +469,7 @@ def export_to_excel(top_genes_cluster, threshold, output_dir="excels/immune/upda
     # Define file path dynamically using the threshold
     output_file = os.path.join(output_dir, f"top_genes_cluster_{threshold}.xlsx")
 
-    print(f"\n Exporting top genes to Excel: {output_file}")
+    print(f"\n Exporting genes to Excel: {output_file}")
 
     # Create an Excel writer object
     with pd.ExcelWriter(output_file) as writer: 
@@ -478,6 +479,8 @@ def export_to_excel(top_genes_cluster, threshold, output_dir="excels/immune/upda
             df.to_excel(writer, sheet_name=cluster)
 
     print(f"Excel file saved: {output_file}")
+
+
 
 
 
@@ -556,11 +559,13 @@ if __name__ == "__main__":
     print(adata.obs['leiden_fusion'])
     #print(adata.obs['leiden_fusion_old1'])
     
+    
     # #Create cluster resolutions UMAP
-    umap_reso_cluster(filtered_adata, 'leiden_fusion')
+    #umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
     pts_thresholds = [0.3, 0.4, 0.5]
 
+    
     # Create dotplot of the top genes
     create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
 
