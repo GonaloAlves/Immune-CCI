@@ -166,15 +166,29 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Example user-defined gene group order
-        user_gene_group_order = []
-
-        # Example user-defined gene group order
-        user_gene_group_order = ["Endothelial","Epithelial" ,"SMC","Pericytes" ,"VLMC", 
+        user_gene_group_order = ["Endothelial","Epithelial","SMC","Pericytes" ,"VLMC", 
                                   "Fibroblasts","ECM_Laminin","ECM_Collagen","ECM_Secreted_Signaling",
                                   "Proliferative"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
+
+        excel_order = { 
+            "Endothelial": ["MeV.Endothelial.0","MeV.Endothelial.1","MeV.Endothelial.2","MeV.Endothelial.3"],
+            "Epithelial": ["MeV.Epithelial.0"],
+            "SMC": ["MeV.SMC.0"],
+            "Pericytes": ["MeV.Pericytes.0"],
+            "VLMC": ["MeV.VLMC.0","MeV.VLMC.1"],
+            "Fibroblasts": ["MeV.FibCollagen.0","MeV.FibCollagen.1", "MeV.FibCollagen.2","MeV.FibCollagen.3","MeV.FibLaminin.0","MeV.Fib.0","MeV.Fib.1",
+                            "MeV.Fib.2","MeV.Fib.5","MeV.Fib.3","MeV.Fib.4"],
+            "ECM_Laminin": ["MeV.FibLaminin.0"],
+            "ECM_Collagen": ["MeV.FibCollagen.0","MeV.FibCollagen.1", "MeV.FibCollagen.2","MeV.FibCollagen.3"],
+            #"ECM_Secreted_Signaling": ["MeV.FibProlif.0"],
+            "Proliferative": ["MeV.FibProlif.0"]
+        }
+
+        # Export only the genes that match these clusters per group
+        export_canonical_to_excel(filtered_genes, excel_order, threshold)
 
         # Generate four different dotplots per threshold
         print(f"Generating dotplots for pts threshold: {threshold}")
@@ -228,9 +242,9 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         # )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_no_dendro_{threshold}.png")
+        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_no_dendro_{threshold}.pdf")
         #output_scaled_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_no_dendro_{threshold}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_no_dendro_{threshold}.pdf")
         #output_normal_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_dendro_{threshold}.png")
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
@@ -443,6 +457,76 @@ def export_cluster_cell_counts(adata, output_dir="excels/meningeal/updates"):
     print(f"Saved Excel file: {output_file}")
 
 
+def export_canonical_to_excel(filtered_genes, excel_order, threshold, output_dir="excels/meningeal/new_tese/canonical"):
+    """
+    Export canonical gene expression results to an Excel file,
+    showing only the clusters defined in 'excel_order' for each gene group.
+    """
+
+    print("\n🟦 [CHECKPOINT 1] Starting export_canonical_to_excel")
+    print(f"Output dir: {output_dir}")
+    print(f"Threshold: {threshold}")
+    print(f"Filtered gene groups: {list(filtered_genes.keys())}")
+    print(f"Excel order groups: {list(excel_order.keys())}")
+
+    # Ensure output directory exists
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        print("🟩 [CHECKPOINT 2] Output directory created.")
+    else:
+        print("🟩 [CHECKPOINT 2] Output directory already exists.")
+
+    output_file = os.path.join(output_dir, f"canonical_genes_filtered_{threshold}.xlsx")
+    print(f"🟦 [CHECKPOINT 3] Preparing Excel file: {output_file}")
+
+    try:
+        with pd.ExcelWriter(output_file) as writer:
+            for group_name, allowed_clusters in excel_order.items():
+                print(f"\n🔹 [CHECKPOINT 4] Processing group: {group_name}")
+
+                if group_name not in filtered_genes:
+                    print(f"⚠️ Skipping {group_name}: not found in filtered_genes")
+                    continue
+
+                group_clusters = filtered_genes[group_name]
+                print(f"   ➜ Available clusters for {group_name}: {list(group_clusters.keys())}")
+
+                combined_data = []
+
+                for cluster_name in allowed_clusters:
+                    print(f"   ➜ Checking cluster: {cluster_name}")
+
+                    if cluster_name in group_clusters:
+                        df = group_clusters[cluster_name].copy()
+                        df["Cluster"] = cluster_name
+                        combined_data.append(df)
+                        print(f"      ✅ Added {len(df)} genes from {cluster_name}")
+                    else:
+                        print(f"      ⚠️ No data for {cluster_name} in {group_name}")
+
+                if combined_data:
+                    print(f"   🔸 [CHECKPOINT 5] Combining {len(combined_data)} DataFrames for {group_name}")
+                    try:
+                        group_df = pd.concat(combined_data)
+                        cols = ["Cluster"] + [col for col in group_df.columns if col != "Cluster"]
+                        group_df = group_df[cols]
+                        group_df.to_excel(writer, sheet_name=group_name)
+                        print(f"   ✅ Wrote sheet '{group_name}' with {group_df.shape[0]} rows.")
+                    except Exception as e:
+                        print(f"   ❌ ERROR writing sheet {group_name}: {e}")
+                else:
+                    print(f"   ⚠️ No combined data for {group_name} — writing info sheet instead.")
+                    pd.DataFrame(
+                        {"Info": [f"No genes found for these clusters at threshold {threshold}"]}
+                    ).to_excel(writer, sheet_name=group_name)
+
+        print(f"\n✅ [CHECKPOINT 6] Excel file saved successfully: {output_file}")
+
+    except Exception as e:
+        print(f"❌ [ERROR] Failed while writing Excel file: {e}")
+        import traceback
+        traceback.print_exc()
+
 
 
 # Main execution block
@@ -450,9 +534,12 @@ if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
+    print(adata.obs["leiden_fusion"])
+    print(adata.uns["rank_genes_groups_leiden_fusion"])
+
     filtered_adata = remove_NA_cat(adata)
 
-    gene_filtered_adata = filter_cells_by_gene_expression(filtered_adata, "Mylip")
+    # gene_filtered_adata = filter_cells_by_gene_expression(filtered_adata, "Mylip")
 
     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', 'MeV.EndoUnknow.4', 'MeV.FibUnknown.6']
     adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
@@ -479,7 +566,7 @@ if __name__ == "__main__":
     # Generate dotplots for each threshold
     create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "")
 
-    export_cluster_cell_counts(adatas_filtered)
+    #export_cluster_cell_counts(adatas_filtered)
 
 
     

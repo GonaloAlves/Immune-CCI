@@ -2,6 +2,7 @@
 import os
 import scanpy as sc
 import time
+import pandas as pd
 
 # Step 1: Load the dataset
 def load_data(file_path):
@@ -143,29 +144,49 @@ def remove_NA_cat(adata: sc.AnnData):
     return adata2
 
 
-# Main execution block
 if __name__ == "__main__":
-    # Load data
     file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     adata = load_data(file_path)
 
-    # # Backup the existing DGE data
-    # adata = backup_dge_data(adata, 
-    #                          old_key='rank_genes_groups_leiden_fusion', 
-    #                          backup_key='rank_genes_groups_leiden_fusion_old1')
+    # 1️⃣ Check existing rank gene groups keys
+    print("\n[CHECKPOINT 1] Existing keys in adata.uns:")
+    for key in adata.uns.keys():
+        if key.startswith("rank_genes_groups"):
+            print("   🔹", key)
 
-    # Perform new DGE analysis
+    # 2️⃣ Backup the current DGE (if exists)
+    adata = backup_dge_data(adata, 
+                             old_key='rank_genes_groups_leiden_fusion', 
+                             backup_key='rank_genes_groups_leiden_fusion_old1')
+
+    # 3️⃣ Clean any leftover temp key
+    if 'rank_genes_groups' in adata.uns:
+        print("[CHECKPOINT 2] Removing temporary key 'rank_genes_groups' before recomputation")
+        del adata.uns['rank_genes_groups']
+
+    # 4️⃣ Run new DGE on leiden_fusion
     adata = dge_data(adata, 'leiden_fusion', 'rank_genes_groups_leiden_fusion')
 
-    #filtered_adata = remove_NA_cat(adata)
+    # 5️⃣ Show what was generated
+    print("\n[CHECKPOINT 3] New rank_genes_groups_leiden_fusion keys:")
+    print(adata.uns['rank_genes_groups_leiden_fusion'].keys())
+    print("Example cluster names:")
+    print(pd.DataFrame(adata.uns['rank_genes_groups_leiden_fusion']['names']).columns.tolist()[:10])
 
-    # Preform Dendrogram
+    # 6️⃣ Compute dendrogram
     dendogram_sc(adata)
 
-    #adata = drop_mako(adata)
+    # 7️⃣ Verify all rank keys again
+    print("\n[CHECKPOINT 4] Final rank_genes_groups keys in uns:")
+    for key in adata.uns.keys():
+        if key.startswith("rank_genes_groups"):
+            print("   ✅", key)
 
-    print(adata)
-    print(adata.obs['leiden_fusion'].cat.categories.to_list())
-    # Save the updated AnnData object
+    print(adata.uns["rank_genes_groups_leiden_fusion"])
+
+
+    print(adata.uns["rank_genes_groups_leiden_fusion_old1"])
+
+    # 8️⃣ Save the updated object
     output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
     save_adata(adata, output_file)
