@@ -37,8 +37,8 @@ def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_meninge/upda
 
     
     # Save the UMAP plot as an image (optional)
-    output_path = os.path.join(output_dir, f"umap_Immune_{resolution_name}_n.png") 
-    output_path_leg = os.path.join(output_dir, f"umap_Immune_{resolution_name}_l.png")
+    output_path = os.path.join(output_dir, f"umap_Immune_{resolution_name}_n.pdf") 
+    output_path_leg = os.path.join(output_dir, f"umap_Immune_{resolution_name}_l.pdf")
     ax.figure.savefig(output_path, bbox_inches="tight")
     ax_ondata.figure.savefig(output_path_leg, bbox_inches="tight")
     # print(f"UMAP plot saved as {output_path}")
@@ -310,7 +310,7 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/meni
         print("   - Checking and creating dendrogram if necessary...")
         # Preform Dendrogram
         dendogram_sc(adata)
-        plot_dendrogram(adata)
+        #plot_dendrogram(adata)
 
         # Select the top genes for each cluster
         print("   - Selecting top genes for each cluster...")
@@ -323,21 +323,21 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/meni
         top_genes_names = top_gene_names(top_genes_cluster)
 
         # Reorder clusters (ON and OFF for dendrogram)
-        print("   - Reordering clusters based on dendrogram...")
-        ordered_genes_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=True)
-        ordered_genes_no_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=False)
+        # print("   - Reordering clusters based on dendrogram...")
+        # ordered_genes_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=True)
+        # ordered_genes_no_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=False)
 
         print("   - Generating dotplots...")
 
         # (1) With Dendrogram
         dotplot_dendro = sc.pl.rank_genes_groups_dotplot(
             adata,
-            var_names=ordered_genes_dendro,
+            var_names=top_genes_names,
             groupby='leiden_fusion',
             key='rank_genes_groups_leiden_fusion',
-            cmap='bwr',
-            vmin=-4,
-            vmax=4,
+            cmap='Greys',
+            vmin=0,
+            vmax=1,
             values_to_plot='logfoldchanges',
             colorbar_title='log fold change',
             use_raw=False,
@@ -348,12 +348,12 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/meni
         # (2) Without Dendrogram
         dotplot_no_dendro = sc.pl.rank_genes_groups_dotplot(
             adata,
-            var_names=ordered_genes_no_dendro,
+            var_names=top_genes_names,
             groupby='leiden_fusion',
             key='rank_genes_groups_leiden_fusion',
-            cmap='bwr',
-            vmin=-4,
-            vmax=4,
+            cmap='Greys',
+            vmin=0,
+            vmax=1,
             values_to_plot='logfoldchanges',
             colorbar_title='log fold change',
             use_raw=False,
@@ -362,14 +362,14 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/meni
         )
 
         # Save plots
-        output_dendro = os.path.join(output_dir, f"dotplot_dendro_{threshold}.png")
-        output_no_dendro = os.path.join(output_dir, f"dotplot_no_dendro_{threshold}.png")
+        #output_dendro = os.path.join(output_dir, f"dotplot_dendro_{threshold}.pdf")
+        output_no_dendro = os.path.join(output_dir, f"dotplot_no_dendro_{threshold}.pdf")
 
-        dotplot_dendro.savefig(output_dendro, bbox_inches="tight")
+        #dotplot_dendro.savefig(output_dendro, bbox_inches="tight")
         dotplot_no_dendro.savefig(output_no_dendro, bbox_inches="tight")
 
         plt.close()
-        print(f" Saved: {output_dendro}")
+        #print(f" Saved: {output_dendro}")
         print(f" Saved: {output_no_dendro}")
 
 
@@ -586,8 +586,8 @@ if __name__ == "__main__":
 
     pts_thresholds = [0.3, 0.4, 0.5]
 
-    # # Create dotplot of the top genes
-    # create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
+    # Create dotplot of the top genes
+    create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
 
     # print("----")
     # print(adata.obs['leiden_fusion'].cat.categories.to_list())
