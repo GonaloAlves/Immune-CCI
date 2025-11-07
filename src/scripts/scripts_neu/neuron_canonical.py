@@ -151,10 +151,10 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         print(f"\nProcessing pts threshold: {threshold}")
 
         # Extract DGE data
-        gene_names, pts = extract_dge_data(adata)
+        gene_names, logfoldchanges, pts = extract_dge_data(adata)
 
         # Create cluster DataFrames with the current threshold
-        cluster_dfs = create_cluster_dfs(gene_names, pts, pts_threshold=threshold)
+        cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pts, pts_threshold=threshold)
 
         # Remove NA clusters
         cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
@@ -173,6 +173,11 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
+
+        excel_order = {'CentralCanal': ['Neu.CSFcN.0'],
+                       'Ependymal': ['Neu.Epend.0']}
+
+        export_canonical_to_excel(filtered_genes, excel_order, threshold)
 
         # Generate four different dotplots per threshold
         print(f"Generating dotplots for pts threshold: {threshold}")
@@ -226,22 +231,22 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_no_dendro_{threshold}.png")
-        output_scaled_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_no_dendro_{threshold}.png")
-        output_normal_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_dendro_{threshold}.png")
+        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_no_dendro_{threshold}.pdf")
+        #output_scaled_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_dendro_{threshold}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_no_dendro_{threshold}.pdf")
+        #output_normal_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_dendro_{threshold}.png")
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
-        dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
+        #dotplot_scaled_dendro.savefig(output_scaled_dendro, bbox_inches="tight")
         dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
-        dotplot_normal_dendro.savefig(output_normal_dendro, bbox_inches="tight")
+        #dotplot_normal_dendro.savefig(output_normal_dendro, bbox_inches="tight")
 
         plt.close()
         print(f"Saved dotplots for threshold {threshold}:")
         print(f"  - {output_scaled_no_dendro}")
-        print(f"  - {output_scaled_dendro}")
+        #print(f"  - {output_scaled_dendro}")
         print(f"  - {output_normal_no_dendro}")
-        print(f"  - {output_normal_dendro}")
+        #print(f"  - {output_normal_dendro}")
 
 
 def extract_dge_data(adata):
@@ -258,13 +263,14 @@ def extract_dge_data(adata):
     
     # Convert the extracted data into DataFrames
     gene_names = pd.DataFrame(dge_fusion['names'])
+    logfoldchanges = pd.DataFrame(dge_fusion['logfoldchanges'])
     pts = pd.DataFrame(dge_fusion['pts'])
     
-    return gene_names, pts
+    return gene_names, logfoldchanges, pts
 
 
 # Step 3: Create cluster dataframes with filtered data
-def create_cluster_dfs(gene_names, pts, pts_threshold=0):
+def create_cluster_dfs(gene_names, logfoldchanges, pts, pts_threshold=0):
     """
     Create a dictionary of dataframes per cluster, with the respective gene expression data.
     By default this function will not order the genes by fold change and the default minimun pts is 0
@@ -287,6 +293,7 @@ def create_cluster_dfs(gene_names, pts, pts_threshold=0):
 
         # Create dataframe for each cluster
         cluster_df = pd.DataFrame({
+            'logfoldchange': logfoldchanges.iloc[:, i].values,
             'pts': pts_reindexed.values},
             index=gene_reindex.values
         )
@@ -439,6 +446,54 @@ def export_cluster_cell_counts(adata, output_dir="excels/neuron"):
     print(f"\n Exporting cell counts to: {output_file}")
     cell_counts.to_excel(output_file, index=False)
     print(f"Saved Excel file: {output_file}")
+
+def export_canonical_to_excel(filtered_genes, excel_order, threshold, output_dir="excels/neuron/new_tese/canonical"):
+    """
+    Export canonical gene expression results to an Excel file,
+    showing only the clusters defined in 'excel_order' for each gene group.
+
+    Parameters:
+    filtered_genes (dict): Dictionary with canonical gene groups -> clusters -> DataFrames.
+    excel_order (dict): Dictionary defining which clusters to include for each gene group.
+    threshold (float): The pts threshold used for filtering.
+    output_dir (str): Directory where the Excel file will be saved.
+
+    Returns:
+    None
+    """
+    # Ensure output directory exists
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    output_file = os.path.join(output_dir, f"canonical_genes_filtered_{threshold}.xlsx")
+    print(f"\nExporting canonical genes to Excel (filtered): {output_file}")
+
+    with pd.ExcelWriter(output_file) as writer:
+        for group_name, allowed_clusters in excel_order.items():
+            if group_name not in filtered_genes:
+                print(f"Skipping {group_name}: not found in filtered_genes")
+                continue
+
+            group_clusters = filtered_genes[group_name]
+            combined_data = []
+
+            for cluster_name in allowed_clusters:
+                if cluster_name in group_clusters:
+                    df = group_clusters[cluster_name].copy()
+                    df["Cluster"] = cluster_name
+                    combined_data.append(df)
+                else:
+                    print(f"   (No data for {cluster_name} in {group_name})")
+
+            if combined_data:
+                group_df = pd.concat(combined_data)
+                cols = ["Cluster"] + [col for col in group_df.columns if col != "Cluster"]
+                group_df = group_df[cols]
+                group_df.to_excel(writer, sheet_name=group_name)
+            else:
+                pd.DataFrame({"Info": [f"No genes found for these clusters at threshold {threshold}"]}).to_excel(writer, sheet_name=group_name)
+
+    print(f"✅ Excel file saved successfully: {output_file}")
 
 
 

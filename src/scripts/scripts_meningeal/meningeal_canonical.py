@@ -151,11 +151,11 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         print(f"\nProcessing pts threshold: {threshold}")
 
         # Extract DGE data
-        gene_names, pts = extract_dge_data(adata)
+        gene_names, logfoldchanges, pts = extract_dge_data(adata)
 
         # Create cluster DataFrames with the current threshold
-        cluster_dfs = create_cluster_dfs(gene_names, pts, pts_threshold=threshold)
-
+        cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pts, pts_threshold=threshold)
+        
         # Remove NA clusters
         cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
 
@@ -274,13 +274,14 @@ def extract_dge_data(adata):
     
     # Convert the extracted data into DataFrames
     gene_names = pd.DataFrame(dge_fusion['names'])
+    logfoldchanges = pd.DataFrame(dge_fusion['logfoldchanges'])
     pts = pd.DataFrame(dge_fusion['pts'])
     
-    return gene_names, pts
+    return gene_names, logfoldchanges, pts
 
 
 # Step 3: Create cluster dataframes with filtered data
-def create_cluster_dfs(gene_names, pts, pts_threshold=0):
+def create_cluster_dfs(gene_names, logfoldchanges, pts, pts_threshold=0):
     """
     Create a dictionary of dataframes per cluster, with the respective gene expression data.
     By default this function will not order the genes by fold change and the default minimun pts is 0
@@ -301,11 +302,11 @@ def create_cluster_dfs(gene_names, pts, pts_threshold=0):
         gene_reindex = gene_names.iloc[:, i]  # Takes correct order of the genes index of the gene names
         pts_reindexed = pts.iloc[:, i].reindex(gene_reindex.values)  # Reindex the pts with the gene names index
 
-        # Create dataframe for each cluster
+         # Create dataframe for this cluster
         cluster_df = pd.DataFrame({
-            'pts': pts_reindexed.values},
-            index=gene_reindex.values
-        )
+            'logfoldchange': logfoldchanges.iloc[:, i].values,
+            'pts': pts_reindexed.values
+        }, index=gene_reindex.values)
 
         # Mask to remove mitochondrial genes (those starting with "mt-")
         mask_mt = ~gene_reindex.str.startswith("mt-")  # Create mask where gene names don't start with "mt-"

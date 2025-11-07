@@ -100,10 +100,10 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, out
         print(f"\nProcessing pts threshold: {threshold}")
 
         # Extract DGE data
-        gene_names, pts = extract_dge_data(adata)
+        gene_names, logfoldchanges, pts = extract_dge_data(adata)
 
         # Create cluster DataFrames with the current threshold
-        cluster_dfs = create_cluster_dfs(gene_names, pts, pts_threshold=threshold)
+        cluster_dfs = create_cluster_dfs(gene_names, logfoldchanges, pts, pts_threshold=threshold)
 
         # Remove NA clusters
         cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
@@ -216,14 +216,15 @@ def extract_dge_data(adata):
     
     # Convert the extracted data into DataFrames
     gene_names = pd.DataFrame(dge_fusion['names'])
+    logfoldchanges = pd.DataFrame(dge_fusion['logfoldchanges'])
     pts = pd.DataFrame(dge_fusion['pts'])
     
-    return gene_names, pts
+    return gene_names, logfoldchanges, pts
 
 
 
 # Step 3: Create cluster dataframes with filtered data
-def create_cluster_dfs(gene_names, pts, pts_threshold):
+def create_cluster_dfs(gene_names, logfoldchanges, pts, pts_threshold):
     """
     Create a dictionary of dataframes per cluster, with the respective gene expression data.
     By default this function will not order the genes by fold change and the default minimun pts is 0
@@ -246,6 +247,7 @@ def create_cluster_dfs(gene_names, pts, pts_threshold):
 
         # Create dataframe for each cluster
         cluster_df = pd.DataFrame({
+            'logfoldchanges': logfoldchanges.iloc[:, i].values,
             'pts': pts_reindexed.values},
             index=gene_reindex.values
         )
