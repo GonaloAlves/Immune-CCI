@@ -356,45 +356,41 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immu
         #     return_fig=True
         # )
 
-        # (2) Without Dendrogram
-        dotplot_no_dendro = sc.pl.rank_genes_groups_dotplot(
+        # (2) normal
+        dotplot_normal = sc.pl.rank_genes_groups_dotplot(
             adata,
             var_names=top_genes_names,
             groupby='leiden_fusion',
             key='rank_genes_groups_leiden_fusion',
-            cmap='Greys',
-            vmin=0,
-            vmax=1,
-            values_to_plot='logfoldchanges',
-            colorbar_title='log fold change',
+            cmap='Reds',
             use_raw=False,
             dendrogram=False,
             return_fig=True
         )
 
-        # dotplot_scaled_no_dendro = sc.pl.dotplot(
-        #     adata,
-        #     var_names=top_genes_names,
-        #     groupby='leiden_fusion',
-        #     cmap='Greys',
-        #     use_raw=False,
-        #     standard_scale='var',
-        #     dendrogram=False,
-        #     dot_min=0,
-        #     dot_max=1,
-        #     return_fig=True
-        # )
+        # (2) scaled
+        dotplot_scaled = sc.pl.rank_genes_groups_dotplot(
+            adata,
+            var_names=top_genes_names,
+            groupby='leiden_fusion',
+            key='rank_genes_groups_leiden_fusion',
+            cmap='Greys',
+            use_raw=False,
+            standard_scale='var',
+            dendrogram=False,
+            return_fig=True
+        )
 
         # Save plots
-        # output_dendro = os.path.join(output_dir, f"dotplot_dendro_{threshold}.png")
-        output_no_dendro = os.path.join(output_dir, f"dotplot_no_dendro_{threshold}.pdf")
+        output_scale = os.path.join(output_dir, f"dotplot_scale_{threshold}.pdf")
+        output_normal = os.path.join(output_dir, f"dotplot_normal_{threshold}.pdf")
 
-        # dotplot_dendro.savefig(output_dendro, bbox_inches="tight")
-        dotplot_no_dendro.savefig(output_no_dendro, bbox_inches="tight")
+        dotplot_scaled.savefig(output_scale, bbox_inches="tight")
+        dotplot_normal.savefig(output_normal, bbox_inches="tight")
 
         plt.close()
-        # print(f" Saved: {output_dendro}")
-        print(f" Saved: {output_no_dendro}")
+        print(f" Saved: {output_scale}")
+        print(f" Saved: {output_normal}")
 
 
         export_to_excel(top_genes_cluster, threshold)

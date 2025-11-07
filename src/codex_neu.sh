@@ -8,11 +8,11 @@ conda activate mkpy
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/copy_fusions.py
 
-# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_neu/a_neuron.py
+python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_neu/a_neuron.py
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_neu/neuron_canonical.py
 
-python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_neu/neu_allgenes.py
+# python /home/makowlg/Documents/Immune-CCI/src/scripts/scripts_neu/neu_allgenes.py
 
 # python /home/makowlg/Documents/Immune-CCI/src/scripts/general_mako/copy_fusions.py
 
