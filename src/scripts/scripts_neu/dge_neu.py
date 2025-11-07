@@ -145,8 +145,8 @@ def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_neu"):
 
     
     # Save the UMAP plot as an image (optional)
-    output_path= os.path.join(output_dir, f"umap_Immune_{resolution_name}_n.png") 
-    output_dir_leg = os.path.join(output_dir, f"umap_Immune_{resolution_name}_l.png")
+    output_path= os.path.join(output_dir, f"umap_Immune_{resolution_name}_n.pdf") 
+    output_dir_leg = os.path.join(output_dir, f"umap_Immune_{resolution_name}_l.pdf")
     ax.figure.savefig(output_path, bbox_inches="tight")
     ax_ondata.figure.savefig(output_dir_leg, bbox_inches="tight")
     # print(f"UMAP plot saved as {output_path}")
@@ -193,11 +193,11 @@ if __name__ == "__main__":
 
     # Preform Dendrogram
     dendogram_sc(adata)
-    plot_dendrogram(adata)
+    #plot_dendrogram(adata)
         
     # adata = drop_mako(adata)
     print(adata)
 
     # Save the updated AnnData object
     output_file = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad"
-    save_adata(adata, output_file)
+    #save_adata(adata, output_file)
