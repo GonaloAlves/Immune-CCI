@@ -349,9 +349,9 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/neur
             var_names=ordered_genes_no_dendro,
             groupby='leiden_fusion',
             key='rank_genes_groups_leiden_fusion',
-            cmap='bwr',
-            vmin=-4,
-            vmax=4,
+            cmap='Greys',
+            vmin=0,
+            vmax=1,
             values_to_plot='logfoldchanges',
             colorbar_title='log fold change',
             use_raw=False,
@@ -360,14 +360,14 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/neur
         )
 
         # Save plots
-        output_dendro = os.path.join(output_dir, f"dotplot_dendro_{threshold}.png")
-        output_no_dendro = os.path.join(output_dir, f"dotplot_no_dendro_{threshold}.png")
+        #output_dendro = os.path.join(output_dir, f"dotplot_dendro_{threshold}.png")
+        output_no_dendro = os.path.join(output_dir, f"dotplot_no_dendro_{threshold}.pdf")
 
-        dotplot_dendro.savefig(output_dendro, bbox_inches="tight")
+        #dotplot_dendro.savefig(output_dendro, bbox_inches="tight")
         dotplot_no_dendro.savefig(output_no_dendro, bbox_inches="tight")
 
         plt.close()
-        print(f" Saved: {output_dendro}")
+        #print(f" Saved: {output_dendro}")
         print(f" Saved: {output_no_dendro}")
 
 
@@ -482,7 +482,7 @@ def dendogram_sc(adata):
     )
 
 
-def plot_dendrogram(adata, output_dir="dendrogram/dendrogram_meningeal"):
+def plot_dendrogram(adata, output_dir="dendrogram/dendrogram_neuron"):
     """
     
     """
@@ -545,7 +545,7 @@ def reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram, dendrogra
     return reordered_dict
 
 
-def export_top_genes_to_txt(top_genes_cluster, threshold, output_dir="excels/meningeal/updates"):
+def export_top_genes_to_txt(top_genes_cluster, threshold, output_dir="excels/neuron/updates"):
     """
     Export the top genes from each cluster to a single text file.
 
