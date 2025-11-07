@@ -205,7 +205,7 @@ def select_top_genes(cluster_dfs):
 
 
 # export to excel
-def export_to_excel(top_genes_cluster, threshold, output_dir="excels/meningeal/updates"):
+def export_to_excel(top_genes_cluster, threshold, output_dir="excels/neuron/updates"):
     """
     Export the top_genes_cluster dictionary to an Excel file, using the threshold in the filename.
 
@@ -236,7 +236,7 @@ def export_to_excel(top_genes_cluster, threshold, output_dir="excels/meningeal/u
     print(f"Excel file saved: {output_file}")
 
 
-def start(adata, thresholds, output_dir="excels/meningeal/updates"):
+def start(adata, thresholds, output_dir="excels/neuron/updates"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -275,7 +275,7 @@ def start(adata, thresholds, output_dir="excels/meningeal/updates"):
     # Main execution block
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Neu_CentralCanal_raw_norm_ranked_copy_copy.h5ad")
 
     print(adata)
 
