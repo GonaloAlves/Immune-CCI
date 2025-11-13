@@ -321,7 +321,9 @@ def create_dotplots_with_thresholds(adata, thresholds, clusters_to_remove, clust
 
         filtered_clusters = remove_clusters2(cluster_dfs, clusters_to_remove)
 
-        export_to_excel_all(filtered_clusters, threshold, string = "all")
+        ordered_clusters = order_clusters(filtered_clusters, cluster_order)
+
+        export_to_excel_all(ordered_clusters, threshold,string = "all")
 
         # Create dendrogram (if not already present)
         print("   - Checking and creating dendrogram if necessary...")
@@ -338,10 +340,12 @@ def create_dotplots_with_thresholds(adata, thresholds, clusters_to_remove, clust
 
         filtered_clustersss = remove_clusters2(top_genes_cluster, clusters_to_remove)
 
+        ordered_clusterss = order_clusters(filtered_clustersss, cluster_order)
+
         print("printaaa")
         print(filtered_clustersss)
 
-        export_to_excel_all(filtered_clustersss, threshold, string = "top")
+        export_to_excel_all(ordered_clusterss, threshold, string = "top")
 
         # Collect top gene names for visualization
         top_genes_names = top_gene_names(top_genes_cluster)
@@ -563,7 +567,7 @@ def export_top_genes_to_txt(top_genes_cluster, threshold, output_dir="excels/men
     print(f"Text file saved: {output_file}")
 
 
-def export_to_excel_all(cluster_dfs, threshold, string, output_dir="excels/meningeal/new_tese/dge"):
+def export_to_excel_all(cluster_dfs, threshold,string, output_dir="excels/meningeal/new_tese/dge"):
     """
     Export all differential expression data per cluster to an Excel file,
     including logfoldchanges, pvals_adj, scores, and pts.
@@ -610,6 +614,33 @@ def export_to_excel_all(cluster_dfs, threshold, string, output_dir="excels/menin
         print(f"❌ Error exporting Excel file: {e}")
         import traceback
         traceback.print_exc()
+
+
+def order_clusters(cluster_dict, custom_order):
+    """
+    Reorder clusters in a dictionary according to a custom order.
+
+    Parameters
+    ----------
+    cluster_dict : dict
+        Dictionary of cluster_name → DataFrame
+    custom_order : list
+        List of cluster names in desired order
+
+    Returns
+    -------
+    dict :
+        Ordered dictionary according to custom_order. Clusters not in custom_order
+        are appended at the end in their original order.
+    """
+    ordered = {k: cluster_dict[k] for k in custom_order if k in cluster_dict}
+
+    # Append clusters not in custom_order at the end
+    remaining = [k for k in cluster_dict if k not in custom_order]
+    for k in remaining:
+        ordered[k] = cluster_dict[k]
+
+    return ordered
 
 def check_cluster_order(adata, cluster_order):
     """
