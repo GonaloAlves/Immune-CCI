@@ -300,7 +300,7 @@ def top_gene_names(top_genes_cluster):
     return top_genes_names
 
 
-def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immune/leiden_fusion"):
+def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir="dotplots/immune/leiden_fusion"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -314,6 +314,9 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immu
     """
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
 
     for threshold in thresholds:
         print(f"\n🔹 Processing dotplots for pts threshold: {threshold}")
@@ -348,6 +351,8 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immu
         # Collect top gene names for visualization
         top_genes_names = top_gene_names(top_genes_cluster)
 
+        top_genes_names = order_clusters(top_genes_names, cluster_order)
+
         # Reorder clusters (ON and OFF for dendrogram)
         print("   - Reordering clusters based on dendrogram...")
         # ordered_genes_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=True)
@@ -365,7 +370,7 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immu
             vmin=-4,
             vmax=4,
             values_to_plot='logfoldchanges',
-            colorbar_title='log fold change',
+            colorbar_title='Magnitude of expression',
             use_raw=False,
             dendrogram=False,
             return_fig=True
@@ -602,6 +607,32 @@ def reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram, dendrogra
 
     return reordered_dict
 
+def order_clusters(top_genes_dict, custom_order):
+    """
+    Reorder the dictionary keys according to a custom order.
+
+    Parameters:
+    top_genes_dict (dict): Dictionary mapping cluster names to gene lists.
+    custom_order (list): List defining the desired cluster order.
+
+    Returns:
+    dict: A new dictionary ordered by the custom order.
+    """
+    print("\n🔃 Ordering clusters...")
+
+    # 1️⃣ Add clusters in the custom order (only if they exist)
+    ordered_dict = {k: top_genes_dict[k] for k in custom_order if k in top_genes_dict}
+
+    # 2️⃣ Add any remaining clusters not present in the custom order
+    remaining = [k for k in top_genes_dict.keys() if k not in custom_order]
+    if remaining:
+        print(f"ℹ️ Adding {len(remaining)} clusters not found in custom order: {remaining}")
+        for k in remaining:
+            ordered_dict[k] = top_genes_dict[k]
+
+    print(f"📊 Final ordered cluster count: {len(ordered_dict)}")
+    return ordered_dict
+
 
 # Main execution block
 if __name__ == "__main__":
@@ -621,9 +652,14 @@ if __name__ == "__main__":
 
     pts_thresholds = [0.3, 0.4, 0.5]
 
-    
+    custom_cluster_order = [
+    "Imm.M0Like.0", "Imm.M0Like.1", 
+    "Imm.M0Like.2", "Imm.MHCII.0" ,
+    "Imm.Interferon.0", "Imm.DAM.0", 
+    "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0"]
+
     # Create dotplot of the top genes
-    create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
+    create_dotplots_with_thresholds(filtered_adata, pts_thresholds, custom_cluster_order)
 
     print("\n********\n* DONE *\n********")  
 

@@ -319,7 +319,9 @@ def create_dotplots_with_thresholds(adata, thresholds, clusters_to_remove, clust
         # Remove NA clusters
         cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
 
-        export_to_excel_all(cluster_dfs, threshold)
+        filtered_clusters = remove_clusters2(cluster_dfs, clusters_to_remove)
+
+        export_to_excel_all(filtered_clusters, threshold, string = "all")
 
         # Create dendrogram (if not already present)
         print("   - Checking and creating dendrogram if necessary...")
@@ -334,12 +336,18 @@ def create_dotplots_with_thresholds(adata, thresholds, clusters_to_remove, clust
         # Add an asterisk to clusters with non-significant genes
         top_genes_cluster = addasterix(top_genes_cluster)
 
+        filtered_clustersss = remove_clusters2(top_genes_cluster, clusters_to_remove)
+
+        print("printaaa")
+        print(filtered_clustersss)
+
+        export_to_excel_all(filtered_clustersss, threshold, string = "top")
+
         # Collect top gene names for visualization
         top_genes_names = top_gene_names(top_genes_cluster)
 
         top_genes_names = filter_and_order_clusters(top_genes_names, clusters_to_remove, cluster_order)
 
-        print(top_genes_names)
 
         # Reorder clusters (ON and OFF for dendrogram)
         # print("   - Reordering clusters based on dendrogram...")
@@ -358,7 +366,7 @@ def create_dotplots_with_thresholds(adata, thresholds, clusters_to_remove, clust
             vmin=-4,
             vmax=4,
             values_to_plot='logfoldchanges',
-            colorbar_title='log fold change',
+            colorbar_title='Magnitude of expression',
             use_raw=False,
             dendrogram=False,
             return_fig=True
@@ -387,10 +395,6 @@ def create_dotplots_with_thresholds(adata, thresholds, clusters_to_remove, clust
         plt.close()
         #print(f" Saved: {output_scale}")
         print(f" Saved: {output_normal}")
-
-
-
-        export_to_excel(top_genes_cluster, threshold)
 
 
 
@@ -442,36 +446,6 @@ def addasterix(top_genes_cluster):
     return updated_cluster
 
 
-# export to excel
-def export_to_excel(top_genes_cluster, threshold, output_dir="excels/meningeal/updates"):
-    """
-    Export the top_genes_cluster dictionary to an Excel file, using the threshold in the filename.
-
-    Parameters:
-    top_genes_cluster (dict): Dictionary containing DataFrames of top genes for each cluster.
-    threshold (float): The threshold value used for filtering.
-    output_dir (str): Directory where the Excel file will be saved.
-
-    Returns:
-    None
-    """
-    # Ensure output directory exists
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    # Define file path dynamically using the threshold
-    output_file = os.path.join(output_dir, f"top_genes_cluster_{threshold}.xlsx")
-
-    print(f"\n Exporting top genes to Excel: {output_file}")
-
-    # Create an Excel writer object
-    with pd.ExcelWriter(output_file) as writer: 
-        # Loop through each cluster and its corresponding DataFrame
-        for cluster, df in top_genes_cluster.items():
-            # Write each DataFrame to a different sheet, named after the cluster
-            df.to_excel(writer, sheet_name=cluster)
-
-    print(f"Excel file saved: {output_file}")
 
 def dendogram_sc(adata):
     """
@@ -588,7 +562,8 @@ def export_top_genes_to_txt(top_genes_cluster, threshold, output_dir="excels/men
 
     print(f"Text file saved: {output_file}")
 
-def export_to_excel_all(cluster_dfs, threshold, output_dir="excels/meningeal/new_tese/dge"):
+
+def export_to_excel_all(cluster_dfs, threshold, string, output_dir="excels/meningeal/new_tese/dge"):
     """
     Export all differential expression data per cluster to an Excel file,
     including logfoldchanges, pvals_adj, scores, and pts.
@@ -606,7 +581,7 @@ def export_to_excel_all(cluster_dfs, threshold, output_dir="excels/meningeal/new
     os.makedirs(output_dir, exist_ok=True)
 
     # Define file path dynamically using the threshold
-    output_file = os.path.join(output_dir, f"all_genes_clusters_{threshold}.xlsx")
+    output_file = os.path.join(output_dir, f"{string}_genes_clusters_{threshold}.xlsx")
     print(f"\n🟩 Exporting full DGE results to Excel: {output_file}")
 
     try:
@@ -732,6 +707,39 @@ def filter_and_order_clusters(top_genes_dict, clusters_to_remove, custom_order):
 
     print(f"📊 Final cluster count: {len(ordered_dict)}")
     return ordered_dict
+
+def remove_clusters2(cluster_dict, clusters_to_remove):
+    """
+    Remove unwanted clusters (dictionary keys) from a dict of DataFrames.
+
+    Parameters
+    ----------
+    cluster_dict : dict
+        Mapping cluster → DataFrame
+    clusters_to_remove : list
+        List of keys to remove from the dictionary
+
+    Returns
+    -------
+    dict
+        Filtered dictionary with specified clusters removed
+    """
+
+    print("\n🧹 Removing unwanted clusters...")
+
+    filtered = {k: v for k, v in cluster_dict.items() if k not in clusters_to_remove}
+
+    removed = [c for c in clusters_to_remove if c in cluster_dict]
+    missing = [c for c in clusters_to_remove if c not in cluster_dict]
+
+    if removed:
+        print(f"✅ Removed {len(removed)} clusters: {removed}")
+    if missing:
+        print(f"⚠️  Skipped {len(missing)} (not found): {missing}")
+
+    print(f"📊 Final cluster count: {len(filtered)}")
+
+    return filtered
 
 # Main execution block
 if __name__ == "__main__":
