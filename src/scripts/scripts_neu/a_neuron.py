@@ -330,45 +330,61 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/neur
 
         # Reorder clusters (ON and OFF for dendrogram)
         print("   - Reordering clusters based on dendrogram...")
-        ordered_genes_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=True)
-        ordered_genes_no_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=False)
+        # ordered_genes_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=True)
+        # ordered_genes_no_dendro = reorder_clusters_to_dendrogram(adata, top_genes_names, dendrogram=False)
 
         print("   - Generating dotplots...")
 
-        # (2) normal
+        # (1) With Dendrogram
         dotplot_normal = sc.pl.rank_genes_groups_dotplot(
             adata,
             var_names=top_genes_names,
             groupby='leiden_fusion',
             key='rank_genes_groups_leiden_fusion',
-            cmap='Reds',
+            cmap='bwr',
+            vmin=-4,
+            vmax=4,
+            values_to_plot='logfoldchanges',
+            colorbar_title='Magnitude of expression',
             use_raw=False,
             dendrogram=False,
             return_fig=True
         )
 
-        # (2) scaled
-        dotplot_scaled = sc.pl.rank_genes_groups_dotplot(
-            adata,
-            var_names=top_genes_names,
-            groupby='leiden_fusion',
-            key='rank_genes_groups_leiden_fusion',
-            cmap='Greys',
-            use_raw=False,
-            standard_scale='var',
-            dendrogram=False,
-            return_fig=True
-        )
+        # # (2) normal
+        # dotplot_normal = sc.pl.rank_genes_groups_dotplot(
+        #     adata,
+        #     var_names=top_genes_names,
+        #     groupby='leiden_fusion',
+        #     key='rank_genes_groups_leiden_fusion',
+        #     cmap='Reds',
+        #     use_raw=False,
+        #     dendrogram=False,
+        #     return_fig=True
+        # )
+
+        # # (2) scaled
+        # dotplot_scaled = sc.pl.rank_genes_groups_dotplot(
+        #     adata,
+        #     var_names=top_genes_names,
+        #     groupby='leiden_fusion',
+        #     key='rank_genes_groups_leiden_fusion',
+        #     cmap='Greys',
+        #     use_raw=False,
+        #     standard_scale='var',
+        #     dendrogram=False,
+        #     return_fig=True
+        # )
 
         # Save plots
-        output_scale = os.path.join(output_dir, f"dotplot_scale_{threshold}.pdf")
+        #output_scale = os.path.join(output_dir, f"dotplot_scale_{threshold}.pdf")
         output_normal = os.path.join(output_dir, f"dotplot_normal_{threshold}.pdf")
 
-        dotplot_scaled.savefig(output_scale, bbox_inches="tight")
+        #dotplot_scaled.savefig(output_scale, bbox_inches="tight")
         dotplot_normal.savefig(output_normal, bbox_inches="tight")
 
         plt.close()
-        print(f" Saved: {output_scale}")
+        #print(f" Saved: {output_scale}")
         print(f" Saved: {output_normal}")
 
 
@@ -588,12 +604,12 @@ if __name__ == "__main__":
     #filtered_adata = remove_NA_cat(adata)
 
     #Create cluster resolutions UMAP
-    umap_reso_cluster(adata, 'leiden_fusion')
+    # umap_reso_cluster(adata, 'leiden_fusion')
 
-    # pts_thresholds = [0.3, 0.4, 0.5]
+    pts_thresholds = [0.3, 0.4, 0.5]
 
-    # # Create dotplot of the top genes
-    # create_dotplots_with_thresholds(adata, pts_thresholds)
+    # Create dotplot of the top genes
+    create_dotplots_with_thresholds(adata, pts_thresholds)
 
     # print("----")
     # print(adata.obs['leiden_fusion'].cat.categories.to_list())
