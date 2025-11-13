@@ -530,13 +530,47 @@ def export_canonical_to_excel(filtered_genes, excel_order, threshold, output_dir
 
 
 
+def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_meninge/updates"):
+    """
+    Plot UMAP for a specific resolution with cluster numbers displayed at the centroid of each cluster.
+
+    Parameters:
+    adata (AnnData): The AnnData object containing the data.
+    resolution_name (str): The resolution name to be used for coloring the UMAP plot (e.g., 'leiden_fusion).
+
+    Returns:
+    None
+    """
+
+    # Plot UMAP for the specified resolution
+    ax = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}", return_fig=True)
+    
+    ax_ondata = sc.pl.umap(adata, 
+                           color=resolution_name, 
+                           title=f"UMAP - Meningeal Clusters",
+                           legend_loc = 'on data',
+                           legend_fontsize=7,  
+                           legend_fontweight = 'bold',  
+                           legend_fontoutline = 1,
+                           size=50,
+                           return_fig=True)
+
+    # Save the UMAP plot as an image (optional)
+    output_path = os.path.join(output_dir, f"umap_Immune_{resolution_name}_n.pdf") 
+    output_path_leg = os.path.join(output_dir, f"umap_Immune_{resolution_name}_l.pdf")
+    ax.figure.savefig(output_path, bbox_inches="tight")
+    ax_ondata.figure.savefig(output_path_leg, bbox_inches="tight")
+    # print(f"UMAP plot saved as {output_path}")
+    plt.close()  # Close the plot to avoid overlap
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
-    print(adata.obs["leiden_fusion"])
-    print(adata.uns["rank_genes_groups_leiden_fusion"])
+    # print(adata.obs["leiden_fusion"])
+    # print(adata.uns["rank_genes_groups_leiden_fusion"])
 
     filtered_adata = remove_NA_cat(adata)
 
@@ -545,29 +579,32 @@ if __name__ == "__main__":
     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', 'MeV.EndoUnknow.4', 'MeV.FibUnknown.6']
     adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
 
+    #Create cluster resolutions UMAP
+    umap_reso_cluster(adatas_filtered, 'leiden_fusion')
+
     # #preform dendrogram
     # dendogram_sc(adatas_filtered)
 
-    # Load canonical gene lists from a directory
-    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal"
-    genes = load_canonical_from_dir(canonical_genes_dir)
+    # # Load canonical gene lists from a directory
+    # canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal"
+    # genes = load_canonical_from_dir(canonical_genes_dir)
 
 
-    # Define thresholds
-    pts_thresholds = [0, 0.2, 0.3]
+    # # Define thresholds
+    # pts_thresholds = [0, 0.2, 0.3]
 
-    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
-                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
-                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
+    # custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
+    #                         "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+    #                         "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
     
 
-    # Check for mismatches before reordering
-    check_cluster_order(adatas_filtered, custom_cluster_order)
+    # # Check for mismatches before reordering
+    # check_cluster_order(adatas_filtered, custom_cluster_order)
     
-    # Generate dotplots for each threshold
-    create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "")
+    # # Generate dotplots for each threshold
+    # create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "")
 
-    #export_cluster_cell_counts(adatas_filtered)
+    # #export_cluster_cell_counts(adatas_filtered)
 
 
     

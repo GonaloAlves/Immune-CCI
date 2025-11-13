@@ -33,12 +33,20 @@ def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_neu"):
 
     # Plot UMAP for the specified resolution
     ax = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}", return_fig=True)
-    ax_ondata = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}",legend_loc = 'on data',legend_fontweight = 'bold', legend_fontsize = 8, legend_fontoutline = 1,return_fig=True)
-
     
+    ax_ondata = sc.pl.umap(adata, 
+                           color=resolution_name, 
+                           title=f"UMAP - Ependymal niche Clusters",
+                           legend_loc = 'on data',
+                           legend_fontsize=12,  
+                           legend_fontweight = 'bold',  
+                           legend_fontoutline = 1,
+                           size=50,
+                           return_fig=True)
+
     # Save the UMAP plot as an image (optional)
-    output_path = os.path.join(output_dir, f"umap_Neuron_{resolution_name}_n.png") 
-    output_path_leg = os.path.join(output_dir, f"umap_Neuron_{resolution_name}_l.png")
+    output_path = os.path.join(output_dir, f"umap_Immune_{resolution_name}_n.pdf") 
+    output_path_leg = os.path.join(output_dir, f"umap_Immune_{resolution_name}_l.pdf")
     ax.figure.savefig(output_path, bbox_inches="tight")
     ax_ondata.figure.savefig(output_path_leg, bbox_inches="tight")
     # print(f"UMAP plot saved as {output_path}")
@@ -582,14 +590,14 @@ if __name__ == "__main__":
     #Create cluster resolutions UMAP
     umap_reso_cluster(adata, 'leiden_fusion')
 
-    pts_thresholds = [0.3, 0.4, 0.5]
+    # pts_thresholds = [0.3, 0.4, 0.5]
 
-    # Create dotplot of the top genes
-    create_dotplots_with_thresholds(adata, pts_thresholds)
+    # # Create dotplot of the top genes
+    # create_dotplots_with_thresholds(adata, pts_thresholds)
 
-    print("----")
-    print(adata.obs['leiden_fusion'].cat.categories.to_list())
-    print("----")
+    # print("----")
+    # print(adata.obs['leiden_fusion'].cat.categories.to_list())
+    # print("----")
 
     
     print("\n********\n* DONE *\n********")  # Indicate completion

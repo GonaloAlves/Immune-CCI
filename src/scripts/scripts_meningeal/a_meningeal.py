@@ -33,7 +33,16 @@ def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_meninge/upda
 
     # Plot UMAP for the specified resolution
     ax = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}", return_fig=True)
-    ax_ondata = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}",legend_loc = 'on data',legend_fontweight = 'bold', legend_fontsize = 8, legend_fontoutline = 1,return_fig=True)
+    
+    ax_ondata = sc.pl.umap(adata, 
+                           color=resolution_name, 
+                           title=f"UMAP - Immune Clusters",
+                           legend_loc = 'on data',
+                           legend_fontsize=10,  
+                           legend_fontweight = 'bold',  
+                           legend_fontoutline = 1,
+                           size=50,
+                           return_fig=True)
 
     
     # Save the UMAP plot as an image (optional)
