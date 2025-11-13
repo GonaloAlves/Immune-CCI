@@ -336,6 +336,8 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immu
         print("   - Checking and creating dendrogram if necessary...")
         # plot_dendogram(adata)
 
+        export_to_excel_all(cluster_dfs, threshold)
+
         # Select the top genes for each cluster
         print("   - Selecting top genes for each cluster...")
         top_genes_cluster = select_top_genes(cluster_dfs)
@@ -353,62 +355,60 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/immu
 
         print("   - Generating dotplots...")
 
-        # # (1) With Dendrogram
-        # dotplot_dendro = sc.pl.rank_genes_groups_dotplot(
-        #     adata,
-        #     var_names=ordered_genes_dendro,
-        #     groupby='leiden_fusion_old1',
-        #     key='rank_genes_groups_leiden_fusion_old1',
-        #     cmap='bwr',
-        #     vmin=-4,
-        #     vmax=4,
-        #     values_to_plot='logfoldchanges',
-        #     colorbar_title='log fold change',
-        #     use_raw=False,
-        #     dendrogram='dendrogram_leiden_fusion_old1',
-        #     return_fig=True
-        # )
-
-        # (2) normal
+        # (1) With Dendrogram
         dotplot_normal = sc.pl.rank_genes_groups_dotplot(
             adata,
             var_names=top_genes_names,
             groupby='leiden_fusion',
             key='rank_genes_groups_leiden_fusion',
-            cmap='Reds',
+            cmap='bwr',
+            vmin=-4,
+            vmax=4,
+            values_to_plot='logfoldchanges',
+            colorbar_title='log fold change',
             use_raw=False,
             dendrogram=False,
             return_fig=True
         )
 
-        # (2) scaled
-        dotplot_scaled = sc.pl.rank_genes_groups_dotplot(
-            adata,
-            var_names=top_genes_names,
-            groupby='leiden_fusion',
-            key='rank_genes_groups_leiden_fusion',
-            cmap='Greys',
-            use_raw=False,
-            standard_scale='var',
-            dendrogram=False,
-            return_fig=True
-        )
+        # # (2) normal
+        # dotplot_normal = sc.pl.rank_genes_groups_dotplot(
+        #     adata,
+        #     var_names=top_genes_names,
+        #     groupby='leiden_fusion',
+        #     key='rank_genes_groups_leiden_fusion',
+        #     cmap='Reds',
+        #     use_raw=False,
+        #     dendrogram=False,
+        #     return_fig=True
+        # )
+
+        # # (2) scaled
+        # dotplot_scaled = sc.pl.rank_genes_groups_dotplot(
+        #     adata,
+        #     var_names=top_genes_names,
+        #     groupby='leiden_fusion',
+        #     key='rank_genes_groups_leiden_fusion',
+        #     cmap='Greys',
+        #     use_raw=False,
+        #     standard_scale='var',
+        #     dendrogram=False,
+        #     return_fig=True
+        # )
 
         # Save plots
-        output_scale = os.path.join(output_dir, f"dotplot_scale_{threshold}.pdf")
-        output_normal = os.path.join(output_dir, f"dotplot_normal_{threshold}.pdf")
+        #output_scale = os.path.join(output_dir, f"dotplot_scale_{threshold}.pdf")
+        output_normal = os.path.join(output_dir, f"dotplot_dge_{threshold}.pdf")
 
-        dotplot_scaled.savefig(output_scale, bbox_inches="tight")
+        #dotplot_scaled.savefig(output_scale, bbox_inches="tight")
         dotplot_normal.savefig(output_normal, bbox_inches="tight")
 
         plt.close()
-        print(f" Saved: {output_scale}")
+        #print(f" Saved: {output_scale}")
         print(f" Saved: {output_normal}")
 
 
-        export_to_excel(top_genes_cluster, threshold)
-
-
+        #export_to_excel(top_genes_cluster, threshold)
 
 
 def print_gene_names(top_genes_names):
@@ -489,6 +489,53 @@ def export_to_excel(top_genes_cluster, threshold, output_dir="excels/immune/new_
 
     print(f"Excel file saved: {output_file}")
 
+def export_to_excel_all(cluster_dfs, threshold, output_dir="excels/immune/new_tese/dge"):
+    """
+    Export all differential expression data per cluster to an Excel file,
+    including logfoldchanges, pvals_adj, scores, and pts.
+
+    Parameters:
+    cluster_dfs (dict): Dictionary where keys = cluster names and values = DataFrames
+                        containing ['logfoldchanges', 'pvals_adj', 'scores', 'pts'].
+    threshold (float): The threshold value used for filtering.
+    output_dir (str): Directory where the Excel file will be saved.
+
+    Returns:
+    None
+    """
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Define file path dynamically using the threshold
+    output_file = os.path.join(output_dir, f"all_genes_clusters_{threshold}.xlsx")
+    print(f"\n🟩 Exporting full DGE results to Excel: {output_file}")
+
+    try:
+        with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
+            for cluster, df in cluster_dfs.items():
+                # Ensure DataFrame has all expected columns
+                expected_cols = ["logfoldchange", "pvals_adj", "score", "pts"]
+                missing_cols = [col for col in expected_cols if col not in df.columns]
+                if missing_cols:
+                    print(f"⚠️  Warning: Missing columns {missing_cols} in cluster {cluster}")
+
+                # Sort columns consistently
+                cols = [col for col in expected_cols if col in df.columns]
+                df_to_write = df[cols].copy()
+                df_to_write.index.name = "Gene"
+
+                # Write to Excel sheet named after the cluster
+                sheet_name = str(cluster)[:31]  # Excel sheet name limit
+                df_to_write.to_excel(writer, sheet_name=sheet_name)
+
+                print(f"   ✅ Wrote {len(df_to_write)} genes for cluster '{cluster}'")
+
+        print(f"✅ Excel file successfully saved at: {output_file}")
+
+    except Exception as e:
+        print(f"❌ Error exporting Excel file: {e}")
+        import traceback
+        traceback.print_exc()
 
 
 
@@ -570,13 +617,13 @@ if __name__ == "__main__":
     
     
     # #Create cluster resolutions UMAP
-    umap_reso_cluster(filtered_adata, 'leiden_fusion')
+    # umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
     pts_thresholds = [0.3, 0.4, 0.5]
 
     
     # Create dotplot of the top genes
-    # create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
+    create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
 
     print("\n********\n* DONE *\n********")  
 
