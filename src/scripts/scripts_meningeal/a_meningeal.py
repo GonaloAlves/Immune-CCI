@@ -283,7 +283,7 @@ def top_gene_names(top_genes_cluster):
     return top_genes_names
 
 
-def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/meningeal/leiden_fusion"):
+def create_dotplots_with_thresholds(adata, thresholds, clusters_to_remove, cluster_order, output_dir="dotplots/meningeal/leiden_fusion"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -297,6 +297,10 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/meni
     """
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
+
 
     for threshold in thresholds:
         print(f"\n🔹 Processing dotplots for pts threshold: {threshold}")
@@ -332,6 +336,10 @@ def create_dotplots_with_thresholds(adata, thresholds, output_dir="dotplots/meni
 
         # Collect top gene names for visualization
         top_genes_names = top_gene_names(top_genes_cluster)
+
+        top_genes_names = filter_and_order_clusters(top_genes_names, clusters_to_remove, cluster_order)
+
+        print(top_genes_names)
 
         # Reorder clusters (ON and OFF for dendrogram)
         # print("   - Reordering clusters based on dendrogram...")
@@ -488,7 +496,6 @@ def dendogram_sc(adata):
         use_raw=False
     )
 
-
 def plot_dendrogram(adata, output_dir="dendrogram/dendrogram_meningeal"):
     """
     
@@ -629,6 +636,102 @@ def export_to_excel_all(cluster_dfs, threshold, output_dir="excels/meningeal/new
         import traceback
         traceback.print_exc()
 
+def check_cluster_order(adata, cluster_order):
+    """
+    Check for mismatches between existing clusters and the user-defined cluster order.
+
+    Parameters:
+    adata (AnnData): The AnnData object.
+    cluster_order (list): The user-defined list of clusters to reorder.
+
+    Returns:
+    None
+    """
+    # Extract existing categories in 'leiden_fusion'
+    existing_categories = list(adata.obs['leiden_fusion'].cat.categories)
+
+    print("\n--- Existing Categories in 'leiden_fusion' ---")
+    print(existing_categories)
+
+    print("\n--- User-Defined Cluster Order ---")
+    print(cluster_order)
+
+    # Check for clusters in custom order that don't exist in the data
+    missing_in_data = [cluster for cluster in cluster_order if cluster not in existing_categories]
+    
+    # Check for clusters in the data that aren't in the custom order
+    missing_in_order = [cluster for cluster in existing_categories if cluster not in cluster_order]
+
+    if missing_in_data:
+        print("\n Clusters in custom order but NOT in 'leiden_fusion':")
+        print(missing_in_data)
+    
+    if missing_in_order:
+        print("\n Clusters in 'leiden_fusion' but NOT in custom order:")
+        print(missing_in_order)
+
+    if not missing_in_data and not missing_in_order:
+        print("\n All categories match! Reordering should work.")
+
+def remove_clusters(adata: sc.AnnData, clusters_to_remove: list, cluster_key: str = 'leiden_fusion'):
+    """
+    Remove specified clusters from the AnnData object.
+
+    Parameters:
+    adata (sc.AnnData): The annotated data matrix.
+    clusters_to_remove (list): List of cluster names to remove.
+    cluster_key (str): The key in adata.obs that contains cluster annotations. Default is 'leiden_fusion'.
+
+    Returns:
+    sc.AnnData: A new AnnData object with the specified clusters removed.
+    """
+    print(f"Removing clusters: {clusters_to_remove}")
+
+    # Create a mask to filter out the specified clusters
+    mask = ~adata.obs[cluster_key].isin(clusters_to_remove)
+    
+    # Apply the mask to create a new AnnData object
+    adata_filtered = adata[mask].copy()
+    
+    return adata_filtered
+
+def filter_and_order_clusters(top_genes_dict, clusters_to_remove, custom_order):
+    """
+    Remove specific clusters and reorder the remaining keys according to a custom order.
+
+    Parameters:
+    top_genes_dict (dict): Dictionary mapping cluster names to gene lists.
+    clusters_to_remove (list): List of cluster names (keys) to remove.
+    custom_order (list): List defining the desired cluster order.
+
+    Returns:
+    dict: A new dictionary filtered and ordered by the custom order.
+    """
+    print("\n🧹 Filtering and ordering clusters...")
+
+    # 1️⃣ Remove unwanted clusters
+    filtered_dict = {k: v for k, v in top_genes_dict.items() if k not in clusters_to_remove}
+    
+    removed = [c for c in clusters_to_remove if c in top_genes_dict]
+    missing = [c for c in clusters_to_remove if c not in top_genes_dict]
+
+    if removed:
+        print(f"✅ Removed {len(removed)} clusters: {removed}")
+    if missing:
+        print(f"⚠️  Skipped {len(missing)} (not found): {missing}")
+    
+    # 2️⃣ Reorder according to custom_order
+    ordered_dict = {k: filtered_dict[k] for k in custom_order if k in filtered_dict}
+
+    # 3️⃣ Add any remaining clusters not in custom_order (at the end)
+    remaining = [k for k in filtered_dict.keys() if k not in custom_order]
+    if remaining:
+        print(f"ℹ️ Added {len(remaining)} clusters not in custom order: {remaining}")
+        for k in remaining:
+            ordered_dict[k] = filtered_dict[k]
+
+    print(f"📊 Final cluster count: {len(ordered_dict)}")
+    return ordered_dict
 
 # Main execution block
 if __name__ == "__main__":
@@ -639,13 +742,24 @@ if __name__ == "__main__":
 
     filtered_adata = remove_NA_cat(adata)
 
-    #Create cluster resolutions UMAP
-    umap_reso_cluster(filtered_adata, 'leiden_fusion')
+    clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', 'MeV.EndoUnknow.4', 'MeV.FibUnknown.6']
+    adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
+
+    # #Create cluster resolutions UMAP
+    # umap_reso_cluster(adatas_filtered, 'leiden_fusion')
 
     pts_thresholds = [0.3, 0.4, 0.5]
 
+    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
+                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
+    
+    # # Check for mismatches before reordering
+    # check_cluster_order(filtered_adata, custom_cluster_order)
+
+    
     # Create dotplot of the top genes
-    create_dotplots_with_thresholds(filtered_adata, pts_thresholds)
+    create_dotplots_with_thresholds(adatas_filtered, pts_thresholds, clusters_to_remove, custom_cluster_order)
 
     # print("----")
     # print(adata.obs['leiden_fusion'].cat.categories.to_list())
