@@ -339,7 +339,9 @@ def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir
         print("   - Checking and creating dendrogram if necessary...")
         # plot_dendogram(adata)
 
-        export_to_excel_all(cluster_dfs, threshold)
+        ordered_clusters = order_clusters(cluster_dfs, cluster_order)
+
+        export_to_excel_all(ordered_clusters, threshold,string = "all")
 
         # Select the top genes for each cluster
         print("   - Selecting top genes for each cluster...")
@@ -347,6 +349,10 @@ def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir
 
         # Add an asterisk to clusters with non-significant genes
         top_genes_cluster = addasterix(top_genes_cluster)
+
+        ordered_clusterss = order_clusters(top_genes_cluster, cluster_order)
+
+        export_to_excel_all(ordered_clusterss, threshold, string = "top")
 
         # Collect top gene names for visualization
         top_genes_names = top_gene_names(top_genes_cluster)
@@ -412,8 +418,6 @@ def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir
         #print(f" Saved: {output_scale}")
         print(f" Saved: {output_normal}")
 
-
-        #export_to_excel(top_genes_cluster, threshold)
 
 
 def print_gene_names(top_genes_names):
@@ -494,7 +498,7 @@ def export_to_excel(top_genes_cluster, threshold, output_dir="excels/immune/new_
 
     print(f"Excel file saved: {output_file}")
 
-def export_to_excel_all(cluster_dfs, threshold, output_dir="excels/immune/new_tese/dge"):
+def export_to_excel_all(cluster_dfs, threshold,string, output_dir="excels/immune/new_tese/dge"):
     """
     Export all differential expression data per cluster to an Excel file,
     including logfoldchanges, pvals_adj, scores, and pts.
@@ -512,7 +516,7 @@ def export_to_excel_all(cluster_dfs, threshold, output_dir="excels/immune/new_te
     os.makedirs(output_dir, exist_ok=True)
 
     # Define file path dynamically using the threshold
-    output_file = os.path.join(output_dir, f"all_genes_clusters_{threshold}.xlsx")
+    output_file = os.path.join(output_dir, f"{string}_genes_clusters_{threshold}.xlsx")
     print(f"\n🟩 Exporting full DGE results to Excel: {output_file}")
 
     try:
