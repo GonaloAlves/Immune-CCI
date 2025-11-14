@@ -224,7 +224,7 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
     ax.yaxis.set_ticks_position('right')
 
     # Add title at the bottom manually
-    plt.figtext(0.5, 0.01, f"Number of Significant Interactions in {category}", ha='center', fontsize=60)
+    plt.figtext(0.5, 0.9, f"Number of Significant Interactions in {category}", ha='center', fontsize=60)
 
     # Adjust colorbar ticksM0Like.1
     cbar = ax.collections[0].colorbar
@@ -232,7 +232,7 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
     cbar.ax.set_position([0.85, 0.2, 0.5, 0.3])  # [left, bottom, width, height]
 
     # Save the figure
-    output_path = f"{cellphonedb_dir}/manual_filtered_heatmap_{category}_one.png"
+    output_path = f"{cellphonedb_dir}/manual_filtered_heatmap_{category}_one.pdf"
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()
 
@@ -760,9 +760,9 @@ if __name__ == "__main__":
     edge_list_15 = build_directional_edge_list(filtered_15_dict)
     edge_list_60 = build_directional_edge_list(filtered_60_dict)
 
-    # Optional: Save to CSV or Excel
-    edge_list_15.to_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/edge_list_injured_15.csv", index=False)
-    edge_list_60.to_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/edge_list_injured_60.csv", index=False)
+    # # Optional: Save to CSV or Excel
+    # edge_list_15.to_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/edge_list_injured_15.csv", index=False)
+    # edge_list_60.to_csv("/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/filtered_pvalues/edge_list_injured_60.csv", index=False)
 
     # print(matrix_15)
     # print(matrix_60)
@@ -814,7 +814,7 @@ if __name__ == "__main__":
     # plot_interaction_distribution(edge_list_15, condition_label="Injured 15")
     # plot_interaction_distribution(edge_list_60, condition_label="Injured 60")
 
-    edge_list_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/"
+    # edge_list_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/excels/edge_list/"
 
     # export_top_interactions_per_cluster(edge_list_15, f"{edge_list_dir}top_cluster_interactions_15.xlsx")
     # export_top_interactions_per_cluster(edge_list_60, f"{edge_list_dir}top_cluster_interactions_60.xlsx")

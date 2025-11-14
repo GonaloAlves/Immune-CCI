@@ -208,8 +208,8 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, output_dir, user_o
         )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"{name}_{order_name}_dotplot_scaled_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"{name}_{order_name}_dotplot_normal_{threshold}.png")
+        output_scaled_no_dendro = os.path.join(output_dir, f"{name}_{order_name}_dotplot_scaled_{threshold}.pdf")
+        output_normal_no_dendro = os.path.join(output_dir, f"{name}_{order_name}_dotplot_normal_{threshold}.pdf")
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
         dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")

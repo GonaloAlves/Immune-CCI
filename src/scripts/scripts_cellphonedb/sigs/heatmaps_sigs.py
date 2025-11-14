@@ -21,7 +21,7 @@ deg_analysis = True
 
 checkpoint_dir = "/home/makowlg/Documents/Immune-CCI/h5ad_files"
 cellphonedb_dir = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/filtered_pvalues"
-cellphonedb_dir_plots = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/heatmaps/sigs"
+cellphonedb_dir_plots = "/home/makowlg/Documents/Immune-CCI/src/cellphonedb/plots/heatmaps/sigs_all"
 
 def test_heatmap(obs_key: str = None, category: str = None, vmin: int = None, vmax: int = None, restrictions = None):
 
@@ -57,8 +57,13 @@ def test_heatmap(obs_key: str = None, category: str = None, vmin: int = None, vm
         "MeV.FibCollagen.2", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
     ]
 
-    relevant_clusters = ["Imm.DAM.0", "Imm.Interferon.0","Imm.PVM.0", "Imm.DAM.1","Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2"]
+    #relevant_clusters = ["Imm.DAM.0", "Imm.Interferon.0","Imm.PVM.0", "Imm.DAM.1","Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2"]
 
+    relevant_clusters = [
+        "Imm.M0Like.1", "Imm.DAM.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1",
+        "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
+        "MeV.FibCollagen.2", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
+    ]
 
     # Check if all your custom labels exist in the matrix
     missing = set(relevant_clusters) - set(count_matrix.index)
@@ -109,7 +114,7 @@ def test_heatmap(obs_key: str = None, category: str = None, vmin: int = None, vm
     ax.yaxis.set_ticks_position('right')
 
     # Add title at the bottom manually
-    plt.figtext(0.5, 0.01, f"Number of Significant Interactions in {category}", ha='center', fontsize=60)
+    plt.figtext(0.5, 0.9, f"Number of Significant Interactions in {category}", ha='center', fontsize=60)
 
     # Adjust colorbar ticksM0Like.1
     cbar = ax.collections[0].colorbar
@@ -117,7 +122,7 @@ def test_heatmap(obs_key: str = None, category: str = None, vmin: int = None, vm
     cbar.ax.set_position([0.85, 0.2, 0.5, 0.3])  # [left, bottom, width, height]
 
     # Save the figure
-    output_path = f"{cellphonedb_dir_plots}/manual_heatmap_{category}_{restrictions}.png"
+    output_path = f"{cellphonedb_dir_plots}/manual_heatmap_{category}_{restrictions}.pdf"
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()
 
@@ -162,9 +167,9 @@ def start() -> None:
         
         # remove_clusters = ["MeV.ImmuneDoublets.0", "MeV.FibUnknown.6", "MeV.LowQuality.0"]
 
-        test_heatmap(obs_key="injury_day", category="injured_15", vmin = 0, vmax = 90, restrictions="two")
-        test_heatmap(obs_key="injury_day", category="injured_60", vmin = 0, vmax = 90, restrictions="two")
-        test_heatmap(obs_key="injury_day", category="uninjured", vmin = 0, vmax = 90, restrictions="two")
+        test_heatmap(obs_key="injury_day", category="injured_15", vmin = 0, vmax = 80, restrictions="two")
+        test_heatmap(obs_key="injury_day", category="injured_60", vmin = 0, vmax = 80, restrictions="two")
+        test_heatmap(obs_key="injury_day", category="uninjured", vmin = 0, vmax = 80, restrictions="two")
 
         # export_to_excel(test, "test_simplified.xlsx")
 
