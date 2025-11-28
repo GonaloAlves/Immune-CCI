@@ -58,9 +58,9 @@ if __name__ == "__main__":
     # List of clusters to rename
     old_clusters = [
         ('Imm.0.8.6', 'Imm.Interferon.0'),
-        ('Imm.0.8.0', 'Imm.M0Like1'),
-        ('Imm.0.8.1', 'Imm.M0Like2'),
-        ('Imm.0.8.2', 'Imm.M0Like3'),
+        ('Imm.0.8.0', 'Imm.M0Like.0'),
+        ('Imm.0.8.1', 'Imm.M0Like.1'),
+        ('Imm.0.8.2', 'Imm.M0Like.2'),
         ('Imm.1.2.15', 'Imm.Proliferative.0'),
         ('Imm.1.2.4', 'Imm.PVM.0'),
         ('Imm.1.2.12', 'Imm.DAM.0'),

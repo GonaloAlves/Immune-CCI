@@ -299,6 +299,124 @@ def top_gene_names(top_genes_cluster):
 
     return top_genes_names
 
+def no_filter_dotplot(adata, cluster_order, output_dir="dotplots/immune/leiden_fusion"):
+
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # 1. Reorder adata categories
+    adata.obs['leiden_fusion_old1'] = adata.obs['leiden_fusion_old1'].cat.reorder_categories(cluster_order, ordered=True)
+
+    # 2. Extract top 5 genes + remove NA clusters
+    top_genes_names = get_top_genes_for_dotplot(
+        adata,
+        key='rank_genes_groups_leiden_fusion_old1',
+        n_genes=5,
+        cluster_order=cluster_order,
+        remove_suffix="NA"
+    )
+
+    # 3. Reorder dict (optional)
+    top_genes_names = order_clusters(top_genes_names, cluster_order)
+
+    # 4. Plot
+    dotplot_normal = sc.pl.rank_genes_groups_dotplot(
+        adata,
+        var_names=top_genes_names,
+        groupby='leiden_fusion_old1',
+        key='rank_genes_groups_leiden_fusion_old1',
+        cmap='bwr',
+        vmin=-4, vmax=4,
+        use_raw=False,
+        values_to_plot='logfoldchanges',
+        dendrogram=False,
+        return_fig=True
+    )
+
+
+    # Save plots
+    output_normal = os.path.join(output_dir, f"dotplot_dge_no_filter.png")
+    dotplot_normal.savefig(output_normal, bbox_inches="tight")
+
+    plt.close()
+    print(f" Saved: {output_normal}")
+
+
+def get_top_genes_for_dotplot(adata, 
+                              key='rank_genes_groups_leiden_fusion_old1',
+                              n_genes=5,
+                              cluster_order=None,
+                              remove_suffix="NA"):
+    """
+    Extract top n_genes used in Scanpy dotplot and apply ordering + NA removal.
+    """
+
+    rgg = adata.uns[key]
+    all_clusters = list(rgg['names'].dtype.names)
+
+    # If no custom order provided, keep original
+    if cluster_order is None:
+        cluster_order = all_clusters
+
+    top_dict = {}
+
+    # Extract top n genes in desired order
+    for cluster in cluster_order:
+        if cluster not in all_clusters:
+            continue
+
+        genes = list(rgg['names'][cluster][:n_genes])
+        top_dict[cluster] = genes
+
+    # Remove suffix clusters (like NA)
+    if remove_suffix:
+        top_dict = remove_varname_clusters_by_suffix(top_dict, remove_suffix)
+
+    return top_dict
+
+
+def order_clusters(cluster_dict, cluster_order):
+    """
+    Reorder a dict according to a list of cluster_order.
+    Keys not in cluster_order are appended at the end.
+    """
+    ordered = {k: cluster_dict[k] for k in cluster_order if k in cluster_dict}
+
+    # Add remaining clusters at the bottom
+    for k in cluster_dict:
+        if k not in ordered:
+            ordered[k] = cluster_dict[k]
+
+    return ordered
+
+def remove_varname_clusters_by_suffix(varname_dict, suffix="NA"):
+    """
+    Remove clusters from a var_names dictionary (cluster → list of genes) 
+    if their cluster name ends with a specified suffix.
+
+    Parameters:
+        varname_dict (dict): {cluster: [gene1, gene2, ...]}
+        suffix (str): Suffix to remove (e.g. "NA")
+
+    Returns:
+        dict: Filtered dictionary
+    """
+    print(f"\n🧹 Removing clusters ending with suffix: '{suffix}'")
+
+    filtered = {
+        k: v for k, v in varname_dict.items()
+        if not k.endswith(suffix)
+    }
+
+    removed = [k for k in varname_dict if k.endswith(suffix)]
+    if removed:
+        print(f"   Removed {len(removed)} clusters: {removed}")
+    else:
+        print("   No clusters removed.")
+
+    return filtered
+
 
 def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir="dotplots/immune/leiden_fusion"):
     """
@@ -341,7 +459,7 @@ def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir
 
         ordered_clusters = order_clusters(cluster_dfs, cluster_order)
 
-        export_to_excel_all(ordered_clusters, threshold,string = "all")
+        #export_to_excel_all(ordered_clusters, threshold,string = "all")
 
         # Select the top genes for each cluster
         print("   - Selecting top genes for each cluster...")
@@ -352,7 +470,7 @@ def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir
 
         ordered_clusterss = order_clusters(top_genes_cluster, cluster_order)
 
-        export_to_excel_all(ordered_clusterss, threshold, string = "top")
+        #export_to_excel_all(ordered_clusterss, threshold, string = "top")
 
         # Collect top gene names for visualization
         top_genes_names = top_gene_names(top_genes_cluster)
@@ -645,10 +763,10 @@ if __name__ == "__main__":
 
     filtered_adata = remove_NA_cat(adata)
 
-    #print(adata)
+    print(adata)
     # print(adata.obs['leiden_fusion'].cat.categories.to_list())
     # print(adata.obs['leiden_fusion'])
-    #print(adata.obs['leiden_fusion_old1'])
+    print(adata.obs['leiden_fusion_old1'])
     
     
     # #Create cluster resolutions UMAP
@@ -662,8 +780,17 @@ if __name__ == "__main__":
     "Imm.Interferon.0", "Imm.DAM.0", 
     "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0"]
 
+    custom_cluster_order_no_filter = [
+    "Imm.0.8.0", "Imm.0.8.1", "Imm.0.8.2", 
+    "Imm.0.8.3", 
+    "Imm.1.2.13", 
+    "Imm.1.2.14",
+    "Imm.0.8.6", "Imm.1.2.12", "Imm.1.2.5", "Imm.1.2.4",
+    "Imm.1.2.15"]
+
     # Create dotplot of the top genes
-    create_dotplots_with_thresholds(filtered_adata, pts_thresholds, custom_cluster_order)
+    # create_dotplots_with_thresholds(filtered_adata, pts_thresholds, custom_cluster_order)
+    no_filter_dotplot(filtered_adata, custom_cluster_order_no_filter)
 
     print("\n********\n* DONE *\n********")  
 
