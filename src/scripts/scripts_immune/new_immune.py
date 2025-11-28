@@ -62,7 +62,7 @@ def extract_dge_data(adata):
     """
     print("\n🔹 Extracting DGE data...")
     
-    dge_fusion = adata.uns['rank_genes_groups_leiden_fusion']
+    dge_fusion = adata.uns['rank_genes_groups_leiden_fusion_old1']
     
     gene_names = pd.DataFrame(dge_fusion['names'])
     logfoldchanges = pd.DataFrame(dge_fusion['logfoldchanges'])
@@ -433,8 +433,8 @@ def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
+    adata.obs['leiden_fusion_old1'] = adata.obs['leiden_fusion_old1'].astype('category')
+    adata.obs['leiden_fusion_old1'] = adata.obs['leiden_fusion_old1'].cat.reorder_categories(cluster_order, ordered=True)
 
     for threshold in thresholds:
         print(f"\n🔹 Processing dotplots for pts threshold: {threshold}")
@@ -453,27 +453,25 @@ def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir
         # Remove NA clusters
         cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
 
-        # Create dendrogram (if not already present)
-        print("   - Checking and creating dendrogram if necessary...")
-        # plot_dendogram(adata)
-
+        print(cluster_dfs)
+        
         ordered_clusters = order_clusters(cluster_dfs, cluster_order)
 
         #export_to_excel_all(ordered_clusters, threshold,string = "all")
 
         # Select the top genes for each cluster
         print("   - Selecting top genes for each cluster...")
-        top_genes_cluster = select_top_genes(cluster_dfs)
+        top_genes_cluster = select_top_genes(ordered_clusters)
 
         # Add an asterisk to clusters with non-significant genes
-        top_genes_cluster = addasterix(top_genes_cluster)
+        #top_genes_cluster = addasterix(top_genes_cluster)
 
         ordered_clusterss = order_clusters(top_genes_cluster, cluster_order)
 
         #export_to_excel_all(ordered_clusterss, threshold, string = "top")
 
         # Collect top gene names for visualization
-        top_genes_names = top_gene_names(top_genes_cluster)
+        top_genes_names = top_gene_names(ordered_clusterss)
 
         top_genes_names = order_clusters(top_genes_names, cluster_order)
 
@@ -488,8 +486,8 @@ def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir
         dotplot_normal = sc.pl.rank_genes_groups_dotplot(
             adata,
             var_names=top_genes_names,
-            groupby='leiden_fusion',
-            key='rank_genes_groups_leiden_fusion',
+            groupby='leiden_fusion_old1',
+            key='rank_genes_groups_leiden_fusion_old1',
             cmap='bwr',
             vmin=-4,
             vmax=4,
@@ -500,40 +498,12 @@ def create_dotplots_with_thresholds(adata, thresholds, cluster_order, output_dir
             return_fig=True
         )
 
-        # # (2) normal
-        # dotplot_normal = sc.pl.rank_genes_groups_dotplot(
-        #     adata,
-        #     var_names=top_genes_names,
-        #     groupby='leiden_fusion',
-        #     key='rank_genes_groups_leiden_fusion',
-        #     cmap='Reds',
-        #     use_raw=False,
-        #     dendrogram=False,
-        #     return_fig=True
-        # )
-
-        # # (2) scaled
-        # dotplot_scaled = sc.pl.rank_genes_groups_dotplot(
-        #     adata,
-        #     var_names=top_genes_names,
-        #     groupby='leiden_fusion',
-        #     key='rank_genes_groups_leiden_fusion',
-        #     cmap='Greys',
-        #     use_raw=False,
-        #     standard_scale='var',
-        #     dendrogram=False,
-        #     return_fig=True
-        # )
-
         # Save plots
-        #output_scale = os.path.join(output_dir, f"dotplot_scale_{threshold}.pdf")
-        output_normal = os.path.join(output_dir, f"dotplot_dge_{threshold}.pdf")
+        output_normal = os.path.join(output_dir, f"dotplot_dge_filter_{threshold}.pdf")
 
-        #dotplot_scaled.savefig(output_scale, bbox_inches="tight")
         dotplot_normal.savefig(output_normal, bbox_inches="tight")
 
         plt.close()
-        #print(f" Saved: {output_scale}")
         print(f" Saved: {output_normal}")
 
 
@@ -664,9 +634,6 @@ def export_to_excel_all(cluster_dfs, threshold,string, output_dir="excels/immune
         import traceback
         traceback.print_exc()
 
-
-
-
 def plot_dendogram(adata, output_dir="dendogram_immune"):
     """
     
@@ -688,7 +655,7 @@ def plot_dendogram(adata, output_dir="dendogram_immune"):
     )
 
     # Save the plot
-    output_path = os.path.join(output_dir, f"leiden_fusion_dendro.png")
+    output_path = os.path.join(output_dir, f"leiden_fusion_dendro.pdf")
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()  # Close the current figure to avoid overlap
     
@@ -755,6 +722,28 @@ def order_clusters(top_genes_dict, custom_order):
     print(f"📊 Final ordered cluster count: {len(ordered_dict)}")
     return ordered_dict
 
+def dendogram_sc(adata):
+    """
+    Compute and save the dendrogram for a specific group and store it in a specified key.
+
+    Parameters:
+    adata (AnnData): The AnnData object containing the data.
+    dendrogram_key (str): The key to save the dendrogram in `adata.uns`.
+
+    Returns:
+    None
+    """
+
+    # Compute the dendrogram
+    print(f"Computing dendrogram for leiden_fusion...")
+    sc.tl.dendrogram(
+        adata,
+        groupby='leiden_fusion_old1',
+        use_rep='X_pca',
+        cor_method='spearman',
+        linkage_method='ward',
+        use_raw=False
+    )
 
 # Main execution block
 if __name__ == "__main__":
@@ -772,7 +761,7 @@ if __name__ == "__main__":
     # #Create cluster resolutions UMAP
     # umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
-    pts_thresholds = [0.3, 0.4, 0.5]
+    pts_thresholds = [0.4]
 
     custom_cluster_order = [
     "Imm.M0Like.0", "Imm.M0Like.1", 
@@ -786,11 +775,14 @@ if __name__ == "__main__":
     "Imm.1.2.13", 
     "Imm.1.2.14",
     "Imm.0.8.6", "Imm.1.2.12", "Imm.1.2.5", "Imm.1.2.4",
-    "Imm.1.2.15"]
+    "Imm.1.2.15"]   
+
+    # dendogram_sc(filtered_adata)
+    # plot_dendogram(filtered_adata)
 
     # Create dotplot of the top genes
-    # create_dotplots_with_thresholds(filtered_adata, pts_thresholds, custom_cluster_order)
-    no_filter_dotplot(filtered_adata, custom_cluster_order_no_filter)
+    create_dotplots_with_thresholds(filtered_adata, pts_thresholds, custom_cluster_order_no_filter)
+    #no_filter_dotplot(filtered_adata, custom_cluster_order_no_filter)
 
     print("\n********\n* DONE *\n********")  
 
