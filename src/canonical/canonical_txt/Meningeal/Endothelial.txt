@@ -3,7 +3,4 @@ Ptprb
 Flt1
 Vwf
 Pecam1
-Eln
-Cdh13
 Cldn5
-Bsg

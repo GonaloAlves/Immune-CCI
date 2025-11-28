@@ -1,14 +1,9 @@
-Ptprc
 Ly86
 Ctss
 Hexb
 Mertk
-Csf3r
-Tmem119
-Cx3cr1
-Iba1
 Csf1r
+Csf3r
+Cx3cr1
 P2ry12
-P2ry13
 Siglech
-Cd86

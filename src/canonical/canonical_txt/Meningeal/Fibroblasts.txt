@@ -1,10 +1,6 @@
-Fgfr2
-Bicc1
 Robo1
-Igf1
+Fgfr2
 Slc7a11
+Igf1
 Aldh1a2
-Cyp26b1
-Apod
 Pdgfra
-Slc1a3
