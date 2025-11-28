@@ -242,9 +242,9 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         # )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_no_dendro_{threshold}.pdf")
+        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_all_{threshold}.pdf")
         #output_scaled_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_no_dendro_{threshold}.pdf")
+        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_all_{threshold}.pdf")
         #output_normal_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_dendro_{threshold}.png")
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
@@ -585,24 +585,28 @@ if __name__ == "__main__":
     # #preform dendrogram
     # dendogram_sc(adatas_filtered)
 
-    # # Load canonical gene lists from a directory
-    # canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal"
-    # genes = load_canonical_from_dir(canonical_genes_dir)
+    # Load canonical gene lists from a directory
+    canonical_genes_dir = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_txt/Meningeal"
+    genes = load_canonical_from_dir(canonical_genes_dir)
 
 
-    # # Define thresholds
-    # pts_thresholds = [0, 0.2, 0.3]
+    # Define thresholds
+    pts_thresholds = [0.2]
 
-    # custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
-    #                         "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
-    #                         "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
+    custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
+                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
     
+    custom_cluster_order_all = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.EndoUnknow.4", "MeV.Epithelial.0",
+                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibUnknown.6", 
+                            "MeV.ImmuneDoublets.0", "MeV.LowQuality.0" ,"MeV.FibProlif.0"]
 
-    # # Check for mismatches before reordering
-    # check_cluster_order(adatas_filtered, custom_cluster_order)
+    # Check for mismatches before reordering
+    #check_cluster_order(adatas_filtered, custom_cluster_order_all)
     
-    # # Generate dotplots for each threshold
-    # create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "")
+    # Generate dotplots for each threshold
+    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order_all, "")
 
     # #export_cluster_cell_counts(adatas_filtered)
 
