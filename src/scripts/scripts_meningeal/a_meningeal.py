@@ -890,6 +890,88 @@ def remove_varname_clusters_by_suffix(varname_dict, suffix="NA"):
 
     return filtered
 
+def create_dotplots_with_thresholds_all(
+    adata, thresholds, clusters_to_remove, cluster_order,
+    output_dir="dotplots/meningeal/leiden_fusion"
+):
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Reorder category levels
+    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
+    adata.obs['leiden_fusion'] = (
+        adata.obs['leiden_fusion']
+        .cat.reorder_categories(cluster_order, ordered=True)
+    )
+
+    for threshold in thresholds:
+        print(f"\n🔹 Processing dotplots for pts threshold: {threshold}")
+
+        # ---------------------------------------
+        # 1. Extract DGE data
+        # ---------------------------------------
+        gene_names, logfoldchanges, pvals_adj, scores, pts = extract_dge_data(adata)
+
+        # ---------------------------------------
+        # 2. Build cluster DataFrames
+        # ---------------------------------------
+        cluster_dfs = create_cluster_dfs(
+            gene_names, logfoldchanges, pvals_adj, scores, pts,
+            sort_by_logfc=True, pts_threshold=threshold
+        )
+
+        # Remove NA clusters only (optional)
+        cluster_dfs = remove_clusters_by_suffix(cluster_dfs, "NA")
+
+        # Order clusters — DO NOT remove any
+        cluster_dfs_ordered = order_clusters(cluster_dfs, cluster_order)
+
+        # Export ALL clusters
+        export_to_excel_all(cluster_dfs_ordered, threshold, string="all")
+
+        # ---------------------------------------
+        # 3. Top genes
+        # ---------------------------------------
+        top_genes_cluster = select_top_genes(cluster_dfs)
+        top_genes_cluster = addasterix(top_genes_cluster)
+
+        # Order top genes — DO NOT remove any
+        top_genes_cluster_ordered = order_clusters(top_genes_cluster, cluster_order)
+
+        # Export ALL clusters again (top genes)
+        export_to_excel_all(top_genes_cluster_ordered, threshold, string="top")
+
+        # ---------------------------------------
+        # 4. Gene list for dotplot (keep ALL clusters)
+        # ---------------------------------------
+        top_genes_names = top_gene_names(top_genes_cluster)
+        top_genes_names = order_clusters(top_genes_names, cluster_order)
+
+        # ---------------------------------------
+        # 5. Dotplot
+        # ---------------------------------------
+        dotplot_normal = sc.pl.rank_genes_groups_dotplot(
+            adata,
+            var_names=top_genes_names,
+            groupby='leiden_fusion',
+            key='rank_genes_groups_leiden_fusion',
+            cmap='bwr',
+            vmin=-4,
+            vmax=4,
+            values_to_plot='logfoldchanges',
+            colorbar_title='Magnitude of expression',
+            use_raw=False,
+            dendrogram=False,
+            return_fig=True
+        )
+
+        output_normal = os.path.join(output_dir, f"dotplot_normal_{threshold}.pdf")
+        dotplot_normal.savefig(output_normal, bbox_inches="tight")
+        plt.close()
+
+        print(f" Saved: {output_normal}")
+
 
 # Main execution block
 if __name__ == "__main__":
@@ -909,6 +991,11 @@ if __name__ == "__main__":
 
     pts_thresholds = [0.3, 0.4, 0.5]
 
+    custom_cluster_order_all = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.EndoUnknow.4", "MeV.Epithelial.0",
+                            "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
+                            "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibUnknown.6", 
+                            "MeV.ImmuneDoublets.0", "MeV.LowQuality.0" ,"MeV.FibProlif.0"]
+    
     custom_cluster_order = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.Epithelial.0",
                             "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
                             "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
@@ -929,13 +1016,15 @@ if __name__ == "__main__":
 
     
     # Create dotplot of the top genes
+
     #create_dotplots_with_thresholds(adatas_filtered, pts_thresholds, clusters_to_remove, custom_cluster_order)
+    create_dotplots_with_thresholds_all(filtered_adata, pts_thresholds, clusters_to_remove, custom_cluster_order_all)
 
     # print("----")
     # print(adata.obs['leiden_fusion'].cat.categories.to_list())
     # print("----")
 
-    no_filter_dotplot(filtered_adata, custom_cluster_order_no_filter)
+    #no_filter_dotplot(filtered_adata, custom_cluster_order_no_filter)
 
     
 
