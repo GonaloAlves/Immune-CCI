@@ -809,7 +809,7 @@ def no_filter_dotplot(adata, cluster_order, output_dir="dotplots/meningeal/leide
 
 
     # Save plots
-    output_normal = os.path.join(output_dir, f"dotplot_dge_no_filter.png")
+    output_normal = os.path.join(output_dir, f"dotplot_dge_no_filter.pdf")
     dotplot_normal.savefig(output_normal, bbox_inches="tight")
 
     plt.close()
