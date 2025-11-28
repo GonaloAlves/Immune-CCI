@@ -66,7 +66,7 @@ def extract_dge_data(adata):
     Returns:
     tuple: DataFrames for gene names, logfoldchanges, adjusted p-values, scores, and pts.
     """
-    dge_fusion = adata.uns['rank_genes_groups_leiden_fusion']
+    dge_fusion = adata.uns['rank_genes_groups_leiden_fusion_old1']
     
     # Convert the extracted data into DataFrames
     gene_names = pd.DataFrame(dge_fusion['names'])
@@ -890,19 +890,14 @@ def remove_varname_clusters_by_suffix(varname_dict, suffix="NA"):
 
     return filtered
 
-def create_dotplots_with_thresholds_all(
-    adata, thresholds, clusters_to_remove, cluster_order,
-    output_dir="dotplots/meningeal/leiden_fusion"
-):
+def create_dotplots_with_thresholds_all(adata, thresholds, clusters_to_remove, cluster_order, output_dir="dotplots/meningeal/leiden_fusion"):
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
     # Reorder category levels
-    adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
-    adata.obs['leiden_fusion'] = (
-        adata.obs['leiden_fusion']
-        .cat.reorder_categories(cluster_order, ordered=True)
+    adata.obs['leiden_fusion_old1'] = adata.obs['leiden_fusion_old1'].astype('category')
+    adata.obs['leiden_fusion_old1'] = (adata.obs['leiden_fusion_old1'].cat.reorder_categories(cluster_order, ordered=True)
     )
 
     for threshold in thresholds:
@@ -928,19 +923,19 @@ def create_dotplots_with_thresholds_all(
         cluster_dfs_ordered = order_clusters(cluster_dfs, cluster_order)
 
         # Export ALL clusters
-        export_to_excel_all(cluster_dfs_ordered, threshold, string="all")
+        #export_to_excel_all(cluster_dfs_ordered, threshold, string="all")
 
         # ---------------------------------------
         # 3. Top genes
         # ---------------------------------------
         top_genes_cluster = select_top_genes(cluster_dfs)
-        top_genes_cluster = addasterix(top_genes_cluster)
+        #top_genes_cluster = addasterix(top_genes_cluster)
 
         # Order top genes — DO NOT remove any
         top_genes_cluster_ordered = order_clusters(top_genes_cluster, cluster_order)
 
         # Export ALL clusters again (top genes)
-        export_to_excel_all(top_genes_cluster_ordered, threshold, string="top")
+        #export_to_excel_all(top_genes_cluster_ordered, threshold, string="top")
 
         # ---------------------------------------
         # 4. Gene list for dotplot (keep ALL clusters)
@@ -954,8 +949,8 @@ def create_dotplots_with_thresholds_all(
         dotplot_normal = sc.pl.rank_genes_groups_dotplot(
             adata,
             var_names=top_genes_names,
-            groupby='leiden_fusion',
-            key='rank_genes_groups_leiden_fusion',
+            groupby='leiden_fusion_old1',
+            key='rank_genes_groups_leiden_fusion_old1',
             cmap='bwr',
             vmin=-4,
             vmax=4,
@@ -966,7 +961,7 @@ def create_dotplots_with_thresholds_all(
             return_fig=True
         )
 
-        output_normal = os.path.join(output_dir, f"dotplot_normal_{threshold}.pdf")
+        output_normal = os.path.join(output_dir, f"dotplot_filter_{threshold}.pdf")
         dotplot_normal.savefig(output_normal, bbox_inches="tight")
         plt.close()
 
@@ -989,7 +984,7 @@ if __name__ == "__main__":
     # #Create cluster resolutions UMAP
     # umap_reso_cluster(adatas_filtered, 'leiden_fusion')
 
-    pts_thresholds = [0.3, 0.4, 0.5]
+    pts_thresholds = [0.4]
 
     custom_cluster_order_all = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3", "MeV.EndoUnknow.4", "MeV.Epithelial.0",
                             "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
@@ -1018,7 +1013,7 @@ if __name__ == "__main__":
     # Create dotplot of the top genes
 
     #create_dotplots_with_thresholds(adatas_filtered, pts_thresholds, clusters_to_remove, custom_cluster_order)
-    create_dotplots_with_thresholds_all(filtered_adata, pts_thresholds, clusters_to_remove, custom_cluster_order_all)
+    create_dotplots_with_thresholds_all(filtered_adata, pts_thresholds, clusters_to_remove, custom_cluster_order_no_filter)
 
     # print("----")
     # print(adata.obs['leiden_fusion'].cat.categories.to_list())
