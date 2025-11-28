@@ -772,14 +772,134 @@ def remove_clusters2(cluster_dict, clusters_to_remove):
 
     return filtered
 
+def no_filter_dotplot(adata, cluster_order, output_dir="dotplots/meningeal/leiden_fusion"):
+
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # 1. Reorder adata categories
+    adata.obs['leiden_fusion_old1'] = adata.obs['leiden_fusion_old1'].cat.reorder_categories(cluster_order, ordered=True)
+
+    # 2. Extract top 5 genes + remove NA clusters
+    top_genes_names = get_top_genes_for_dotplot(
+        adata,
+        key='rank_genes_groups_leiden_fusion_old1',
+        n_genes=5,
+        cluster_order=cluster_order,
+        remove_suffix="NA"
+    )
+
+    # 3. Reorder dict (optional)
+    top_genes_names = order_clusters(top_genes_names, cluster_order)
+
+    # 4. Plot
+    dotplot_normal = sc.pl.rank_genes_groups_dotplot(
+        adata,
+        var_names=top_genes_names,
+        groupby='leiden_fusion_old1',
+        key='rank_genes_groups_leiden_fusion_old1',
+        cmap='bwr',
+        vmin=-4, vmax=4,
+        use_raw=False,
+        values_to_plot='logfoldchanges',
+        dendrogram=False,
+        return_fig=True
+    )
+
+
+    # Save plots
+    output_normal = os.path.join(output_dir, f"dotplot_dge_no_filter.png")
+    dotplot_normal.savefig(output_normal, bbox_inches="tight")
+
+    plt.close()
+    print(f" Saved: {output_normal}")
+
+
+def get_top_genes_for_dotplot(adata, 
+                              key='rank_genes_groups_leiden_fusion_old1',
+                              n_genes=5,
+                              cluster_order=None,
+                              remove_suffix="NA"):
+    """
+    Extract top n_genes used in Scanpy dotplot and apply ordering + NA removal.
+    """
+
+    rgg = adata.uns[key]
+    all_clusters = list(rgg['names'].dtype.names)
+
+    # If no custom order provided, keep original
+    if cluster_order is None:
+        cluster_order = all_clusters
+
+    top_dict = {}
+
+    # Extract top n genes in desired order
+    for cluster in cluster_order:
+        if cluster not in all_clusters:
+            continue
+
+        genes = list(rgg['names'][cluster][:n_genes])
+        top_dict[cluster] = genes
+
+    # Remove suffix clusters (like NA)
+    if remove_suffix:
+        top_dict = remove_varname_clusters_by_suffix(top_dict, remove_suffix)
+
+    return top_dict
+
+
+def order_clusters(cluster_dict, cluster_order):
+    """
+    Reorder a dict according to a list of cluster_order.
+    Keys not in cluster_order are appended at the end.
+    """
+    ordered = {k: cluster_dict[k] for k in cluster_order if k in cluster_dict}
+
+    # Add remaining clusters at the bottom
+    for k in cluster_dict:
+        if k not in ordered:
+            ordered[k] = cluster_dict[k]
+
+    return ordered
+
+def remove_varname_clusters_by_suffix(varname_dict, suffix="NA"):
+    """
+    Remove clusters from a var_names dictionary (cluster → list of genes) 
+    if their cluster name ends with a specified suffix.
+
+    Parameters:
+        varname_dict (dict): {cluster: [gene1, gene2, ...]}
+        suffix (str): Suffix to remove (e.g. "NA")
+
+    Returns:
+        dict: Filtered dictionary
+    """
+    print(f"\n🧹 Removing clusters ending with suffix: '{suffix}'")
+
+    filtered = {
+        k: v for k, v in varname_dict.items()
+        if not k.endswith(suffix)
+    }
+
+    removed = [k for k in varname_dict if k.endswith(suffix)]
+    if removed:
+        print(f"   Removed {len(removed)} clusters: {removed}")
+    else:
+        print("   No clusters removed.")
+
+    return filtered
+
+
 # Main execution block
 if __name__ == "__main__":
     # Load data
     adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
 
-    # print(adata)
 
     filtered_adata = remove_NA_cat(adata)
+
+    print(filtered_adata.obs["leiden_fusion_old1"].cat.categories.to_list())
 
     clusters_to_remove = ['MeV.ImmuneDoublets.0', 'MeV.LowQuality.0', 'MeV.EndoUnknow.4', 'MeV.FibUnknown.6']
     adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
@@ -793,16 +913,29 @@ if __name__ == "__main__":
                             "MeV.SMC.0", "MeV.Pericytes.0", "MeV.VLMC.0", "MeV.VLMC.1" , "MeV.FibCollagen.0", "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3",
                             "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
     
+
+    custom_cluster_order_no_filter = ["MeV.1.4.1", "MeV.1.4.15", "MeV.1.4.5", "MeV.4.21", "MeV.1.4.20",
+                                      "MeV.4.26", "MeV.4.31", "MeV.4.1", 
+                                      "MeV.4.4", "MeV.1.4.0", "MeV.4.12" , 
+                                      "MeV.2.8", "MeV.1.4.12", "MeV.4.30", "MeV.1.4.4", "MeV.3.17", 
+                                      "MeV.2.1", "MeV.1.4.7", "MeV.1.4.6", "MeV.1.4.11", "MeV.4.34", "MeV.1.4.13", "MeV.1.4.2",
+                                      "MeV.1.4.21", "MeV.1.4.8", "MeV.3.30"]
+    
+
+
+    
     # # Check for mismatches before reordering
     # check_cluster_order(filtered_adata, custom_cluster_order)
 
     
     # Create dotplot of the top genes
-    create_dotplots_with_thresholds(adatas_filtered, pts_thresholds, clusters_to_remove, custom_cluster_order)
+    #create_dotplots_with_thresholds(adatas_filtered, pts_thresholds, clusters_to_remove, custom_cluster_order)
 
     # print("----")
     # print(adata.obs['leiden_fusion'].cat.categories.to_list())
     # print("----")
+
+    no_filter_dotplot(filtered_adata, custom_cluster_order_no_filter)
 
     
 
