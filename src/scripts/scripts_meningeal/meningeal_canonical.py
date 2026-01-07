@@ -167,7 +167,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
 
         # Example user-defined gene group order
         user_gene_group_order = ["Endothelial","Epithelial","SMC","Pericytes" ,"VLMC", 
-                                  "Fibroblasts","ECM_Laminin","ECM_Collagen","ECM_Secreted_Signaling",
+                                  "Fibroblasts","ECM_Laminin","ECM_Collagen",
                                   "Proliferative"]
 
         # Reorder the dictionary based on user order
@@ -242,9 +242,9 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, gen
         # )
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_all_{threshold}.pdf")
+        output_scaled_no_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_{threshold}.pdf")
         #output_scaled_dendro = os.path.join(output_dir, f"{gene}dotplot_scaled_dendro_{threshold}.png")
-        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_all_{threshold}.pdf")
+        output_normal_no_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_{threshold}.pdf")
         #output_normal_dendro = os.path.join(output_dir, f"{gene}dotplot_normal_dendro_{threshold}.png")
 
         dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
@@ -580,7 +580,7 @@ if __name__ == "__main__":
     adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
 
     #Create cluster resolutions UMAP
-    umap_reso_cluster(adatas_filtered, 'leiden_fusion')
+    umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
     # #preform dendrogram
     # dendogram_sc(adatas_filtered)
@@ -606,7 +606,8 @@ if __name__ == "__main__":
     #check_cluster_order(adatas_filtered, custom_cluster_order_all)
     
     # Generate dotplots for each threshold
-    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order_all, "")
+    #create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order_all, "")
+    #create_dotplots_with_thresholds(adatas_filtered, genes, pts_thresholds, custom_cluster_order, "")
 
     # #export_cluster_cell_counts(adatas_filtered)
 
