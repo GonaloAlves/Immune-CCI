@@ -51,15 +51,17 @@ def test_heatmap(obs_key: str = None, category: str = None, vmin: int = None, vm
     # Extract the matrix
     count_matrix = clusterg["count_network"]
     
-    custom_order = [
-        "Imm.M0Like.1", "Imm.DAM.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1",
-        "Neu.CSFcN.0", "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
-        "MeV.FibCollagen.2", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"
+    relevant_clusters = [
+        "Imm.M0Like.1", "Imm.DAM.0", "Imm.DAM.1", "Imm.Interferon.0", "Imm.PVM.0",
+        "Neu.Epend.0", 
+        "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Pericytes.0", 
+        "MeV.FibCollagen.1", "MeV.FibCollagen.2", "MeV.FibCollagen.3", 
+        "MeV.Fib.4", "MeV.Fib.5"
     ]
 
     #relevant_clusters = ["Imm.DAM.0", "Imm.Interferon.0","Imm.PVM.0", "Imm.DAM.1","Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0","MeV.Endothelial.1", "MeV.Endothelial.2"]
 
-    relevant_clusters = [
+    custom_order = [
         "Imm.M0Like.1", "Imm.DAM.0", "Imm.Interferon.0", "Imm.PVM.0", "Imm.DAM.1",
         "Neu.Epend.0", "MeV.Pericytes.0", "MeV.Endothelial.0", "MeV.FibCollagen.1", "MeV.Fib.5", "MeV.Fib.4", 
         "MeV.FibCollagen.2", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.FibCollagen.3"

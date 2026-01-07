@@ -755,9 +755,9 @@ if __name__ == "__main__":
 
     dom_coll = ["Collagen_I", "Collagen_III", "Collagen_IV", "Collagen_V", "Receptors", "Collagen_DS"]
 
-    dom_endo = ["ANGPT1_TEK", "LAMC1_integrin", "LGALS3_MERTK", "SIRPA_CD47"]
+    dom_endo = ["ANGPT1_TEK", "LAMC1_integrin"]
 
-    dom_epend = ["APP_SORL1"]
+    dom_epend = ["APP_SORL1", "SIRPA_CD47"]
 
 
     output_dir_immune = "/home/makowlg/Documents/Immune-CCI/src/canonical/canonical_immune/cpdb_genes"
