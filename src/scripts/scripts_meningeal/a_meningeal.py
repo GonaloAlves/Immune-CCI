@@ -32,7 +32,11 @@ def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_meninge/upda
     """
 
     # Plot UMAP for the specified resolution
-    ax = sc.pl.umap(adata, color=resolution_name, title=f"UMAP - {resolution_name}", return_fig=True)
+    ax = sc.pl.umap(adata, 
+                    color=resolution_name, 
+                    title=f"UMAP - Meningeal and Vascular Clusters",
+                    size=50,
+                    return_fig=True)
     
     ax_ondata = sc.pl.umap(adata, 
                            color=resolution_name, 
@@ -982,7 +986,7 @@ if __name__ == "__main__":
     adatas_filtered = remove_clusters(filtered_adata, clusters_to_remove)
 
     # #Create cluster resolutions UMAP
-    # umap_reso_cluster(adatas_filtered, 'leiden_fusion')
+    umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
     pts_thresholds = [0.4]
 
@@ -1013,7 +1017,7 @@ if __name__ == "__main__":
     # Create dotplot of the top genes
 
     #create_dotplots_with_thresholds(adatas_filtered, pts_thresholds, clusters_to_remove, custom_cluster_order)
-    create_dotplots_with_thresholds_all(filtered_adata, pts_thresholds, clusters_to_remove, custom_cluster_order_no_filter)
+    #create_dotplots_with_thresholds_all(filtered_adata, pts_thresholds, clusters_to_remove, custom_cluster_order_no_filter)
 
     # print("----")
     # print(adata.obs['leiden_fusion'].cat.categories.to_list())

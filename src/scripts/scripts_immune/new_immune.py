@@ -21,8 +21,8 @@ def umap_reso_cluster(adata, resolution_name, output_dir="reso/reso_immune/updat
     # Plot UMAP for the specified resolution
     ax = sc.pl.umap(adata, 
                     color=resolution_name, 
-                    title=f"UMAP - {resolution_name}",
-                    size=20, 
+                    title=f"UMAP - Immune Clusters",
+                    size=50,
                     return_fig=True)
     
     ax_ondata = sc.pl.umap(adata, 
@@ -759,7 +759,7 @@ if __name__ == "__main__":
     
     
     # #Create cluster resolutions UMAP
-    # umap_reso_cluster(filtered_adata, 'leiden_fusion')
+    umap_reso_cluster(filtered_adata, 'leiden_fusion')
 
     pts_thresholds = [0.4]
 
@@ -781,7 +781,7 @@ if __name__ == "__main__":
     # plot_dendogram(filtered_adata)
 
     # Create dotplot of the top genes
-    create_dotplots_with_thresholds(filtered_adata, pts_thresholds, custom_cluster_order_no_filter)
+    #create_dotplots_with_thresholds(filtered_adata, pts_thresholds, custom_cluster_order_no_filter)
     #no_filter_dotplot(filtered_adata, custom_cluster_order_no_filter)
 
     print("\n********\n* DONE *\n********")  
