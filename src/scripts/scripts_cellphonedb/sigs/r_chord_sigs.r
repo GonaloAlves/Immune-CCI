@@ -27,11 +27,11 @@ get_group <- function(label) {
 # )
 
 imm_red_colors <- c(  #immune verdes
-  "#91cb3e22", # 33 22
+  "#91cb3e", # 33 22
   "#00000000", 
-  "#5bba6f22", #
-  "#73a94222", #
-  "#11982222", #
+  "#5bba6f", #
+  "#73a942", #
+  "#119822", #
   "#00000000", 
   "#00000000", 
   "#00000000",
@@ -39,50 +39,50 @@ imm_red_colors <- c(  #immune verdes
   "#00000000"  
 )
 mev_blue_colors <- c( # mevs azuis
-  "#7b70d222", #7b70d2ff
-  "#9c70c222", #9c70c2
+  "#7b70d2", #7b70d2ff
+  "#9c70c2", #9c70c2
   "#00000000",
   "#00000000",
-  "#729fcf22", # 
-  "#3f7cac22", #
+  "#729fcf", # 
+  "#3f7cac", #
   "#00000000",
   "#00000000",
   "#00000000"  
 )
-neu_green_colors <- c("#ff666bff", #neus red/purple ff666b
+neu_green_colors <- c("#ff666b", #neus red/purple ff666b
  "#00000000")
 
 
-imma_red_colors <- c(  #immune verdes
-  "#9c70c2", #
-  "#729fcf", 
-  "#7b70d2", #
-  "#729fcf", #
-  "#486ec7", #
+# imma_red_colors <- c(  #immune verdes
+#   "#9c70c2", #
+#   "#729fcf", 
+#   "#7b70d2", #
+#   "#729fcf", #
+#   "#486ec7", #
   
   
-  "#f57c73", #f57c73
-  "#f68c70", #aa6554
-  "#f6ac69",
-  "#f6bc66", 
-  "#f6bc66"  
-)
-meva_blue_colors <- c( # mevs azuis
-  "#f6ac69", #
-  "#ff666b", #
+#   "#f57c73", #f57c73
+#   "#f68c70", #aa6554
+#   "#f6ac69",
+#   "#f6bc66", 
+#   "#f6bc66"  
+# )
+# meva_blue_colors <- c( # mevs azuis
+#   "#f6ac69", #
+#   "#ff666b", #
 
-  "#7ec4cf",
-  "#9cadce",
+#   "#7ec4cf",
+#   "#9cadce",
 
-  "#fe9e9e", # 
-  "#c24b72", #
+#   "#fe9e9e", # 
+#   "#c24b72", #
 
-  "#9898ab",
-  "#8494c0",
-  "#b2b2a4"  
-)
-neua_green_colors <- c("#00bf63", #neus red/purple
- "#bbdb44")
+#   "#9898ab",
+#   "#8494c0",
+#   "#b2b2a4"  
+# )
+# neua_green_colors <- c("#00bf63", #neus red/purple
+#  "#bbdb44")
 
 
 mev_groups <- c("MeV.Endothelial", "MeV.Pericytes", "MeV.SMC", "MeV.Epithelial", "MeV.Fib", "MeV.FibCollagen", "MeV.FibLaminin", "MeV.VLMC", "MeV.FibProlif")
@@ -182,10 +182,11 @@ chordDiagram(
 # Add names manually with full control
 circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
   sector_name <- CELL_META$sector.index
+  pretty_label <- sub("^[^.]+\\.", "", sector_name)
   circos.text(
     x = CELL_META$xcenter,
     y = CELL_META$ycenter + 1.5,  # ← Move name outward
-    labels = sector_name,
+    labels = pretty_label,
     facing = "bending",
     niceFacing = TRUE,
     cex = 1.7,                    # ← Font size
@@ -231,13 +232,14 @@ chordDiagram(
 # Add names manually with full control
 circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
   sector_name <- CELL_META$sector.index
+  pretty_label <- sub("^[^.]+\\.", "", sector_name)
   circos.text(
     x = CELL_META$xcenter,
     y = CELL_META$ycenter + 1.5,  # ← Move name outward
-    labels = sector_name,
+    labels = pretty_label,
     facing = "bending",
     niceFacing = TRUE,
-    cex = 1.25,  # ← Font size
+    cex = 1.7,  # ← Font size
     font = 2   # ← Bold
   )
 }, bg.border = NA)
