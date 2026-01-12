@@ -212,7 +212,7 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
         cbar_kws={"shrink": 0.8},
         xticklabels=True,
         yticklabels=True,
-        annot_kws={"size": 30},
+        annot_kws={"size": 50},
         vmin=vmin,
         vmax=vmax
     )

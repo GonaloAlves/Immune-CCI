@@ -104,7 +104,7 @@ def test_heatmap(obs_key: str = None, category: str = None, vmin: int = None, vm
         cbar_kws={"shrink": 0.8},
         xticklabels=True,
         yticklabels=True,
-        annot_kws={"size": 30},
+        annot_kws={"size": 50},
         vmin=vmin,
         vmax=vmax
     )
