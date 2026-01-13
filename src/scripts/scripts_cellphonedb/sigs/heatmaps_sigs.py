@@ -78,7 +78,7 @@ def test_heatmap(obs_key: str = None, category: str = None, vmin: int = None, vm
 
     #show only one part
     # mask = np.triu(np.ones(ordered_matrix.shape, dtype=bool), k=1)
-    mask = np.tril(np.ones(ordered_matrix.shape, dtype=bool), k=-1) 
+    mask = np.triu(np.ones(ordered_matrix.shape, dtype=bool), k=1)    
     
     # print("######")
     # print(ordered_matrix.shape)
@@ -110,10 +110,13 @@ def test_heatmap(obs_key: str = None, category: str = None, vmin: int = None, vm
     )
 
     # Move x-tick labels to top
+    ax.invert_yaxis()
     ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)
     ax.set_yticklabels(ax.get_yticklabels(), fontsize=40, rotation=0)
-    ax.yaxis.set_ticks_position('right')
+    ax.yaxis.set_ticks_position("left")
+
+    
 
     # Add title at the bottom manually
     plt.figtext(0.5, 0.9, f"Number of Significant Interactions in {category}", ha='center', fontsize=60)

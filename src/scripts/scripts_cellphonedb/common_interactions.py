@@ -169,7 +169,7 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
     print(f"Ordered Matrix:\n{ordered_matrix}")
 
     #show only one part
-    mask = np.tril(np.ones(ordered_matrix.shape, dtype=bool), k=-1) 
+    mask = np.tril(np.ones(ordered_matrix.shape, dtype=bool), k=1) 
 
     # print("######")
     # print(ordered_matrix.shape)
@@ -201,6 +201,7 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
     )
 
     # Move x-tick labels to top
+    ax.invert_yaxis()
     ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)
     ax.set_yticklabels(ax.get_yticklabels(), fontsize=40, rotation=0)

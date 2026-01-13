@@ -186,8 +186,8 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
     print(f"Ordered Matrix:\n{ordered_matrix}")
 
     #show only one part
-    mask = np.tril(np.ones(ordered_matrix.shape, dtype=bool), k=-1) 
-
+    mask = np.triu(np.ones(ordered_matrix.shape, dtype=bool), k=1)
+    
     # print("######")
     # print(ordered_matrix.shape)
     # print("######")
@@ -202,12 +202,12 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
 
     ax = sns.heatmap(
         ordered_matrix,
-        mask = mask,
+        mask=mask,
         annot=True,
         fmt=".0f",
         cmap=custom_cmap,
         linewidths=0.2,
-        linecolor='gray',
+        linecolor="gray",
         square=True,
         cbar_kws={"shrink": 0.8},
         xticklabels=True,
@@ -218,10 +218,11 @@ def test_heatmap(category: str = None, remove_clusters: list = [], matrix: pd.Da
     )
 
     # Move x-tick labels to top
+    ax.invert_yaxis()
     ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=40, rotation=90)
     ax.set_yticklabels(ax.get_yticklabels(), fontsize=40, rotation=0)
-    ax.yaxis.set_ticks_position('right')
+    ax.yaxis.set_ticks_position("left")
 
     # Add title at the bottom manually
     plt.figtext(0.5, 0.9, f"Number of Significant Interactions in {category}", ha='center', fontsize=60)
