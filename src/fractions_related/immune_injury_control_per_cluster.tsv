@@ -1,0 +1,11 @@
+	control	injured	total_cells	control_pct	injured_pct
+Imm.M0Like.0	149	273	422	35.31	64.69
+Imm.M0Like.1	135	229	364	37.09	62.91
+Imm.M0Like.2	85	138	223	38.12	61.88
+Imm.MHCII.0	12	32	44	27.27	72.73
+Imm.Interferon.0	3	36	39	7.69	92.31
+Imm.DAM.0	1	51	52	1.92	98.08
+Imm.DAM.1	14	120	134	10.45	89.55
+Imm.PVM.0	51	70	121	42.15	57.85
+Imm.Proliferative.0	6	12	18	33.33	66.67
+TOTAL	456	961	1417	32.18	67.82
