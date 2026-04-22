@@ -23,20 +23,129 @@ def load_data(file_path):
     return sc.read_h5ad(file_path)
 
 
-def split_adata_by_injury_day(adata: sc.AnnData):
+def split_adata_by_injury_day_and_region_sep(adata: sc.AnnData):
     """
-    Split an AnnData object into four sub-objects based on the 'injury_day' column in obs.
+    Split AnnData into datasets based on:
+    - injury_day (control, injured_15, injured_60, injured)
+    - region (rostral, caudal)
 
     Returns:
-        tuple: (adata_uninjured_0, adata_sham_15, adata_injured_15, adata_injured_60)
+        dict: dictionary with all subsets
     """
-    print("Splitting AnnData by injury_day...")
-    adata_control = adata[adata.obs['injury_day'].isin(["uninjured_0", "sham_15"])].copy()
-    adata_injured_15  = adata[adata.obs['injury_day'] == "injured_15"].copy()
-    adata_injured_60  = adata[adata.obs['injury_day'] == "injured_60"].copy()
-    adata_injured = adata[adata.obs['injury_day'].isin(["injured_15", "injured_60"])].copy()
 
-    return adata_control, adata_injured_15, adata_injured_60, adata_injured
+    print("🔹 Splitting AnnData by injury_day AND region...")
+
+
+    # --- Base splits (same as your original) ---
+    adata_control = adata[adata.obs['injury_day'].isin(["uninjured_0", "sham_15"])].copy()
+    adata_injured_15 = adata[adata.obs['injury_day'] == "injured_15"].copy()
+    adata_injured_60 = adata[adata.obs['injury_day'] == "injured_60"].copy()
+    adata_injured = adata[adata.obs['injury_day'].isin(["injured_15", "injured_60"])].copy()
+    
+
+    # --- Region splits ---
+    def split_region(sub_adata, label):
+        rostral = sub_adata[sub_adata.obs["collection_region"] == "rostral"].copy()
+        caudal  = sub_adata[sub_adata.obs["collection_region"] == "caudal"].copy()
+        # print(rostral)
+        # print("#################")
+        # print(caudal)
+        # print("#################")
+
+        print(f"   {label}: rostral={rostral.n_obs}, caudal={caudal.n_obs}")
+        return rostral, caudal
+
+    adata_control_rostral, adata_control_caudal = split_region(adata_control, "control")
+    adata_injured_15_rostral, adata_injured_15_caudal = split_region(adata_injured_15, "injured_15")
+    adata_injured_60_rostral, adata_injured_60_caudal = split_region(adata_injured_60, "injured_60")
+    adata_injured_rostral, adata_injured_caudal = split_region(adata_injured, "injured_total")
+
+    print("✅ Splitting complete.")
+
+    return (
+        # original sets
+        adata_control,
+        adata_injured_15,
+        adata_injured_60,
+        adata_injured,
+
+        # region-specific sets
+        adata_control_rostral,
+        adata_control_caudal,
+        adata_injured_15_rostral,
+        adata_injured_15_caudal,
+        adata_injured_60_rostral,
+        adata_injured_60_caudal,
+        adata_injured_rostral,
+        adata_injured_caudal
+    )
+
+def split_adata_by_injury_day_and_region_merged(adata: sc.AnnData):
+    """
+    Split AnnData into datasets based on:
+    - injury_day (control, injured_15, injured_60, injured)
+    - region (rostral, caudal)
+
+    Returns:
+        dict: dictionary with all subsets
+    """
+
+    print("🔹 Splitting AnnData by injury_day AND region...")
+
+
+
+    # --- Base splits (same as your original) ---
+    adata_control = adata[adata.obs['injury_day'].isin(["uninjured.0", "sham.15"])].copy()
+    adata_uninjured = adata[adata.obs['injury_day'] == "uninjured.0"].copy()
+    print(adata_uninjured.obs["injury_day"])
+    adata_sham = adata[adata.obs['injury_day'] == "sham.15"].copy()
+    adata_injured_15 = adata[adata.obs['injury_day'] == "injured.15"].copy()
+    adata_injured_60 = adata[adata.obs['injury_day'] == "injured.60"].copy()
+    adata_injured = adata[adata.obs['injury_day'].isin(["injured.15", "injured.60"])].copy()
+    
+
+    # --- Region splits ---
+    def split_region(sub_adata, label):
+        rostral = sub_adata[sub_adata.obs["injury_region"].str.endswith("rostral")].copy()
+        caudal  = sub_adata[sub_adata.obs["injury_region"].str.endswith("caudal")].copy()
+        central = sub_adata[sub_adata.obs["injury_region"].str.endswith("central")].copy()
+
+        print(f"   {label}: rostral={rostral.n_obs}, caudal={caudal.n_obs}, central={central.n_obs}")
+        return rostral, caudal, central
+
+
+    adata_control_rostral, adata_control_caudal = split_region(adata_control, "control")
+    adata_uninjured_rostral, adata_uninjured_caudal = split_region(adata_uninjured, "uninjured")
+    adata_sham_rostral, adata_sham_caudal = split_region(adata_sham, "sham")
+    adata_injured_15_rostral, adata_injured_15_caudal = split_region(adata_injured_15, "injured_15")
+    adata_injured_60_rostral, adata_injured_60_caudal = split_region(adata_injured_60, "injured_60")
+    adata_injured_rostral, adata_injured_caudal = split_region(adata_injured, "injured_total")
+
+    print("✅ Splitting complete.")
+
+    return (
+        # original sets
+        adata_control,
+        adata_uninjured,
+        adata_sham,
+        adata_injured_15,
+        adata_injured_60,
+        adata_injured,
+
+        # region-specific sets
+        adata_control_rostral,
+        adata_control_caudal,
+        adata_sham_rostral,
+        adata_sham_caudal,
+        adata_injured_15_rostral,
+        adata_injured_15_caudal,
+        adata_injured_60_rostral,
+        adata_injured_60_caudal,
+        adata_injured_rostral,
+        adata_injured_caudal
+    )
+
+
 
 
 def remove_NA_cat(adata: sc.AnnData):
@@ -133,7 +242,7 @@ def imm_keep_only_selected_clusters(adata: sc.AnnData, clusters_to_keep: list):
     
     return filtered_adata
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, name, prefix ,output_dir="canonical/canonical_dalila/new_sep"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, name, prefix ,output_dir="canonical/canonical_dalila/isaura"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -152,18 +261,13 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, nam
 
     adata = imm_keep_only_selected_clusters(adata=adata, clusters_to_keep=cluster_order)
 
-    #print(adata['leiden_fusion'].cat.categories.to_list())
+    print("############")
+    print(adata.obs['leiden_fusion'].cat.categories.to_list())
+    print("############")
     
     # Convert to categorical and reorder only existing categories
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].astype('category')
 
-    # # Find actual categories present in this subset
-    # present_categories = [cat for cat in cluster_order if cat in adata.obs['leiden_fusion'].cat.categories]
-
-    # # Inform if some clusters are missing
-    # missing_clusters = [cat for cat in cluster_order if cat not in present_categories]
-    # if missing_clusters:
-    #     print(f"Skipping missing clusters in dotplot: {missing_clusters}")
 
     # Reorder with only present ones
     adata.obs['leiden_fusion'] = adata.obs['leiden_fusion'].cat.reorder_categories(cluster_order, ordered=True)
@@ -191,7 +295,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, nam
         top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Example user-defined gene group order
-        user_gene_group_order = ["Mylip_Idol", "Isa_genes"]
+        user_gene_group_order = ["Isaura_genes"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -229,17 +333,17 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, nam
 
 
         # Save dotplots with appropriate filenames
-        output_scaled_no_dendro = os.path.join(output_dir, f"{prefix}_dotplot_scaled_{threshold}_{name}.png")
-        #output_normal_no_dendro = os.path.join(output_dir, f"{prefix}_dotplot_normal_{threshold}_{name}.png")
+        #output_scaled_no_dendro = os.path.join(output_dir, f"{prefix}.png")
+        output_normal_no_dendro = os.path.join(output_dir, f"{prefix}.png")
 
 
-        dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
-        #dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
+        #dotplot_scaled_no_dendro.savefig(output_scaled_no_dendro, bbox_inches="tight")
+        dotplot_normal_no_dendro.savefig(output_normal_no_dendro, bbox_inches="tight")
 
         plt.close()
         print(f"Saved dotplots for threshold {threshold}:")
-        print(f"  - {output_scaled_no_dendro}")
-        #print(f"  - {output_normal_no_dendro}")
+        #print(f"  - {output_scaled_no_dendro}")
+        print(f"  - {output_normal_no_dendro}")
         
 
 
@@ -452,22 +556,48 @@ def filter_cells_by_gene_expression(adata: sc.AnnData, gene_name: str):
 
 if __name__ == "__main__":
     # Load data
-    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad")
+    adata = load_data("/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_merged_raw_norm_annot_nona_copy.h5ad")
+    #adata_final_merged_raw_norm_annot_nona_copy
+    #adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy
+
 
     # Remove NA categories
     filtered_adata = remove_NA_cat(adata)
 
+    # print("########")
+    # print(filtered_adata.obs['injury_region'])
+    # print("########")
+
     # Split into injury_day groups
-    adata_control, adata_injured_15, adata_injured_60, adata_injured = split_adata_by_injury_day(filtered_adata)
-    print(adata_injured_15.obs["leiden_fusion"])
+    #adata_control, adata_injured_15, adata_injured_60, adata_injured = split_adata_by_injury_day(filtered_adata)
+    (
+    adata_control, adata_uninjured, adata_sham, adata_injured_15, adata_injured_60, adata_injured, 
+     
+    adata_control_rostral, adata_control_caudal, 
+    adata_uninjured_rostral, adata_uninjured_caudal,
+    adata_sham_rostral, adata_sham_caudal,
+    adata_injured_15_rostral, adata_injured_15_caudal,
+    adata_injured_60_rostral, adata_injured_60_caudal, 
+    adata_injured_rostral, adata_injured_caudal 
+
+    ) = split_adata_by_injury_day_and_region_merged(filtered_adata)
+    
 
     # Group into a dictionary for looping
     adata_groups = {
         "control": adata_control,
         "injured_15": adata_injured_15,
         "injured_60": adata_injured_60,
-        "injured": adata_injured
-        # "fulldays": filtered_adata
+        "injured": adata_injured,
+        "adata_control_rostral": adata_control_rostral, 
+        "adata_control_caudal": adata_control_caudal, 
+        "adata_injured_15_rostra": adata_injured_15_rostral, 
+        "adata_injured_15_caudal": adata_injured_15_caudal, 
+        "adata_injured_60_rostral": adata_injured_60_rostral, 
+        "adata_injured_60_caudal": adata_injured_60_caudal, 
+        "adata_injured_rostral": adata_injured_rostral, 
+        "adata_injured_caudal": adata_injured_caudal,
+        "fulldays": filtered_adata
     }
 
     # Load canonical gene lists from a directory
@@ -481,32 +611,87 @@ if __name__ == "__main__":
                             "MeV.FibLaminin.0", "MeV.Fib.0", "MeV.Fib.1", "MeV.Fib.2", "MeV.Fib.5", "MeV.Fib.3", "MeV.Fib.4", "MeV.FibProlif.0"]
 
     custom_cluster_order_mylip = ["MeV.Pericytes.0", "MeV.FibCollagen.1", "MeV.FibProlif.0"]
+    custom_cluster_order_peri_fibcoll = ["MeV.Pericytes.0", "MeV.FibCollagen.1"]
+    custom_cluster_order_peri = ["MeV.Pericytes.0"]
+
+    custom_cluster_order_ecs_mm = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3",
+                                   "Imm.M0Like.0", "Imm.M0Like.1", "Imm.M0Like.2", "Imm.MHCII.0" ,"Imm.Interferon.0", "Imm.DAM.0", 
+                                    "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0"]
+    custom_cluster_order_ecs_mm_1 = ["MeV.Endothelial.0", "MeV.Endothelial.1", "MeV.Endothelial.2", "MeV.Endothelial.3",
+                                   "Imm.M0Like.0", "Imm.M0Like.1", "Imm.M0Like.2", "Imm.MHCII.0" ,"Imm.Interferon.0", 
+                                    "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0"]
+    custom_cluster_order_ecs_mm_2 = ["MeV.Endothelial.0", "MeV.Endothelial.2",
+                                   "Imm.M0Like.0", "Imm.M0Like.1", "Imm.M0Like.2", "Imm.MHCII.0" ,"Imm.Interferon.0", "Imm.DAM.0", 
+                                    "Imm.DAM.1", "Imm.PVM.0", "Imm.Proliferative.0"]
 
 
     cond = "all"
     cond1= "control"
-    cond2= "injured15"
-    cond3= "injured60"
-    cond4= "injured"
+    cond2= "uninjured"
+    cond3= "sham"
+    cond4= "injured15"
+    cond5= "injured60"
+    cond6= "injured"
+    cond7= "control_rostral"
+    cond8= "control_caudal"
+
+    cond11= "sham_rostral"
+    cond12= "sham_caudal"
+    cond13= "injured15_rostral"
+    cond14= "injured15_caudal"
+    cond15= "injured60_rostral"
+    cond16= "injured60_caudal"
+    cond17= "injured_rostral"
+    cond18= "injured_caudal"
 
     name1 = "Mylip"
 
     
     # Generate dotplots
-    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order_mylip, None ,prefix=cond)
+    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order_ecs_mm, None ,prefix=cond)
 
-    create_dotplots_with_thresholds(adata_control, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond1)
+    create_dotplots_with_thresholds(adata_control, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond1)
 
-    create_dotplots_with_thresholds(adata_injured_15, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond2)
+    create_dotplots_with_thresholds(adata_uninjured, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond2)
 
-    create_dotplots_with_thresholds(adata_injured_60, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond3)
+    create_dotplots_with_thresholds(adata_sham, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond3)
 
-    create_dotplots_with_thresholds(adata_injured, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond4)
+    create_dotplots_with_thresholds(adata_injured_15, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond4)
+
+    create_dotplots_with_thresholds(adata_injured_60, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond5)
+
+    create_dotplots_with_thresholds(adata_injured, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond6)
+
+    create_dotplots_with_thresholds(adata_control_rostral, genes, pts_thresholds, custom_cluster_order_ecs_mm, None ,prefix=cond7) #custom_cluster_order_peri_fibcoll
+
+    create_dotplots_with_thresholds(adata_control_caudal, genes, pts_thresholds, custom_cluster_order_ecs_mm_1, None,prefix=cond8)
+
+    create_dotplots_with_thresholds(adata_uninjured_rostral, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond9)
+
+    create_dotplots_with_thresholds(adata_uninjured_caudal, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond10)
+
+    create_dotplots_with_thresholds(adata_sham_rostral, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond11)
+
+    create_dotplots_with_thresholds(adata_sham_caudal, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond12)
+
+    create_dotplots_with_thresholds(adata_injured_15_rostral, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond13)
+
+    create_dotplots_with_thresholds(adata_injured_15_caudal, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond14)
+
+    create_dotplots_with_thresholds(adata_injured_60_rostral, genes, pts_thresholds, custom_cluster_order_ecs_mm_2, None,prefix=cond15) #custom_cluster_order_peri
+
+    create_dotplots_with_thresholds(adata_injured_60_caudal, genes, pts_thresholds, custom_cluster_order_ecs_mm, None ,prefix=cond16)
+
+    create_dotplots_with_thresholds(adata_injured_rostral, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond17)
+
+    create_dotplots_with_thresholds(adata_injured_caudal, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond18)
+
+
 
 
     # Process each subset
     
-    print(f"\n--- Processing condition with: Mylip ---")
+    # print(f"\n--- Processing condition with: Mylip ---")
 
     # # Filter cells by gene expression
     # gene_filtered_adata_all = filter_cells_by_gene_expression(filtered_adata, "Mylip")
