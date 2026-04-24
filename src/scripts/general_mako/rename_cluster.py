@@ -52,7 +52,7 @@ def rename_clusters(adata, rename_pairs, resolution="leiden_fusion"):
 # Main execution block
 if __name__ == "__main__":
     # Load data
-    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
+    file_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_merged_raw_norm_annot_nona_copy_copy.h5ad"
     adata = load_data(file_path)
 
     # List of clusters to rename
@@ -124,15 +124,34 @@ if __name__ == "__main__":
         ('MeV.1.4.13', 'MeV.Fib.4')
     ]
 
+    old_clusters_merge = [
+        ('Imm.Interferon.0', "Imm.ActiveMicroglia.0"),
+        ('Imm.M0Like.0', "Imm.Homeostatic.0"),
+        ('Imm.M0Like.1', "Imm.Homeostatic.0"),
+        ('Imm.M0Like.2', "Imm.Homeostatic.0"),
+        ('Imm.Proliferative.0', 'Imm.Proliferative.0'),
+        ('Imm.PVM.0', "Imm.PVM.0"),
+        ('Imm.DAM.0', "Imm.ActiveMicroglia.0"),
+        ('Imm.DAM.1', "Imm.ActiveMicroglia.0"),
+        ("Imm.MHCII.0", "Imm.Homeostatic.0"),
+        ("MeV.Endothelial.0", "MeV.Endothelial.0"),
+        ("MeV.Endothelial.1", "MeV.Endothelial.0"),
+        ("MeV.Endothelial.2", "MeV.Endothelial.0"),
+        ("MeV.Endothelial.3", "MeV.Endothelial.0")
+    ]
+
+
+
+
     # Rename the clusters
-    adata = rename_clusters(adata, rename_pairs)
+    adata = rename_clusters(adata, old_clusters_merge)
 
     print("----")
     print(adata.obs['leiden_fusion'].cat.categories.to_list())
     print("----")
 
     # Save the modified AnnData object
-    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_Meningeal_Vascular_raw_norm_ranked_copy_copy.h5ad"
+    output_path = "/home/makowlg/Documents/Immune-CCI/h5ad_files/adata_final_merged_raw_norm_annot_nona_copy_copy.h5ad"
     print(f"Saving modified AnnData to '{output_path}'...")
     adata.write_h5ad(output_path, compression="gzip")
     print("Save complete.")
