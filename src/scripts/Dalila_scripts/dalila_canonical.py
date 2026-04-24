@@ -237,7 +237,7 @@ def imm_keep_only_selected_clusters(adata: sc.AnnData, clusters_to_keep: list):
     
     return filtered_adata
 
-def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, name, prefix ,output_dir="canonical/canonical_dalila/isaura_cd9"):
+def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, name, prefix ,output_dir="canonical/canonical_dalila/isaura"):
     """
     Create and save dotplots for different pts thresholds, with and without dendrograms.
 
@@ -290,7 +290,7 @@ def create_dotplots_with_thresholds(adata, genes, thresholds, cluster_order, nam
         top_genes_names = top_gene_names(filtered_genes, genes)
 
         # Example user-defined gene group order
-        user_gene_group_order = ["Isaura_genes"]
+        user_gene_group_order = ["MYLIP"]
 
         # Reorder the dictionary based on user order
         top_genes_names = {key: top_genes_names[key] for key in user_gene_group_order}
@@ -635,35 +635,35 @@ if __name__ == "__main__":
 
     
     # Generate dotplots
-    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order_ecs_mm, None ,prefix=cond)
+    create_dotplots_with_thresholds(filtered_adata, genes, pts_thresholds, custom_cluster_order_mylip, None ,prefix=cond)
 
-    create_dotplots_with_thresholds(adata_control, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond1)
+    create_dotplots_with_thresholds(adata_control, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond1)
 
-    create_dotplots_with_thresholds(adata_uninjured, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond2)
+    create_dotplots_with_thresholds(adata_uninjured, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond2)
 
-    create_dotplots_with_thresholds(adata_sham, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond3)
+    create_dotplots_with_thresholds(adata_sham, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond3)
 
-    create_dotplots_with_thresholds(adata_injured_15, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond4)
+    create_dotplots_with_thresholds(adata_injured_15, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond4)
 
-    create_dotplots_with_thresholds(adata_injured_60, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond5)
+    create_dotplots_with_thresholds(adata_injured_60, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond5)
 
-    create_dotplots_with_thresholds(adata_injured, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond6)
+    create_dotplots_with_thresholds(adata_injured, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond6)
 
-    create_dotplots_with_thresholds(adata_sham_rostral, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond7) #custom_cluster_order_peri_fibcoll
+    create_dotplots_with_thresholds(adata_sham_rostral, genes, pts_thresholds, custom_cluster_order_peri_fibcoll, None,prefix=cond7) #custom_cluster_order_peri_fibcoll
 
-    create_dotplots_with_thresholds(adata_sham_caudal, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond8)
+    create_dotplots_with_thresholds(adata_sham_caudal, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond8)
 
-    create_dotplots_with_thresholds(adata_injured_15_rostral, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond9)
+    create_dotplots_with_thresholds(adata_injured_15_rostral, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond9)
 
-    create_dotplots_with_thresholds(adata_injured_15_caudal, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond10)
+    create_dotplots_with_thresholds(adata_injured_15_caudal, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond10)
 
-    create_dotplots_with_thresholds(adata_injured_60_rostral, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond11) #custom_cluster_order_peri
+    create_dotplots_with_thresholds(adata_injured_60_rostral, genes, pts_thresholds, custom_cluster_order_peri, None,prefix=cond11) #custom_cluster_order_peri
 
-    create_dotplots_with_thresholds(adata_injured_60_caudal, genes, pts_thresholds, custom_cluster_order_ecs_mm, None ,prefix=cond12)
+    create_dotplots_with_thresholds(adata_injured_60_caudal, genes, pts_thresholds, custom_cluster_order_mylip, None ,prefix=cond12)
 
-    create_dotplots_with_thresholds(adata_injured_rostral, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond13)
+    create_dotplots_with_thresholds(adata_injured_rostral, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond13)
 
-    create_dotplots_with_thresholds(adata_injured_caudal, genes, pts_thresholds, custom_cluster_order_ecs_mm, None,prefix=cond14)
+    create_dotplots_with_thresholds(adata_injured_caudal, genes, pts_thresholds, custom_cluster_order_mylip, None,prefix=cond14)
 
 
 
